@@ -3,6 +3,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import { pathToFileURL } from "node:url";
 
 // --- Credentials from environment (never exposed to tool callers) ---
 
@@ -53,10 +54,18 @@ function toolResult(data: unknown, isError = false) {
 
 // --- MCP Server ---
 
-const server = new McpServer({
+export const server = new McpServer({
   name: "recurpost",
-  version: "1.0.0",
+  version: "1.1.0",
 });
+
+// Shared schema for tools that operate within a workspace.
+const workspaceIdParam = z
+  .string()
+  .optional()
+  .describe(
+    "Workspace ID (ws_id from workspace_list). Omit to use your default workspace."
+  );
 
 // 1. Verify credentials
 server.tool("user_login", "Verify RecurPost API credentials", {}, async () => {
@@ -85,10 +94,12 @@ server.tool(
 server.tool(
   "social_account_list",
   "List all connected social media accounts with their IDs",
-  {},
-  async () => {
+  {
+    workspace_id: workspaceIdParam,
+  },
+  async (params) => {
     try {
-      return toolResult(await callAPI("/api/social_account_list"));
+      return toolResult(await callAPI("/api/social_account_list", params));
     } catch (e) {
       return toolResult({ error: String(e) }, true);
     }
@@ -99,22 +110,39 @@ server.tool(
 server.tool(
   "library_list",
   "List all content libraries with their IDs",
-  {},
-  async () => {
+  {
+    workspace_id: workspaceIdParam,
+  },
+  async (params) => {
     try {
-      return toolResult(await callAPI("/api/library_list"));
+      return toolResult(await callAPI("/api/library_list", params));
     } catch (e) {
       return toolResult({ error: String(e) }, true);
     }
   }
 );
 
-// 5. Get posting history
+// 5. List workspaces
+server.tool(
+  "workspace_list",
+  "List all workspaces the user is a member of (own and shared), with their IDs. Pass a ws_id as workspace_id to other tools to work inside that workspace.",
+  {},
+  async () => {
+    try {
+      return toolResult(await callAPI("/api/workspace_list"));
+    } catch (e) {
+      return toolResult({ error: String(e) }, true);
+    }
+  }
+);
+
+// 6. Get posting history
 server.tool(
   "history_data",
   "Get posting history for a social account (max 100 posts per request)",
   {
     id: z.string().describe("Social account ID (from social_account_list)"),
+    workspace_id: workspaceIdParam,
     start_date: z
       .string()
       .optional()
@@ -137,12 +165,13 @@ server.tool(
   }
 );
 
-// 6. Add content to a library
+// 7. Add content to a library
 server.tool(
   "add_content_in_library",
   "Add a post to a content library for recurring/evergreen posting",
   {
     id: z.string().describe("Library ID (from library_list)"),
+    workspace_id: workspaceIdParam,
     message: z.string().describe("Default post content text"),
     image_url: z
       .array(z.string().url())
@@ -327,7 +356,7 @@ server.tool(
   }
 );
 
-// 7. Post or schedule content
+// 8. Post or schedule content
 server.tool(
   "post_content",
   "Post content immediately or schedule it for a future time on a social account",
@@ -335,6 +364,7 @@ server.tool(
     id: z
       .string()
       .describe("Social account ID (from social_account_list)"),
+    workspace_id: workspaceIdParam,
     message: z.string().describe("Post content text"),
     schedule_date_time: z
       .string()
@@ -491,7 +521,7 @@ server.tool(
   }
 );
 
-// 8. Generate content with AI
+// 9. Generate content with AI
 server.tool(
   "generate_content_with_ai",
   "Generate social media content text using RecurPost AI. Supports multi-turn conversations via ai_id.",
@@ -521,7 +551,7 @@ server.tool(
   }
 );
 
-// 9. Generate image with AI
+// 10. Generate image with AI
 server.tool(
   "generate_image_with_ai",
   "Generate an image from a text description using RecurPost AI",
@@ -549,7 +579,10 @@ async function main() {
   console.error("RecurPost MCP Server running on stdio");
 }
 
-main().catch((error) => {
-  console.error("Fatal error:", error);
-  process.exit(1);
-});
+// Only take over stdio when executed as a CLI, not when imported (e.g. by tests).
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error("Fatal error:", error);
+    process.exit(1);
+  });
+}

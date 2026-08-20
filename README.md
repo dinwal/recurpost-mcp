@@ -5,6 +5,7 @@ An [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that g
 ## What can it do?
 
 - List connected social accounts and content libraries
+- List workspaces and work inside any workspace you're a member of
 - Post content immediately or schedule it for later
 - Add content to libraries for recurring/evergreen posting
 - View posting history with engagement metrics
@@ -58,6 +59,7 @@ claude mcp add recurpost -- npx -y recurpost-mcp \
 | Tool | Description |
 |------|-------------|
 | `user_login` | Verify your API credentials |
+| `workspace_list` | List all workspaces you're a member of (own and shared) |
 | `social_account_list` | List all connected social media accounts |
 | `library_list` | List all content libraries |
 | `connect_social_account_urls` | Get URLs to connect new social accounts |
@@ -67,6 +69,10 @@ claude mcp add recurpost -- npx -y recurpost-mcp \
 | `generate_content_with_ai` | Generate social media post text with AI |
 | `generate_image_with_ai` | Generate images from text descriptions |
 
+### Workspaces
+
+`social_account_list`, `library_list`, `history_data`, `post_content`, and `add_content_in_library` accept an optional `workspace_id` (a `ws_id` from `workspace_list`). When omitted, your default workspace is used. When provided, results and actions are scoped to that workspace — social accounts and libraries must belong to it.
+
 ## Example prompts
 
 - "Show me all my connected social accounts"
@@ -74,6 +80,7 @@ claude mcp add recurpost -- npx -y recurpost-mcp \
 - "Generate a LinkedIn post about remote work productivity tips"
 - "What posts went out on my Twitter account this week?"
 - "Add 5 evergreen tips about social media marketing to my Tips library"
+- "List my workspaces, then show the social accounts in the Client A workspace"
 
 ## Security
 
