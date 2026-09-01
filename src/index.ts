@@ -4,6 +4,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { pathToFileURL } from "node:url";
+import { realpathSync } from "node:fs";
 
 // --- Credentials from environment (never exposed to tool callers) ---
 
@@ -580,7 +581,20 @@ async function main() {
 }
 
 // Only take over stdio when executed as a CLI, not when imported (e.g. by tests).
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+// process.argv[1] is the path as invoked, which for `npx recurpost-mcp` is the
+// node_modules/.bin symlink, while import.meta.url is always the realpath of this
+// module. Resolve argv[1] through realpath so the two are comparable.
+function isRunningAsCli(): boolean {
+  const entry = process.argv[1];
+  if (!entry) return false;
+  try {
+    return import.meta.url === pathToFileURL(realpathSync(entry)).href;
+  } catch {
+    return false;
+  }
+}
+
+if (isRunningAsCli()) {
   main().catch((error) => {
     console.error("Fatal error:", error);
     process.exit(1);
