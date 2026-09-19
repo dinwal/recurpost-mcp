@@ -49,10 +49,13 @@ Restart Claude Desktop after saving.
 #### Claude Code
 
 ```bash
-claude mcp add recurpost -- npx -y recurpost-mcp \
+claude mcp add recurpost --scope user \
   -e RECURPOST_EMAIL=your-email@example.com \
-  -e RECURPOST_API_KEY=your-api-key
+  -e RECURPOST_API_KEY=your-api-key \
+  -- npx -y recurpost-mcp
 ```
+
+The `-e` flags must come before `--`. Anything after `--` is passed to `npx`, so the server would start without credentials. `--scope user` makes the server available in every project; omit it to add it to the current project only.
 
 ## Available Tools
 
