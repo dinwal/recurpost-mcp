@@ -190,4 +190,21 @@ describe("error handling", () => {
     expect(content.text).toContain("API error 500");
     expect(content.text).toContain("Internal Server Error");
   });
+
+  it("surfaces the underlying network cause instead of a bare 'fetch failed'", async () => {
+    // This is exactly what undici throws when DNS fails inside the spawned process.
+    const cause = Object.assign(new Error("getaddrinfo ENOTFOUND social.recurpost.com"), {
+      code: "ENOTFOUND",
+    });
+    fetchMock.mockRejectedValue(new TypeError("fetch failed", { cause }));
+
+    const result = await client.callTool({ name: "social_account_list", arguments: {} });
+
+    expect(result.isError).toBe(true);
+    const content = (result.content as Array<{ text: string }>)[0];
+    expect(content.text).toContain("Could not reach https://social.recurpost.com");
+    expect(content.text).toContain("fetch failed");
+    expect(content.text).toContain("ENOTFOUND");
+    expect(content.text).toContain("getaddrinfo ENOTFOUND social.recurpost.com");
+  });
 });

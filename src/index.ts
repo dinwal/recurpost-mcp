@@ -20,6 +20,23 @@ if (!EMAIL || !API_KEY) {
 
 const API_BASE = "https://social.recurpost.com";
 
+// Node's fetch reports every network failure as a bare "TypeError: fetch failed"
+// and buries the real reason (ENOTFOUND, ECONNREFUSED, a rejected certificate...)
+// in `cause`. Walk the chain so the tool output says what actually went wrong.
+function describeError(e: unknown): string {
+  const parts: string[] = [];
+  const seen = new Set<unknown>();
+  let cur: unknown = e;
+  while (cur && typeof cur === "object" && !seen.has(cur)) {
+    seen.add(cur);
+    const err = cur as { name?: string; message?: string; code?: string; cause?: unknown };
+    const code = err.code ? ` [${err.code}]` : "";
+    parts.push(`${err.name ?? "Error"}: ${err.message ?? ""}${code}`);
+    cur = err.cause;
+  }
+  return parts.length ? parts.join(" <- ") : String(e);
+}
+
 // --- API helper ---
 
 async function callAPI(
@@ -32,11 +49,16 @@ async function callAPI(
     ...params,
   };
 
-  const response = await fetch(`${API_BASE}${endpoint}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  } catch (e) {
+    throw new Error(`Could not reach ${API_BASE}`, { cause: e });
+  }
 
   if (!response.ok) {
     const text = await response.text();
@@ -73,7 +95,7 @@ server.tool("user_login", "Verify RecurPost API credentials", {}, async () => {
   try {
     return toolResult(await callAPI("/api/user_login"));
   } catch (e) {
-    return toolResult({ error: String(e) }, true);
+    return toolResult({ error: describeError(e) }, true);
   }
 });
 
@@ -86,7 +108,7 @@ server.tool(
     try {
       return toolResult(await callAPI("/api/connect_social_account_urls"));
     } catch (e) {
-      return toolResult({ error: String(e) }, true);
+      return toolResult({ error: describeError(e) }, true);
     }
   }
 );
@@ -102,7 +124,7 @@ server.tool(
     try {
       return toolResult(await callAPI("/api/social_account_list", params));
     } catch (e) {
-      return toolResult({ error: String(e) }, true);
+      return toolResult({ error: describeError(e) }, true);
     }
   }
 );
@@ -118,7 +140,7 @@ server.tool(
     try {
       return toolResult(await callAPI("/api/library_list", params));
     } catch (e) {
-      return toolResult({ error: String(e) }, true);
+      return toolResult({ error: describeError(e) }, true);
     }
   }
 );
@@ -132,7 +154,7 @@ server.tool(
     try {
       return toolResult(await callAPI("/api/workspace_list"));
     } catch (e) {
-      return toolResult({ error: String(e) }, true);
+      return toolResult({ error: describeError(e) }, true);
     }
   }
 );
@@ -161,7 +183,7 @@ server.tool(
     try {
       return toolResult(await callAPI("/api/history_data", params));
     } catch (e) {
-      return toolResult({ error: String(e) }, true);
+      return toolResult({ error: describeError(e) }, true);
     }
   }
 );
@@ -352,7 +374,7 @@ server.tool(
     try {
       return toolResult(await callAPI("/api/add_content_in_library", params));
     } catch (e) {
-      return toolResult({ error: String(e) }, true);
+      return toolResult({ error: describeError(e) }, true);
     }
   }
 );
@@ -517,7 +539,7 @@ server.tool(
     try {
       return toolResult(await callAPI("/api/post_content", params));
     } catch (e) {
-      return toolResult({ error: String(e) }, true);
+      return toolResult({ error: describeError(e) }, true);
     }
   }
 );
@@ -547,7 +569,7 @@ server.tool(
         await callAPI("/api/generate_content_with_ai", params)
       );
     } catch (e) {
-      return toolResult({ error: String(e) }, true);
+      return toolResult({ error: describeError(e) }, true);
     }
   }
 );
@@ -567,7 +589,7 @@ server.tool(
         await callAPI("/api/generate_image_with_ai", params)
       );
     } catch (e) {
-      return toolResult({ error: String(e) }, true);
+      return toolResult({ error: describeError(e) }, true);
     }
   }
 );
