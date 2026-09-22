@@ -5,6 +5,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { pathToFileURL } from "node:url";
 import { realpathSync } from "node:fs";
+import { VERSION } from "./version.js";
 
 // --- Credentials from environment (never exposed to tool callers) ---
 
@@ -79,7 +80,7 @@ function toolResult(data: unknown, isError = false) {
 
 export const server = new McpServer({
   name: "recurpost",
-  version: "1.1.0",
+  version: VERSION,
 });
 
 // Shared schema for tools that operate within a workspace.
