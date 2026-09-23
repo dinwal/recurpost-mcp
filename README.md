@@ -22,8 +22,24 @@ An [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that g
 
 ### 2. Install
 
-The server needs Node.js 18 or newer. Download the LTS installer from
-https://nodejs.org if `node -v` in a terminal does not print a version.
+#### Claude Desktop (recommended): one-click extension
+
+Works on macOS and Windows. Nothing else to install: Claude Desktop runs the
+extension with its own built-in Node.js.
+
+1. Download [recurpost.mcpb](https://github.com/dinwal/recurpost-mcp/releases/latest/download/recurpost.mcpb).
+2. Double-click the file (or drag it onto **Settings > Extensions** in
+   Claude Desktop) and click **Install**.
+3. Enter your RecurPost email and API Password Key when asked. The key is
+   stored in your operating system's keychain, not in a plain text file.
+
+The RecurPost tools are available in a new chat straight away. To update,
+download the latest file and install it again.
+
+#### Manual setup
+
+The manual routes below need Node.js 18 or newer. Download the LTS installer
+from https://nodejs.org if `node -v` in a terminal does not print a version.
 
 #### Claude Desktop on macOS
 
