@@ -1,0 +1,162 @@
+[
+  {
+    "name": "user_login",
+    "description": "Verify your API key and receive an access token valid for one hour."
+  },
+  {
+    "name": "workspace_list",
+    "description": "List the workspaces you own or that are shared with you."
+  },
+  {
+    "name": "workspace_details",
+    "description": "Read one workspace: libraries, accounts, members, pending invites and account manager."
+  },
+  {
+    "name": "workspace_members",
+    "description": "Members of a workspace with role and status, and the approvers you can send content to."
+  },
+  {
+    "name": "account_details",
+    "description": "Who the API key belongs to: name, email, timezone, plan, default workspace and queue state."
+  },
+  {
+    "name": "connect_social_account_urls",
+    "description": "Get the links that connect a new social account to a workspace."
+  },
+  {
+    "name": "social_account_list",
+    "description": "List the social accounts of a workspace with their connection state."
+  },
+  {
+    "name": "library_list",
+    "description": "Get every content library in a workspace with its id and name."
+  },
+  {
+    "name": "library_details",
+    "description": "Read one library: name, colour, state, one-time-use flag, seasonal window and post counts."
+  },
+  {
+    "name": "library_create",
+    "description": "Create a content library in the workspace."
+  },
+  {
+    "name": "library_content_list",
+    "description": "Page through the active posts of one library."
+  },
+  {
+    "name": "library_content_search",
+    "description": "Find active library posts whose text, link title, variation or network version contains a phrase."
+  },
+  {
+    "name": "library_content_delete",
+    "description": "Delete one or more posts from a library."
+  },
+  {
+    "name": "add_content_in_library",
+    "description": "Add a recurring post to a content library."
+  },
+  {
+    "name": "post_content",
+    "description": "Publish a post now, or schedule it, on one or more social accounts."
+  },
+  {
+    "name": "post_status",
+    "description": "Where a post stands on every account it was sent to."
+  },
+  {
+    "name": "media_upload_url",
+    "description": "Get a signed URL to upload an image or video directly to RecurPost storage."
+  },
+  {
+    "name": "queue_list",
+    "description": "Queued items of the workspace in a date window, one per account and time."
+  },
+  {
+    "name": "queue_post",
+    "description": "One queued item by its id."
+  },
+  {
+    "name": "queue_post_update",
+    "description": "Move a queued item to a new time, replace its content, or both."
+  },
+  {
+    "name": "queue_post_delete",
+    "description": "Remove one or several queued items."
+  },
+  {
+    "name": "queue_reschedule",
+    "description": "Move queued items to another day, keeping each item's time of day."
+  },
+  {
+    "name": "queue_post_now",
+    "description": "Publish queued items of one post right away."
+  },
+  {
+    "name": "post_retry",
+    "description": "Retry a failed queue item now or at a new time."
+  },
+  {
+    "name": "draft_list",
+    "description": "List the drafts of a workspace with the accounts each one targets."
+  },
+  {
+    "name": "draft_save",
+    "description": "Save a new draft, or replace the content and accounts of an existing one."
+  },
+  {
+    "name": "draft_schedule",
+    "description": "Turn a draft into a scheduled post at the given time, keeping its id."
+  },
+  {
+    "name": "draft_delete",
+    "description": "Delete a draft and every account row it holds."
+  },
+  {
+    "name": "approval_list",
+    "description": "List library posts in the approval flow: waiting on you, sent by you, or rejected."
+  },
+  {
+    "name": "approval_approve",
+    "description": "Approve a waiting library post into its library, or reject it with a message for the author. This tool runs the approve action."
+  },
+  {
+    "name": "approval_reject",
+    "description": "Approve a waiting library post into its library, or reject it with a message for the author. This tool runs the reject action."
+  },
+  {
+    "name": "approval_comment",
+    "description": "Add a comment to the thread of a rejected post."
+  },
+  {
+    "name": "history_data",
+    "description": "Posting history of one social account, built for polling."
+  },
+  {
+    "name": "history_list",
+    "description": "Published and failed posts across every account of the workspace, newest first."
+  },
+  {
+    "name": "history_to_library",
+    "description": "Copy a published post into one or more libraries as evergreen content."
+  },
+  {
+    "name": "schedule_list",
+    "description": "List every time slot of the workspace, optionally for one library or account."
+  },
+  {
+    "name": "report_account",
+    "description": "Analytics for one social account, or the overview of every account in the workspace."
+  },
+  {
+    "name": "workflow_board",
+    "description": "Columns and cards of the board, for one workspace or for every workspace of the owner you belong to."
+  },
+  {
+    "name": "generate_content_with_ai",
+    "description": "Generate post text from a prompt, with multi-turn follow-ups to refine it."
+  },
+  {
+    "name": "generate_image_with_ai",
+    "description": "Generate one image from a text description and get its URL."
+  }
+]
