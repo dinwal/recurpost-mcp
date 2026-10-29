@@ -38,6 +38,8 @@ writeFileSync(
 
 const manifest = JSON.parse(readFileSync(join(root, "mcpb/manifest.json"), "utf8"));
 manifest.version = pkg.version;
+// The advertised tool list is the generated first-class set, never typed by hand
+manifest.tools = JSON.parse(readFileSync(join(root, "mcpb/tools.json"), "utf8"));
 writeFileSync(join(stage, "manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
 
 copyFileSync(join(root, "mcpb/icon.png"), join(stage, "icon.png"));
@@ -45,7 +47,10 @@ copyFileSync(join(root, "README.md"), join(stage, "README.md"));
 
 const out = join(root, `recurpost-${pkg.version}.mcpb`);
 rmSync(out, { force: true });
-execFileSync("npx", ["-y", "@anthropic-ai/mcpb@2", "pack", stage, out], {
+// Windows only has npx.cmd, which Node refuses to spawn without a shell
+const windows = process.platform === "win32";
+execFileSync(windows ? "npx.cmd" : "npx", ["-y", "@anthropic-ai/mcpb@2", "pack", stage, out], {
   stdio: "inherit",
+  shell: windows,
 });
 console.log(`\nBuilt ${out}`);
