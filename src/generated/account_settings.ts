@@ -250,8 +250,8 @@ export const accountSettingsTools: ToolSpec[] = [
     title: "X Wallet",
     module: "account_settings",
     endpoint: "x_wallet",
-    summary: "Balance of the X (Twitter) URL wallet, posts it still covers, top-up packs and transactions.",
-    description: "Posts to X carry a per-post cost that is paid from the workspace owner's wallet. This read-only call returns the balance, how many posts it still covers, the cost per post, the threshold below which RecurPost warns, and the top-up packs on offer. When the key belongs to the wallet owner the latest transactions are included too, 20 a page; a team member reading a shared workspace gets the wallet without transactions. Top-ups happen in the app: There is no endpoint to buy a pack; the sku values match the packs on the X wallet page in RecurPost.",
+    summary: "Balance of the X (Twitter) URL wallet, posts it still covers, top-up packs, transactions and the Permit Repeated Tweets rule.",
+    description: "Posts to X carry a per-post cost that is paid from the workspace owner's wallet. This read-only call returns the balance, how many posts it still covers, the cost per post, the threshold below which RecurPost warns, and the top-up packs on offer. When the key belongs to the wallet owner the latest transactions are included too, 20 a page; a team member reading a shared workspace gets the wallet without transactions. permit_repeated_tweets is the owner's X posting rule from the same page of the app: whether evergreen library posts may go out on X again after they have posted once. It is read here and saved with /api/email_preferences under the type permit_repeated_tweets. Top-ups happen in the app: There is no endpoint to buy a pack; the sku values match the packs on the X wallet page in RecurPost.",
     readOnly: true,
     destructive: false,
     params: [
@@ -581,7 +581,7 @@ export const accountSettingsTools: ToolSpec[] = [
     module: "account_settings",
     endpoint: "email_preferences",
     summary: "List the key owner's email and push notification preferences, or switch one.",
-    description: "Without email_type lists the key owner's notification preferences with their current state; with email_type and enabled saves one. The list is the caller's own and there is no workspace_id; the set of types depends on the account (account owners also see the workflow_ toggles), so read the list before saving and send only a type it offers. Types a user sees: daily_editorial, daily_editorial_no_schedule, post_failure_email, post_failure_notification, weekly_summary_report, team_member_push_notification, inbox_summary_report, pause_queue_email, social_profile_disconnection_email, permit_repeated_tweets, post_success_email, post_success_notification, daily_posting_summary and, for owners, the workflow toggles. daily_posting_summary also takes the time of day the summary is sent.",
+    description: "Without email_type lists the key owner's notification preferences with their current state; with email_type and enabled saves one. The list is the caller's own and there is no workspace_id; the set of types depends on the account (account owners also see the workflow_ toggles), so read the list before saving and send only a type it offers. Types a user sees: daily_editorial, daily_editorial_no_schedule, post_failure_email, post_failure_notification, weekly_summary_report, team_member_push_notification, inbox_summary_report, pause_queue_email, social_profile_disconnection_email, permit_repeated_tweets, post_success_email, post_success_notification, daily_posting_summary and, for owners, the workflow toggles. daily_posting_summary also takes the time of day the summary is sent. permit_repeated_tweets is not a notification: it is the X posting rule the app shows under X settings, kept here because it is stored with the preference switches. Read its state on /api/x_wallet as well.",
     readOnly: false,
     destructive: false,
     params: [
