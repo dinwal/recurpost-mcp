@@ -4,13 +4,13 @@
   "display_name": "RecurPost",
   "version": "0.0.0",
   "description": "Schedule and publish social media posts through your RecurPost account.",
-  "long_description": "Connects Claude to RecurPost so you can list your connected social accounts and content libraries, post or schedule content, add evergreen content to a library, review posting history, and generate post copy or images with AI. Requires a RecurPost account and an API Password Key from Account Settings.",
+  "long_description": "Connects Claude to the whole RecurPost API: post or schedule content, manage queues, drafts, approvals, libraries and workspaces, review posting history and reports, and generate post copy or images with AI. The most used operations are direct tools; every other operation is reachable through list_operations, describe_operation and call_operation. Requires a RecurPost account and an API Password Key from Account Settings.",
   "author": {
     "name": "RecurPost",
     "url": "https://recurpost.com"
   },
   "homepage": "https://recurpost.com/features/schedule/mcp/",
-  "documentation": "https://recurpost.com/features/schedule/mcp/",
+  "documentation": "https://developers.recurpost.com/",
   "support": "https://recurpost.com/contact/",
   "icon": "icon.png",
   "license": "MIT",
@@ -23,7 +23,9 @@
       "args": ["${__dirname}/server/index.js"],
       "env": {
         "RECURPOST_EMAIL": "${user_config.email}",
-        "RECURPOST_API_KEY": "${user_config.api_key}"
+        "RECURPOST_API_KEY": "${user_config.api_key}",
+        "RECURPOST_API_URL": "${user_config.api_url}",
+        "RECURPOST_MODULES": "${user_config.modules}"
       }
     }
   },
@@ -40,20 +42,22 @@
       "description": "Generate one in RecurPost under Account Settings > API Password Key. This is not your login password.",
       "sensitive": true,
       "required": true
+    },
+    "api_url": {
+      "type": "string",
+      "title": "API URL",
+      "description": "Leave as is unless RecurPost support gives you another address.",
+      "required": false,
+      "default": "https://social.recurpost.com"
+    },
+    "modules": {
+      "type": "string",
+      "title": "Extra direct tools",
+      "description": "Optional. Comma-separated API modules whose operations should all become direct tools (for example: inbox, feeds), or all for every operation. Everything stays reachable through call_operation either way.",
+      "required": false,
+      "default": ""
     }
   },
-  "tools": [
-    { "name": "user_login", "description": "Verify your RecurPost API credentials" },
-    { "name": "workspace_list", "description": "List all workspaces you are a member of" },
-    { "name": "social_account_list", "description": "List all connected social media accounts" },
-    { "name": "library_list", "description": "List all content libraries" },
-    { "name": "connect_social_account_urls", "description": "Get URLs to connect new social accounts" },
-    { "name": "history_data", "description": "Get posting history for a social account" },
-    { "name": "post_content", "description": "Post or schedule content to a social account" },
-    { "name": "add_content_in_library", "description": "Add content to a library for recurring posting" },
-    { "name": "generate_content_with_ai", "description": "Generate social media post text with AI" },
-    { "name": "generate_image_with_ai", "description": "Generate images from text descriptions" }
-  ],
   "compatibility": {
     "platforms": ["darwin", "win32", "linux"],
     "runtimes": {
