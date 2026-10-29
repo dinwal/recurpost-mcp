@@ -8,7 +8,7 @@ export const workflowBoardTools: ToolSpec[] = [
     module: "workflow_board",
     endpoint: "workflow_board",
     summary: "Columns and cards of the board, for one workspace or for every workspace of the owner you belong to.",
-    description: "Returns the board of the workspace owner: its columns (Ideas, the owner's stages, Scheduled) with the cards in each, the team members who can be assigned, and the workflow settings. Scoping. The board is the owner's, not yours. workspace_id (or your default workspace when omitted) picks the owner; the board then spans every workspace of that owner you are an active member of. The owner's signup default workspace is kept off the board while other workspaces exist, as on the dashboard. When you pass workspace_id only that workspace's cards are returned; otherwise all board workspaces are, unless workspace_ids narrows them. Every card carries its own workspace_id. Card shape. This is the full card object; /api/workflow_card, /api/workflow_card_save and /api/workflow_card_move return the same fields. Whose board: Team members see the board of the owner whose workspace they pass. Your own signup workspace is the default when you omit workspace_id, so as a team member pass the agency's workspace_id to reach their board. Timezones: target_date is the owner's wall clock as typed. schedule.first_at and the schedule times of /api/workflow_card are converted to the owner's timezone. created_at and updated_at are the app's stored UTC values.",
+    description: "Returns the board of the workspace owner: its columns (Ideas, the owner's stages, Scheduled) with the cards in each, the team members who can be assigned, and the workflow settings. Scoping. The board is the owner's, not yours. workspace_id (or your default workspace when omitted) picks the owner; the board then spans every workspace of that owner you are an active member of. The owner's signup default workspace is kept off the board while other workspaces exist, as on the dashboard; passing its id is the same as passing none. When you pass any other workspace_id only that workspace's cards are returned; otherwise all board workspaces are, unless workspace_ids narrows them. Every card carries its own workspace_id. Card shape. This is the full card object; /api/workflow_card, /api/workflow_card_save and /api/workflow_card_move return the same fields. Whose board: Team members see the board of the owner whose workspace they pass. Your own signup workspace is the default when you omit workspace_id, so as a team member pass the agency's workspace_id to reach their board. Timezones: target_date is the owner's wall clock as typed. schedule.first_at and the schedule times of /api/workflow_card are converted to the owner's timezone. created_at and updated_at are the app's stored UTC values.",
     readOnly: true,
     destructive: false,
     params: [
@@ -28,7 +28,7 @@ export const workflowBoardTools: ToolSpec[] = [
         key: "workspace_id",
         type: "string",
         required: false,
-        description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list. When given, the board shows this workspace only; it must be on the owner's board.",
+        description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list. When given, the board shows this workspace only; the owner's signup default workspace (is_default in the list) gives the whole board instead, the same as leaving it out.",
         example: "nX2k9Qp7Lw=="
       }
     ]
@@ -202,7 +202,7 @@ export const workflowBoardTools: ToolSpec[] = [
         key: "workspace_id",
         type: "string",
         required: false,
-        description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list. On create the card is placed in this workspace; without it, in the first board workspace by name.",
+        description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list. On create the card is placed in this workspace; without it, or with the owner's signup default workspace, in the first board workspace by name.",
         example: "nX2k9Qp7Lw=="
       }
     ]
