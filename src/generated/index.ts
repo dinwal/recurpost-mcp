@@ -102,17 +102,17 @@ export const modules: ModuleSpec[] = [
   {
     key: "libraries",
     title: "Libraries",
-    description: "Libraries hold evergreen posts that RecurPost publishes in rotation on the schedules attached to the library. These endpoints list, create, update and pause libraries, read and search their posts, move or copy posts between libraries, delete posts, and manage the message variations of a post. Add a post to a library with /api/add_content_in_library and change one with /api/library_content_update, both documented under Posts. Every id in this module (library_id, post id, variation id) is an encrypted string handed out by these endpoints; plain numbers are rejected."
+    description: "Libraries hold evergreen posts that RecurPost publishes in rotation on the schedules attached to the library. These endpoints list, create, update and pause libraries, add, read, search and update their posts, move or copy posts between libraries, delete posts, and manage the message variations of a post. /api/add_content_in_library and /api/library_content_update take the content fields of /api/post_content. Every id in this module (library_id, post id, variation id) is an encrypted string handed out by these endpoints; plain numbers are rejected."
   },
   {
     key: "library_tools",
     title: "Library Tools",
-    description: "The tools the app keeps beside a library: posts that expired out of their library, the drafts of a library, find-and-replace across posts, the next-post pointer of every account, the public share link with the comments clients leave through it, and the media already used in posts. Ids follow the Libraries module: library_id, content_id, account_id and account_ids are encrypted strings handed out by other endpoints. comment_id, position and the page numbers are plain integers. Endpoints with an action parameter are one call per resource; the action picks what happens and which other fields are read."
+    description: "The tools the app keeps beside a library: posts that expired out of their library, the drafts of a library, find-and-replace across posts, the next-post pointer of every account, and the public share link with the comments clients leave through it. Ids follow the Libraries module: library_id, content_id, account_id and account_ids are encrypted strings handed out by other endpoints. comment_id, position and the page numbers are plain integers. Endpoints with an action parameter are one call per resource; the action picks what happens and which other fields are read."
   },
   {
     key: "media",
     title: "Media",
-    description: "Upload images and videos straight to RecurPost storage through a presigned URL, then reference them by URL in the post, draft and library calls."
+    description: "Upload images and videos straight to RecurPost storage through a presigned URL, then reference them by URL in the post, draft and library calls, and browse the media already used in the owner's posts."
   },
   {
     key: "post_labels",
@@ -122,7 +122,7 @@ export const modules: ModuleSpec[] = [
   {
     key: "posts",
     title: "Posts",
-    description: "Publish or schedule one-off posts on your social accounts, add and update recurring posts in content libraries, follow a post's state per account, and look up Instagram places to tag. All post calls share one set of content fields with per-network prefixed overrides."
+    description: "Publish or schedule one-off posts on your social accounts, follow a post's state per account, preview or shorten links, and look up Instagram places to tag. All post calls share one set of content fields with per-network prefixed overrides; the same fields add and update recurring posts under Libraries."
   },
   {
     key: "queue",

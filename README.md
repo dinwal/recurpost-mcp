@@ -198,7 +198,7 @@ Claude Desktop writes a log per server:
 | `library_content_list` | libraries | Page through the active posts of one library. |
 | `library_content_search` | libraries | Find active library posts whose text, link title, variation or network version contains a phrase. |
 | `library_content_delete` | libraries | Delete one or more posts from a library. |
-| `add_content_in_library` | posts | Add a recurring post to a content library. |
+| `add_content_in_library` | libraries | Add a recurring post to a content library. |
 | `post_content` | posts | Publish a post now, or schedule it, on one or more social accounts. |
 | `post_status` | posts | Where a post stands on every account it was sent to. |
 | `media_upload_url` | media | Get a signed URL to upload an image or video directly to RecurPost storage. |

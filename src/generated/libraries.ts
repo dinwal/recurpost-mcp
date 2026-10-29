@@ -273,6 +273,1259 @@ export const librariesTools: ToolSpec[] = [
     ]
   },
   {
+    name: "add_content_in_library",
+    title: "Add Content to Library",
+    module: "libraries",
+    endpoint: "add_content_in_library",
+    summary: "Add a recurring post to a content library.",
+    description: "Adds one post to the library in id. Library content is published again and again by the schedules attached to the library, so there is no post time here; content_livedate and content_expiredate bound when the post may go out and is_top_of_queue makes it the next one. The content fields are the same as /api/post_content: message, url, image_url or video_url, and the per-network prefixed overrides. The post is saved as one tab per network from these fields. Two differences from one-off posts: a library post holds either images or a video, not both (video_url wins and image_url is ignored), and twitter_thread is not supported. The post counts against the workspace owner's library content limit. The call does not return the new content id; read it from /api/library_content_list. Images or video, not both: When video_url is sent, image_url is ignored. media_order and twitter_thread are not read by the library calls. Dates are plain days: content_livedate and content_expiredate are stored as dates in the workspace owner's timezone; any time part is discarded. Plan rules follow the workspace owner: The library content limit and the paid-plan check for video apply to the workspace owner's plan, not the caller's. Option checks: The option rules of /api/post_content (at most 20 images, 1000 characters of alt text, 3 collaborators, a location name with a location id, image tag positions) are checked here too and answer 400 before any media is fetched.",
+    readOnly: false,
+    destructive: false,
+    params: [
+      {
+        key: "id",
+        type: "string",
+        required: true,
+        description: "Encrypted library id from /api/library_list. Exactly one.",
+        example: "lB7xK2mP9q=="
+      },
+      {
+        key: "message",
+        type: "string",
+        required: true,
+        description: "Post text. \\r\\n is normalised to \\n. The first link in it is used for the link preview when url is omitted.",
+        example: "Check out our latest product! https://example.com/product"
+      },
+      {
+        key: "is_top_of_queue",
+        type: "integer",
+        required: false,
+        description: "1 posts this content next on every account the library's schedules cover.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "content_livedate",
+        type: "date",
+        required: false,
+        description: "First day the post may go out, YYYY-MM-DD; kept as a draft until then. A datetime like 2026-11-01T00:00:00+05:30 is accepted and cut to its date. Blank means active at once.",
+        example: "2026-11-01"
+      },
+      {
+        key: "content_expiredate",
+        type: "date",
+        required: false,
+        description: "Last day the post may go out, YYYY-MM-DD; recurring stops after it. A datetime is cut to its date. Blank means it never expires.",
+        example: "2026-12-31"
+      },
+      {
+        key: "url",
+        type: "url",
+        required: false,
+        description: "Link to share with the post. On a text post the page's title, description and image are fetched and saved as the link preview; when omitted, the first link found in message is used instead. On a Pinterest account the value becomes the pin's destination link. http:// is prepended when the scheme is missing. The host must be a public address.",
+        example: "https://example.com/summer-sale"
+      },
+      {
+        key: "image_url",
+        type: "array",
+        required: false,
+        description: "Image URLs, in display order. Send a JSON array (or repeat image_url[] in form encoding); a single string is accepted as a one-item list. At most 20 images. Each URL must be a publicly reachable http or https URL and answer an image content type. URLs returned by /api/media_upload_url are used as they are; every other URL is copied to RecurPost storage unless host_images_on_recurpost is off. Ignored when video_url is also sent.",
+        example: [
+          "https://example.com/sale1.jpg",
+          "https://example.com/sale2.jpg"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "video_url",
+        type: "url",
+        required: false,
+        description: "A public mp4 or mov URL (Google Drive share links are accepted and resolved to the download URL). The file is downloaded and stored on RecurPost storage, so the call takes as long as the download; a URL from /api/media_upload_url skips the download. Needs a paid plan. Files are limited to 2 GB.",
+        example: "https://example.com/promo.mp4"
+      },
+      {
+        key: "host_images_on_recurpost",
+        type: "boolean",
+        required: false,
+        description: "Copy images and custom thumbnails to RecurPost storage (the default). Send false, 0 or the form string \"false\" to keep your own URLs instead; they must then stay reachable until every post using them has been published.",
+        default: "true",
+        example: true
+      },
+      {
+        key: "alt_text",
+        type: "array",
+        required: false,
+        description: "Alternative text per image, in image_url order; a single string applies to the first image. At most 1000 characters each. Saved on the Facebook, Twitter/X, LinkedIn, Pinterest, Threads and Bluesky tabs; Instagram does not take alt text here.",
+        example: [
+          "Two models in summer outfits",
+          "Store front with sale banner"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "fb_message",
+        type: "string",
+        required: false,
+        description: "Text for Facebook accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview.",
+        example: "Summer sale is here! #facebook"
+      },
+      {
+        key: "tw_message",
+        type: "string",
+        required: false,
+        description: "Text for Twitter/X accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview.",
+        example: "Summer sale is here! #twitter"
+      },
+      {
+        key: "ln_message",
+        type: "string",
+        required: false,
+        description: "Text for LinkedIn accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview.",
+        example: "Summer sale is here! #linkedin"
+      },
+      {
+        key: "in_message",
+        type: "string",
+        required: false,
+        description: "Text for Instagram accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview.",
+        example: "Summer sale is here! #instagram"
+      },
+      {
+        key: "gmb_message",
+        type: "string",
+        required: false,
+        description: "Text for Google Business accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview.",
+        example: "Summer sale is here! #googlebusiness"
+      },
+      {
+        key: "pi_message",
+        type: "string",
+        required: false,
+        description: "Text for Pinterest accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview.",
+        example: "Summer sale is here! #pinterest"
+      },
+      {
+        key: "yt_message",
+        type: "string",
+        required: false,
+        description: "Text for YouTube accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview. On YouTube this is the video description.",
+        example: "Summer sale is here! #youtube"
+      },
+      {
+        key: "tk_message",
+        type: "string",
+        required: false,
+        description: "Text for TikTok accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview.",
+        example: "Summer sale is here! #tiktok"
+      },
+      {
+        key: "th_message",
+        type: "string",
+        required: false,
+        description: "Text for Threads accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview.",
+        example: "Summer sale is here! #threads"
+      },
+      {
+        key: "bs_message",
+        type: "string",
+        required: false,
+        description: "Text for Bluesky accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview.",
+        example: "Summer sale is here! #bluesky"
+      },
+      {
+        key: "first_comment",
+        type: "string",
+        required: false,
+        description: "First comment posted right after the post, commonly hashtags. Applied on Facebook Pages, LinkedIn and Instagram feed posts unless a network-specific first comment is given.",
+        example: "#summer #sale #deals"
+      },
+      {
+        key: "fb_first_comment",
+        type: "string",
+        required: false,
+        description: "Facebook first comment; overrides first_comment on Facebook.",
+        example: "#facebook #summersale"
+      },
+      {
+        key: "ln_first_comment",
+        type: "string",
+        required: false,
+        description: "LinkedIn first comment; overrides first_comment on LinkedIn.",
+        example: "#linkedin #summersale"
+      },
+      {
+        key: "in_first_comment",
+        type: "string",
+        required: false,
+        description: "Instagram first comment (feed posts only); overrides first_comment on Instagram.",
+        example: "#instagram #summersale"
+      },
+      {
+        key: "fb_post_type",
+        type: "string",
+        required: false,
+        description: "Facebook post type. Case-insensitive; an unknown value keeps feed.",
+        values: [
+          "feed",
+          "reel",
+          "story"
+        ],
+        default: "feed",
+        example: "feed"
+      },
+      {
+        key: "fb_thumb",
+        type: "url",
+        required: false,
+        description: "Custom cover image URL for the video on Facebook. Public image URL; copied to RecurPost storage unless host_images_on_recurpost is off. Ignored when the post has no video_url.",
+        example: "https://example.com/fb-cover.jpg"
+      },
+      {
+        key: "ln_document",
+        type: "url",
+        required: false,
+        description: "Public URL of a document to post as a LinkedIn document (carousel) post: PDF, PPT, PPTX, DOC or DOCX, detected from the file bytes, not the file name. The file is downloaded and stored on RecurPost storage and the LinkedIn tab becomes a document post. A file of another type is left as given and ignored by the publisher. Google Drive share links are resolved.",
+        example: "https://example.com/catalog.pdf"
+      },
+      {
+        key: "ln_document_title",
+        type: "string",
+        required: false,
+        description: "Title shown on the LinkedIn document. Defaults to the file name without its extension.",
+        example: "Summer Catalog 2026"
+      },
+      {
+        key: "ln_thumb",
+        type: "url",
+        required: false,
+        description: "Custom cover image URL for the video on LinkedIn. Ignored when the post has no video_url.",
+        example: "https://example.com/ln-cover.jpg"
+      },
+      {
+        key: "in_post_type",
+        type: "string",
+        required: false,
+        description: "Instagram post type. Case-insensitive; an unknown value keeps feed. A reel needs a video_url.",
+        values: [
+          "feed",
+          "story",
+          "reel"
+        ],
+        default: "feed",
+        example: "feed"
+      },
+      {
+        key: "in_reel_share_in_feed",
+        type: "string",
+        required: false,
+        description: "Whether a reel also appears in the profile feed. Only read when in_post_type is reel.",
+        values: [
+          "yes",
+          "no"
+        ],
+        default: "yes",
+        example: "yes"
+      },
+      {
+        key: "in_thumb",
+        type: "url",
+        required: false,
+        description: "Custom cover image URL for an Instagram reel. Only applied when in_post_type is reel and the post has a video_url; copied to RecurPost storage because Meta fetches it at publish time.",
+        example: "https://example.com/in-cover.jpg"
+      },
+      {
+        key: "in_location_id",
+        type: "string",
+        required: false,
+        description: "Instagram place id to tag the post with. Take id and name from /api/instagram_locations.",
+        example: "212988663"
+      },
+      {
+        key: "in_location_name",
+        type: "string",
+        required: false,
+        description: "Name of the place in in_location_id.",
+        example: "Pune, Maharashtra"
+      },
+      {
+        key: "in_location_city",
+        type: "string",
+        required: false,
+        description: "City of the tagged place, as returned by /api/instagram_locations.",
+        example: "Pune"
+      },
+      {
+        key: "in_location_country",
+        type: "string",
+        required: false,
+        description: "Country of the tagged place, as returned by /api/instagram_locations.",
+        example: "India"
+      },
+      {
+        key: "in_image_tags",
+        type: "array",
+        required: false,
+        description: "People to tag on feed images. A JSON array of objects with username, x and y (fractions of the image width and height between 0 and 1) and image (1-based position in image_url, default 1). The leading @ is optional.",
+        example: [
+          {
+            image: 1,
+            username: "recurpost",
+            x: 0.5,
+            y: 0.4
+          }
+        ],
+        items: "object",
+        acceptsList: false
+      },
+      {
+        key: "in_reel_tags",
+        type: "array",
+        required: false,
+        description: "Usernames to tag on a reel, as a JSON array or a comma-separated string. Only saved when the post has a video_url.",
+        example: [
+          "recurpost",
+          "jane_doe"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "in_collaborators",
+        type: "array",
+        required: false,
+        description: "Instagram usernames invited as collaborators, as a JSON array or a comma-separated string. At most 3.",
+        example: [
+          "jane_doe"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "pi_title",
+        type: "string",
+        required: false,
+        description: "Pin title. The destination link of the pin is url or the first link in the text.",
+        example: "Summer Sale - Best Deals of the Season"
+      },
+      {
+        key: "gbp_cta",
+        type: "string",
+        required: false,
+        description: "Call-to-action button on the Google Business post. Case-insensitive. An unknown value or None saves no button. On a link post with no CTA given, Learn more pointing at the link is set automatically.",
+        values: [
+          "Learn more",
+          "Sign up",
+          "Buy",
+          "Order online",
+          "Book",
+          "Call now",
+          "Offer",
+          "None"
+        ],
+        default: "None",
+        example: "Learn more"
+      },
+      {
+        key: "gbp_cta_url",
+        type: "url",
+        required: false,
+        description: "Link the button opens. Not used for Call now. With gbp_cta=Offer and no gbp_redeem_offer_link, this value doubles as the redeem link.",
+        example: "https://example.com/summer-sale"
+      },
+      {
+        key: "gbp_offer_title",
+        type: "string",
+        required: false,
+        description: "Offer title; offer fields are used when gbp_cta is Offer.",
+        example: "Summer Sale - 50% Off"
+      },
+      {
+        key: "gbp_offer_start_date",
+        type: "datetime",
+        required: false,
+        description: "Offer start, YYYY-MM-DD HH:MM:SS.",
+        example: "2026-06-01 00:00:00"
+      },
+      {
+        key: "gbp_offer_end_date",
+        type: "datetime",
+        required: false,
+        description: "Offer end, YYYY-MM-DD HH:MM:SS.",
+        example: "2026-06-30 23:59:59"
+      },
+      {
+        key: "gbp_offer_coupon_code",
+        type: "string",
+        required: false,
+        description: "Coupon code shown on the offer.",
+        example: "SUMMER50"
+      },
+      {
+        key: "gbp_offer_terms",
+        type: "string",
+        required: false,
+        description: "Terms and conditions of the offer.",
+        example: "Valid on selected items only"
+      },
+      {
+        key: "gbp_redeem_offer_link",
+        type: "url",
+        required: false,
+        description: "Link to redeem the offer.",
+        example: "https://example.com/redeem"
+      },
+      {
+        key: "yt_title",
+        type: "string",
+        required: false,
+        description: "Video title. YouTube needs a video_url; message or yt_message is the description.",
+        example: "Summer Sale Announcement 2026"
+      },
+      {
+        key: "yt_category",
+        type: "string",
+        required: false,
+        description: "Category name, matched exactly against the list. An unknown or missing name falls back to the default category of the workspace owner's YouTube settings (Entertainment when none is set).",
+        values: [
+          "Film & Animation",
+          "Autos & Vehicles",
+          "Music",
+          "Pets & Animals",
+          "Sports",
+          "Travel & Events",
+          "Gaming",
+          "People & Blogs",
+          "Comedy",
+          "Entertainment",
+          "News & Politics",
+          "Howto & Style",
+          "Education",
+          "Science & Technology",
+          "Nonprofits & Activism"
+        ],
+        example: "Howto & Style"
+      },
+      {
+        key: "yt_privacy_status",
+        type: "string",
+        required: false,
+        description: "Video privacy. Lower-cased and stored as given; use one of the listed values.",
+        values: [
+          "public",
+          "private",
+          "unlisted"
+        ],
+        default: "public",
+        example: "public"
+      },
+      {
+        key: "yt_user_tags",
+        type: "string",
+        required: false,
+        description: "Video tags, comma-separated.",
+        example: "summer, sale, deals",
+        acceptsList: true
+      },
+      {
+        key: "yt_thumb",
+        type: "url",
+        required: false,
+        description: "Custom thumbnail URL for the YouTube video. Public image URL; copied to RecurPost storage unless host_images_on_recurpost is off.",
+        example: "https://example.com/yt-thumb.jpg"
+      },
+      {
+        key: "yt_video_made_for_kids",
+        type: "string",
+        required: false,
+        description: "Whether the video is made for kids. Only yes switches it on.",
+        values: [
+          "yes",
+          "no"
+        ],
+        default: "no",
+        example: "no"
+      },
+      {
+        key: "tk_privacy_status",
+        type: "string",
+        required: false,
+        description: "Who can watch the TikTok video. Case-insensitive, spaces or underscores. Any other value is saved as Public to Everyone; omitted leaves it unset. /api/tiktok_options lists what the account allows.",
+        values: [
+          "Public to Everyone",
+          "Mutual Follow Friends",
+          "Self Only"
+        ],
+        example: "Public to Everyone"
+      },
+      {
+        key: "tk_allow_comments",
+        type: "string",
+        required: false,
+        description: "Allow comments on the TikTok video. Only no switches it off.",
+        values: [
+          "yes",
+          "no"
+        ],
+        default: "yes",
+        example: "yes"
+      },
+      {
+        key: "tk_allow_duet",
+        type: "string",
+        required: false,
+        description: "Allow duets. Only no switches it off.",
+        values: [
+          "yes",
+          "no"
+        ],
+        default: "yes",
+        example: "yes"
+      },
+      {
+        key: "tk_allow_stitches",
+        type: "string",
+        required: false,
+        description: "Allow stitches. Only no switches it off.",
+        values: [
+          "yes",
+          "no"
+        ],
+        default: "yes",
+        example: "yes"
+      },
+      {
+        key: "tk_promote_own_brand",
+        type: "integer",
+        required: false,
+        description: "Set to 1 to mark the video as promoting your own brand (TikTok's content disclosure).",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "tk_promote_other_brand",
+        type: "integer",
+        required: false,
+        description: "Set to 1 to mark the video as branded content for a third party.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "workspace_id",
+        type: "string",
+        required: false,
+        description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list.",
+        example: "wS9kLm2Qp1=="
+      }
+    ]
+  },
+  {
+    name: "library_content_update",
+    title: "Update Library Content",
+    module: "libraries",
+    endpoint: "library_content_update",
+    summary: "Replace the text, media and network options of a library post.",
+    description: "Rewrites the library post id inside library library_id with the fields of the request. It takes the same fields as /api/add_content_in_library; every network tab is rebuilt from what you send, so fields you leave out are reset to their defaults, not kept. Send the whole post each time. The post keeps its id and its place in the library; content_livedate, content_expiredate and is_top_of_queue are written from the request too. Full replacement: This is not a patch. Media, per-network messages, first comments, covers and options not present in the request are dropped; images already on RecurPost storage must be sent again by their URL (they are kept as they are, nothing is re-downloaded). Option checks: The option rules of /api/post_content (at most 20 images, 1000 characters of alt text, 3 collaborators, a location name with a location id, image tag positions) are checked here too and answer 400 before any media is fetched. media_order and twitter_thread are checked but not applied: media_order and twitter_thread pass the option checks above (and answer their 400s when malformed) but have no effect on a library post: the library builder never makes a mixed post (a video_url wins over image_url, so there is no media order) and never builds thread tabs. Threads and mixed media are one-off features of /api/post_content and /api/queue_post_update.",
+    readOnly: false,
+    destructive: false,
+    params: [
+      {
+        key: "library_id",
+        type: "string",
+        required: true,
+        description: "Encrypted library id the post belongs to, from /api/library_list.",
+        example: "lB7xK2mP9q=="
+      },
+      {
+        key: "id",
+        type: "string",
+        required: true,
+        description: "Encrypted library content id from /api/library_content_list.",
+        example: "cN4vR8tY1z=="
+      },
+      {
+        key: "message",
+        type: "string",
+        required: true,
+        description: "New post text. \\r\\n is normalised to \\n.",
+        example: "Updated: our latest product is now 20% off! https://example.com/product"
+      },
+      {
+        key: "is_top_of_queue",
+        type: "integer",
+        required: false,
+        description: "1 posts this content next on every account the library's schedules cover.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "content_livedate",
+        type: "date",
+        required: false,
+        description: "First day the post may go out, YYYY-MM-DD. Blank clears it.",
+        example: "2026-11-01"
+      },
+      {
+        key: "content_expiredate",
+        type: "date",
+        required: false,
+        description: "Last day the post may go out, YYYY-MM-DD. Blank clears it.",
+        example: "2026-12-31"
+      },
+      {
+        key: "url",
+        type: "url",
+        required: false,
+        description: "Link to share with the post. On a text post the page's title, description and image are fetched and saved as the link preview; when omitted, the first link found in message is used instead. On a Pinterest account the value becomes the pin's destination link. http:// is prepended when the scheme is missing. The host must be a public address.",
+        example: "https://example.com/summer-sale"
+      },
+      {
+        key: "image_url",
+        type: "array",
+        required: false,
+        description: "Image URLs, in display order. Send a JSON array (or repeat image_url[] in form encoding); a single string is accepted as a one-item list. At most 20 images. Each URL must be a publicly reachable http or https URL and answer an image content type. URLs returned by /api/media_upload_url are used as they are; every other URL is copied to RecurPost storage unless host_images_on_recurpost is off. Ignored when video_url is also sent.",
+        example: [
+          "https://example.com/sale1.jpg",
+          "https://example.com/sale2.jpg"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "video_url",
+        type: "url",
+        required: false,
+        description: "A public mp4 or mov URL (Google Drive share links are accepted and resolved to the download URL). The file is downloaded and stored on RecurPost storage, so the call takes as long as the download; a URL from /api/media_upload_url skips the download. Needs a paid plan. Files are limited to 2 GB.",
+        example: "https://example.com/promo.mp4"
+      },
+      {
+        key: "host_images_on_recurpost",
+        type: "boolean",
+        required: false,
+        description: "Copy images and custom thumbnails to RecurPost storage (the default). Send false, 0 or the form string \"false\" to keep your own URLs instead; they must then stay reachable until every post using them has been published.",
+        default: "true",
+        example: true
+      },
+      {
+        key: "alt_text",
+        type: "array",
+        required: false,
+        description: "Alternative text per image, in image_url order; a single string applies to the first image. At most 1000 characters each. Saved on the Facebook, Twitter/X, LinkedIn, Pinterest, Threads and Bluesky tabs; Instagram does not take alt text here.",
+        example: [
+          "Two models in summer outfits",
+          "Store front with sale banner"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "fb_message",
+        type: "string",
+        required: false,
+        description: "Text for Facebook accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview.",
+        example: "Summer sale is here! #facebook"
+      },
+      {
+        key: "tw_message",
+        type: "string",
+        required: false,
+        description: "Text for Twitter/X accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview.",
+        example: "Summer sale is here! #twitter"
+      },
+      {
+        key: "ln_message",
+        type: "string",
+        required: false,
+        description: "Text for LinkedIn accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview.",
+        example: "Summer sale is here! #linkedin"
+      },
+      {
+        key: "in_message",
+        type: "string",
+        required: false,
+        description: "Text for Instagram accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview.",
+        example: "Summer sale is here! #instagram"
+      },
+      {
+        key: "gmb_message",
+        type: "string",
+        required: false,
+        description: "Text for Google Business accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview.",
+        example: "Summer sale is here! #googlebusiness"
+      },
+      {
+        key: "pi_message",
+        type: "string",
+        required: false,
+        description: "Text for Pinterest accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview.",
+        example: "Summer sale is here! #pinterest"
+      },
+      {
+        key: "yt_message",
+        type: "string",
+        required: false,
+        description: "Text for YouTube accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview. On YouTube this is the video description.",
+        example: "Summer sale is here! #youtube"
+      },
+      {
+        key: "tk_message",
+        type: "string",
+        required: false,
+        description: "Text for TikTok accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview.",
+        example: "Summer sale is here! #tiktok"
+      },
+      {
+        key: "th_message",
+        type: "string",
+        required: false,
+        description: "Text for Threads accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview.",
+        example: "Summer sale is here! #threads"
+      },
+      {
+        key: "bs_message",
+        type: "string",
+        required: false,
+        description: "Text for Bluesky accounts when it should differ from message. On a text-only post the first link in this text becomes that network's link preview.",
+        example: "Summer sale is here! #bluesky"
+      },
+      {
+        key: "first_comment",
+        type: "string",
+        required: false,
+        description: "First comment posted right after the post, commonly hashtags. Applied on Facebook Pages, LinkedIn and Instagram feed posts unless a network-specific first comment is given.",
+        example: "#summer #sale #deals"
+      },
+      {
+        key: "fb_first_comment",
+        type: "string",
+        required: false,
+        description: "Facebook first comment; overrides first_comment on Facebook.",
+        example: "#facebook #summersale"
+      },
+      {
+        key: "fb_mentions",
+        type: "array",
+        required: false,
+        description: "Facebook pages to mention, at most 10: page ids from /api/mention_search, as a list of ids or of {page_id, name} objects. Write each page in the text as @<page id>; the publisher turns it into the page's mention on Facebook pages.",
+        example: [
+          {
+            page_id: "108296975869040",
+            name: "Acme"
+          }
+        ],
+        items: "object",
+        acceptsList: false
+      },
+      {
+        key: "fb_background_id",
+        type: "string",
+        required: false,
+        description: "Facebook text background for a post without image_url or video_url: an id from /api/facebook_backgrounds (letters, digits, underscore or dash, up to 64 characters). Applied on Facebook pages only.",
+        example: "106"
+      },
+      {
+        key: "ln_first_comment",
+        type: "string",
+        required: false,
+        description: "LinkedIn first comment; overrides first_comment on LinkedIn.",
+        example: "#linkedin #summersale"
+      },
+      {
+        key: "in_first_comment",
+        type: "string",
+        required: false,
+        description: "Instagram first comment (feed posts only); overrides first_comment on Instagram.",
+        example: "#instagram #summersale"
+      },
+      {
+        key: "fb_post_type",
+        type: "string",
+        required: false,
+        description: "Facebook post type. Case-insensitive; an unknown value keeps feed.",
+        values: [
+          "feed",
+          "reel",
+          "story"
+        ],
+        default: "feed",
+        example: "feed"
+      },
+      {
+        key: "fb_thumb",
+        type: "url",
+        required: false,
+        description: "Custom cover image URL for the video on Facebook. Public image URL; copied to RecurPost storage unless host_images_on_recurpost is off. Ignored when the post has no video_url.",
+        example: "https://example.com/fb-cover.jpg"
+      },
+      {
+        key: "ln_document",
+        type: "url",
+        required: false,
+        description: "Public URL of a document to post as a LinkedIn document (carousel) post: PDF, PPT, PPTX, DOC or DOCX, detected from the file bytes, not the file name. The file is downloaded and stored on RecurPost storage and the LinkedIn tab becomes a document post. A file of another type is left as given and ignored by the publisher. Google Drive share links are resolved.",
+        example: "https://example.com/catalog.pdf"
+      },
+      {
+        key: "ln_document_title",
+        type: "string",
+        required: false,
+        description: "Title shown on the LinkedIn document. Defaults to the file name without its extension.",
+        example: "Summer Catalog 2026"
+      },
+      {
+        key: "ln_thumb",
+        type: "url",
+        required: false,
+        description: "Custom cover image URL for the video on LinkedIn. Ignored when the post has no video_url.",
+        example: "https://example.com/ln-cover.jpg"
+      },
+      {
+        key: "in_post_type",
+        type: "string",
+        required: false,
+        description: "Instagram post type. Case-insensitive; an unknown value keeps feed. A reel needs a video_url.",
+        values: [
+          "feed",
+          "story",
+          "reel"
+        ],
+        default: "feed",
+        example: "feed"
+      },
+      {
+        key: "in_reel_share_in_feed",
+        type: "string",
+        required: false,
+        description: "Whether a reel also appears in the profile feed. Only read when in_post_type is reel.",
+        values: [
+          "yes",
+          "no"
+        ],
+        default: "yes",
+        example: "yes"
+      },
+      {
+        key: "in_thumb",
+        type: "url",
+        required: false,
+        description: "Custom cover image URL for an Instagram reel. Only applied when in_post_type is reel and the post has a video_url; copied to RecurPost storage because Meta fetches it at publish time.",
+        example: "https://example.com/in-cover.jpg"
+      },
+      {
+        key: "in_location_id",
+        type: "string",
+        required: false,
+        description: "Instagram place id to tag the post with. Take id and name from /api/instagram_locations.",
+        example: "212988663"
+      },
+      {
+        key: "in_location_name",
+        type: "string",
+        required: false,
+        description: "Name of the place in in_location_id.",
+        example: "Pune, Maharashtra"
+      },
+      {
+        key: "in_location_city",
+        type: "string",
+        required: false,
+        description: "City of the tagged place, as returned by /api/instagram_locations.",
+        example: "Pune"
+      },
+      {
+        key: "in_location_country",
+        type: "string",
+        required: false,
+        description: "Country of the tagged place, as returned by /api/instagram_locations.",
+        example: "India"
+      },
+      {
+        key: "in_image_tags",
+        type: "array",
+        required: false,
+        description: "People to tag on feed images. A JSON array of objects with username, x and y (fractions of the image width and height between 0 and 1) and image (1-based position in image_url, default 1). The leading @ is optional.",
+        example: [
+          {
+            image: 1,
+            username: "recurpost",
+            x: 0.5,
+            y: 0.4
+          }
+        ],
+        items: "object",
+        acceptsList: false
+      },
+      {
+        key: "in_reel_tags",
+        type: "array",
+        required: false,
+        description: "Usernames to tag on a reel, as a JSON array or a comma-separated string. Only saved when the post has a video_url.",
+        example: [
+          "recurpost",
+          "jane_doe"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "in_collaborators",
+        type: "array",
+        required: false,
+        description: "Instagram usernames invited as collaborators, as a JSON array or a comma-separated string. At most 3.",
+        example: [
+          "jane_doe"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "in_audio_id",
+        type: "string",
+        required: false,
+        description: "Instagram audio to lay under a reel, from /api/instagram_audio_search. Needs in_post_type reel, a video_url and in_audio_account_id.",
+        example: "1234567890123456"
+      },
+      {
+        key: "in_audio_account_id",
+        type: "string",
+        required: false,
+        description: "Encrypted id of the Instagram account /api/instagram_audio_search ran for. Required with in_audio_id.",
+        example: "aK3mZ8vQr1=="
+      },
+      {
+        key: "in_audio_type",
+        type: "string",
+        required: false,
+        description: "Kind of audio behind in_audio_id.",
+        values: [
+          "music",
+          "original_sound"
+        ],
+        default: "music",
+        example: "music"
+      },
+      {
+        key: "in_audio_title",
+        type: "string",
+        required: false,
+        description: "Title of the audio, as the search returned it; stored with the reel.",
+        example: "Summer Nights"
+      },
+      {
+        key: "in_audio_artist",
+        type: "string",
+        required: false,
+        description: "Artist of the audio, as the search returned it.",
+        example: "The Examples"
+      },
+      {
+        key: "in_audio_duration_ms",
+        type: "integer",
+        required: false,
+        description: "Length of the audio in milliseconds, as the search returned it.",
+        example: 30000
+      },
+      {
+        key: "in_audio_volume",
+        type: "integer",
+        required: false,
+        description: "Volume of the added audio, 0 to 100.",
+        default: "100",
+        example: 100
+      },
+      {
+        key: "in_video_volume",
+        type: "integer",
+        required: false,
+        description: "Volume of the reel's own sound, 0 to 100.",
+        default: "100",
+        example: 100
+      },
+      {
+        key: "in_trial_reel",
+        type: "string",
+        required: false,
+        description: "Publish the reel as a trial reel, shown to non-followers first. manual: you decide in Instagram when to share it with followers; performance: Instagram shares it when it does well. Reels only.",
+        values: [
+          "manual",
+          "performance"
+        ],
+        example: "manual"
+      },
+      {
+        key: "in_product_tags",
+        type: "array",
+        required: false,
+        description: "Instagram product tags on images: objects with account_id (encrypted, the account whose catalog holds the product), product_id (from /api/instagram_products), image (1-based position in image_url), x and y (0 to 1, default 0.5), and optionally product_name and product_image.",
+        example: [
+          {
+            image: 1,
+            account_id: "aK3mZ8vQr1==",
+            product_id: "901000111222333",
+            x: 0.5,
+            y: 0.6
+          }
+        ],
+        items: "object",
+        acceptsList: false
+      },
+      {
+        key: "in_reel_product_tags",
+        type: "array",
+        required: false,
+        description: "Products tagged on a reel: objects with account_id (encrypted) and product_id (from /api/instagram_products), optionally product_name and image_url. Reels only.",
+        example: [
+          {
+            account_id: "aK3mZ8vQr1==",
+            product_id: "901000111222333"
+          }
+        ],
+        items: "object",
+        acceptsList: false
+      },
+      {
+        key: "pi_title",
+        type: "string",
+        required: false,
+        description: "Pin title. The destination link of the pin is url or the first link in the text.",
+        example: "Summer Sale - Best Deals of the Season"
+      },
+      {
+        key: "gbp_cta",
+        type: "string",
+        required: false,
+        description: "Call-to-action button on the Google Business post. Case-insensitive. An unknown value or None saves no button. On a link post with no CTA given, Learn more pointing at the link is set automatically.",
+        values: [
+          "Learn more",
+          "Sign up",
+          "Buy",
+          "Order online",
+          "Book",
+          "Call now",
+          "Offer",
+          "None"
+        ],
+        default: "None",
+        example: "Learn more"
+      },
+      {
+        key: "gbp_cta_url",
+        type: "url",
+        required: false,
+        description: "Link the button opens. Not used for Call now. With gbp_cta=Offer and no gbp_redeem_offer_link, this value doubles as the redeem link.",
+        example: "https://example.com/summer-sale"
+      },
+      {
+        key: "gbp_offer_title",
+        type: "string",
+        required: false,
+        description: "Offer title; offer fields are used when gbp_cta is Offer.",
+        example: "Summer Sale - 50% Off"
+      },
+      {
+        key: "gbp_offer_start_date",
+        type: "datetime",
+        required: false,
+        description: "Offer start, YYYY-MM-DD HH:MM:SS.",
+        example: "2026-06-01 00:00:00"
+      },
+      {
+        key: "gbp_offer_end_date",
+        type: "datetime",
+        required: false,
+        description: "Offer end, YYYY-MM-DD HH:MM:SS.",
+        example: "2026-06-30 23:59:59"
+      },
+      {
+        key: "gbp_offer_coupon_code",
+        type: "string",
+        required: false,
+        description: "Coupon code shown on the offer.",
+        example: "SUMMER50"
+      },
+      {
+        key: "gbp_offer_terms",
+        type: "string",
+        required: false,
+        description: "Terms and conditions of the offer.",
+        example: "Valid on selected items only"
+      },
+      {
+        key: "gbp_redeem_offer_link",
+        type: "url",
+        required: false,
+        description: "Link to redeem the offer.",
+        example: "https://example.com/redeem"
+      },
+      {
+        key: "yt_title",
+        type: "string",
+        required: false,
+        description: "Video title. YouTube needs a video_url; message or yt_message is the description.",
+        example: "Summer Sale Announcement 2026"
+      },
+      {
+        key: "yt_category",
+        type: "string",
+        required: false,
+        description: "Category name, matched exactly against the list. An unknown or missing name falls back to the default category of the workspace owner's YouTube settings (Entertainment when none is set).",
+        values: [
+          "Film & Animation",
+          "Autos & Vehicles",
+          "Music",
+          "Pets & Animals",
+          "Sports",
+          "Travel & Events",
+          "Gaming",
+          "People & Blogs",
+          "Comedy",
+          "Entertainment",
+          "News & Politics",
+          "Howto & Style",
+          "Education",
+          "Science & Technology",
+          "Nonprofits & Activism"
+        ],
+        example: "Howto & Style"
+      },
+      {
+        key: "yt_privacy_status",
+        type: "string",
+        required: false,
+        description: "Video privacy. Lower-cased and stored as given; use one of the listed values.",
+        values: [
+          "public",
+          "private",
+          "unlisted"
+        ],
+        default: "public",
+        example: "public"
+      },
+      {
+        key: "yt_user_tags",
+        type: "string",
+        required: false,
+        description: "Video tags, comma-separated.",
+        example: "summer, sale, deals",
+        acceptsList: true
+      },
+      {
+        key: "yt_thumb",
+        type: "url",
+        required: false,
+        description: "Custom thumbnail URL for the YouTube video. Public image URL; copied to RecurPost storage unless host_images_on_recurpost is off.",
+        example: "https://example.com/yt-thumb.jpg"
+      },
+      {
+        key: "yt_video_made_for_kids",
+        type: "string",
+        required: false,
+        description: "Whether the video is made for kids. Only yes switches it on.",
+        values: [
+          "yes",
+          "no"
+        ],
+        default: "no",
+        example: "no"
+      },
+      {
+        key: "tk_privacy_status",
+        type: "string",
+        required: false,
+        description: "Who can watch the TikTok video. Case-insensitive, spaces or underscores. Any other value is saved as Public to Everyone; omitted leaves it unset. /api/tiktok_options lists what the account allows.",
+        values: [
+          "Public to Everyone",
+          "Mutual Follow Friends",
+          "Self Only"
+        ],
+        example: "Public to Everyone"
+      },
+      {
+        key: "tk_allow_comments",
+        type: "string",
+        required: false,
+        description: "Allow comments on the TikTok video. Only no switches it off.",
+        values: [
+          "yes",
+          "no"
+        ],
+        default: "yes",
+        example: "yes"
+      },
+      {
+        key: "tk_allow_duet",
+        type: "string",
+        required: false,
+        description: "Allow duets. Only no switches it off.",
+        values: [
+          "yes",
+          "no"
+        ],
+        default: "yes",
+        example: "yes"
+      },
+      {
+        key: "tk_allow_stitches",
+        type: "string",
+        required: false,
+        description: "Allow stitches. Only no switches it off.",
+        values: [
+          "yes",
+          "no"
+        ],
+        default: "yes",
+        example: "yes"
+      },
+      {
+        key: "tk_promote_own_brand",
+        type: "integer",
+        required: false,
+        description: "Set to 1 to mark the video as promoting your own brand (TikTok's content disclosure).",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "tk_promote_other_brand",
+        type: "integer",
+        required: false,
+        description: "Set to 1 to mark the video as branded content for a third party.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "workspace_id",
+        type: "string",
+        required: false,
+        description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list.",
+        example: "wS9kLm2Qp1=="
+      }
+    ]
+  },
+  {
     name: "library_content_search",
     title: "Library Content Search",
     module: "libraries",

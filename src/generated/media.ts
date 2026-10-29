@@ -27,5 +27,52 @@ export const mediaTools: ToolSpec[] = [
         example: 348211
       }
     ]
+  },
+  {
+    name: "media_list",
+    title: "Media List",
+    module: "media",
+    endpoint: "media_list",
+    summary: "The images, GIFs and videos already used in the owner's posts, newest first.",
+    description: "Pages through the media the workspace owner has already used in posts, 50 a page, newest first. types narrows to images, GIFs or videos and search matches the text of the posts the media was used in. Every item carries a URL you can send again as image_url or video_url in /api/post_content or /api/add_content_in_library; media already on RecurPost storage is not downloaded again. The app lists the owner's media across all of their workspaces, so workspace_id only picks the owner here.",
+    readOnly: true,
+    destructive: false,
+    params: [
+      {
+        key: "page",
+        type: "integer",
+        required: false,
+        description: "Page, from 1; 50 items a page. There is no total: an empty page means the end.",
+        default: "1",
+        example: 1
+      },
+      {
+        key: "types",
+        type: "array",
+        required: false,
+        description: "Kinds to list: any of image, gif, video, as an array or a comma-separated string. All three when omitted.",
+        default: "image,gif,video",
+        example: [
+          "image",
+          "video"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "search",
+        type: "string",
+        required: false,
+        description: "Text to match against the posts the media was used in.",
+        example: "sale"
+      },
+      {
+        key: "workspace_id",
+        type: "string",
+        required: false,
+        description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list.",
+        example: "wS7pQ2mN1x=="
+      }
+    ]
   }
 ];
