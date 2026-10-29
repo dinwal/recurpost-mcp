@@ -23,7 +23,7 @@ describe("generated tool specs", () => {
     for (const name of names) {
       expect(name).toMatch(/^[a-z0-9_]{1,64}$/);
     }
-    expect(modules.length).toBe(26);
+    expect(modules.length).toBe(27);
     for (const mod of modules) {
       expect(generatedTools.some((t) => t.module === mod.key), mod.key).toBe(true);
     }
