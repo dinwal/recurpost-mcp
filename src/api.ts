@@ -2,6 +2,8 @@
 // sends the one-hour Bearer token on every call, and logs in again when it expires or is
 // rejected. Nothing here knows about MCP.
 
+import { VERSION } from "./version.js";
+
 export interface ClientOptions {
   baseUrl: string;
   email: string;
@@ -192,7 +194,8 @@ export class RecurPostClient {
   }
 
   private async post(path: string, params: Record<string, unknown>, token?: string): Promise<Reply> {
-    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    // The user agent names this server, so the account's API key page can list it among the connected tools
+    const headers: Record<string, string> = { "Content-Type": "application/json", "User-Agent": `RecurPost-MCP/${VERSION}` };
     if (token) {
       headers.Authorization = `Bearer ${token}`;
     }
