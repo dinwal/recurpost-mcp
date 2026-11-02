@@ -101,7 +101,7 @@ export const accountSettingsTools: ToolSpec[] = [
         key: "photo_url",
         type: "string",
         required: false,
-        description: "New profile photo: the URL of an image you uploaded with /api/media_upload_url under your own account. Any other URL is refused. The previous photo is removed from storage.",
+        description: "New profile photo: a publicly reachable image URL, downloaded and stored in your RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is). The previous photo is removed from storage.",
         example: "https://cdn.recurpost.com/media/12345/images/me.png"
       }
     ]
@@ -750,7 +750,7 @@ export const accountSettingsTools: ToolSpec[] = [
     endpoint: "branding",
     action: "get",
     summary: "Read, set or remove the workspace owner's white-label logo for reports. This tool runs the get action.",
-    description: "The logo printed on the owner's report PDFs in place of RecurPost's. action is get (the default, open to every member), set with a logo_url you uploaded through /api/media_upload_url, or delete. set and delete need the workspace owner's own key.",
+    description: "The logo printed on the owner's report PDFs in place of RecurPost's. action is get (the default, open to every member), set with a logo_url (any publicly reachable image URL, stored in the owner's RecurPost storage), or delete. set and delete need the workspace owner's own key.",
     readOnly: true,
     destructive: false,
     params: [
@@ -770,7 +770,7 @@ export const accountSettingsTools: ToolSpec[] = [
     endpoint: "branding",
     action: "set",
     summary: "Read, set or remove the workspace owner's white-label logo for reports. This tool runs the set action.",
-    description: "The logo printed on the owner's report PDFs in place of RecurPost's. action is get (the default, open to every member), set with a logo_url you uploaded through /api/media_upload_url, or delete. set and delete need the workspace owner's own key.",
+    description: "The logo printed on the owner's report PDFs in place of RecurPost's. action is get (the default, open to every member), set with a logo_url (any publicly reachable image URL, stored in the owner's RecurPost storage), or delete. set and delete need the workspace owner's own key.",
     readOnly: false,
     destructive: false,
     params: [
@@ -778,7 +778,7 @@ export const accountSettingsTools: ToolSpec[] = [
         key: "logo_url",
         type: "url",
         required: false,
-        description: "For set, required there: the URL of an image you uploaded with /api/media_upload_url under your own account. Any other URL is refused.",
+        description: "For set, required there: a publicly reachable image URL, downloaded and stored in the owner's RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is).",
         example: "https://cdn.recurpost.com/media/4821/images/logo.png"
       },
       {
@@ -797,7 +797,7 @@ export const accountSettingsTools: ToolSpec[] = [
     endpoint: "branding",
     action: "delete",
     summary: "Read, set or remove the workspace owner's white-label logo for reports. This tool runs the delete action.",
-    description: "The logo printed on the owner's report PDFs in place of RecurPost's. action is get (the default, open to every member), set with a logo_url you uploaded through /api/media_upload_url, or delete. set and delete need the workspace owner's own key.",
+    description: "The logo printed on the owner's report PDFs in place of RecurPost's. action is get (the default, open to every member), set with a logo_url (any publicly reachable image URL, stored in the owner's RecurPost storage), or delete. set and delete need the workspace owner's own key.",
     readOnly: false,
     destructive: true,
     params: [

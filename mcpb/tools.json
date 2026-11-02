@@ -64,10 +64,6 @@
     "description": "Where a post stands on every account it was sent to."
   },
   {
-    "name": "media_upload_url",
-    "description": "Get a signed URL to upload an image or video directly to RecurPost storage."
-  },
-  {
     "name": "queue_list",
     "description": "Queued items of the workspace in a date window, one per account and time."
   },

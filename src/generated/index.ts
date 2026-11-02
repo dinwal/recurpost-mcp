@@ -112,7 +112,7 @@ export const modules: ModuleSpec[] = [
   {
     key: "media",
     title: "Media",
-    description: "Upload images and videos straight to RecurPost storage through a presigned URL, then reference them by URL in the post, draft and library calls, and browse the media already used in the owner's posts."
+    description: "Browse the images, GIFs and videos already used in the owner's posts, and reuse their URLs in the post, draft and library calls without a second download."
   },
   {
     key: "post_labels",
@@ -213,7 +213,6 @@ export const firstClassToolNames: string[] = [
   "add_content_in_library",
   "post_content",
   "post_status",
-  "media_upload_url",
   "queue_list",
   "queue_post",
   "queue_post_update",

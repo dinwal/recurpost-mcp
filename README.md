@@ -12,7 +12,7 @@ An [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that g
 - Manage workspaces, members, social accounts, schedules, RSS feeds, labels, the inbox and more
 - Generate post text and images with AI
 
-The 40 most used operations are **direct tools** the assistant sees straight away. Every other operation is one call away through three catalog tools:
+The 39 most used operations are **direct tools** the assistant sees straight away. Every other operation is one call away through three catalog tools:
 
 | Tool | Purpose |
 |------|---------|
@@ -162,7 +162,7 @@ Ask: *"Verify my RecurPost connection"* (runs `user_login`), then
 | `RECURPOST_API_URL` | no | API base URL. Default `https://social.recurpost.com` |
 | `RECURPOST_MODULES` | no | Comma-separated modules whose operations should all become direct tools (for example `inbox,feeds`), or `all` for every operation. Everything stays reachable through `call_operation` either way |
 
-Each direct tool costs context in every conversation, which is why the default set is 40 and the rest sit behind the catalog tools. Promote a module when you use it constantly; use `all` only with clients that load tool definitions on demand.
+Each direct tool costs context in every conversation, which is why the default set is 39 and the rest sit behind the catalog tools. Promote a module when you use it constantly; use `all` only with clients that load tool definitions on demand.
 
 ## Troubleshooting
 
@@ -201,7 +201,6 @@ Claude Desktop writes a log per server:
 | `add_content_in_library` | libraries | Add a recurring post to a content library. |
 | `post_content` | posts | Publish a post now, or schedule it, on one or more social accounts. |
 | `post_status` | posts | Where a post stands on every account it was sent to. |
-| `media_upload_url` | media | Get a signed URL to upload an image or video directly to RecurPost storage. |
 | `queue_list` | queue | Queued items of the workspace in a date window, one per account and time. |
 | `queue_post` | queue | One queued item by its id. |
 | `queue_post_update` | queue | Move a queued item to a new time, replace its content, or both. |

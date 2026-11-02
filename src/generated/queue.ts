@@ -137,7 +137,7 @@ export const queueTools: ToolSpec[] = [
         key: "image_url",
         type: "array",
         required: false,
-        description: "Public image URL or an array of up to 20. Each is downloaded and hosted by RecurPost unless it already comes from /api/media_upload_url.",
+        description: "Public image URL or an array of up to 20. Each is downloaded and hosted by RecurPost unless it is already on RecurPost storage.",
         example: [
           "https://example.com/img/plan.jpg"
         ],

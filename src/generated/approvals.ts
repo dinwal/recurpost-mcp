@@ -194,7 +194,7 @@ export const approvalsTools: ToolSpec[] = [
         key: "image_url",
         type: "array",
         required: false,
-        description: "Image URLs, in display order. Send a JSON array (or repeat image_url[] in form encoding); a single string is accepted as a one-item list. At most 20 images. Each URL must be a publicly reachable http or https URL and answer an image content type. URLs returned by /api/media_upload_url are used as they are; every other URL is copied to RecurPost storage unless host_images_on_recurpost is off. Ignored when video_url is also sent.",
+        description: "Image URLs, in display order. Send a JSON array (or repeat image_url[] in form encoding); a single string is accepted as a one-item list. At most 20 images. Each URL must be a publicly reachable http or https URL and answer an image content type. URLs already on RecurPost storage (for example from /api/media_list) are used as they are; every other URL is copied to RecurPost storage unless host_images_on_recurpost is off. Ignored when video_url is also sent.",
         example: [
           "https://example.com/sale1.jpg",
           "https://example.com/sale2.jpg"
@@ -206,7 +206,7 @@ export const approvalsTools: ToolSpec[] = [
         key: "video_url",
         type: "url",
         required: false,
-        description: "A public mp4 or mov URL (Google Drive share links are accepted and resolved to the download URL). The file is downloaded and stored on RecurPost storage, so the call takes as long as the download; a URL from /api/media_upload_url skips the download. Needs a paid plan. Files are limited to 2 GB.",
+        description: "A public mp4 or mov URL (Google Drive share links are accepted and resolved to the download URL). The file is downloaded and stored on RecurPost storage, so the call takes as long as the download; a URL already on RecurPost storage skips the download. Needs a paid plan. Files are limited to 2 GB.",
         example: "https://example.com/promo.mp4"
       },
       {

@@ -450,7 +450,7 @@ export const contentToolsTools: ToolSpec[] = [
     endpoint: "watermark",
     action: "get",
     summary: "Read, set, delete or copy the watermark stamped on images, per account or for the workspace. This tool runs the get action.",
-    description: "A watermark is stamped on every image at posting time. It is set on one social account (scope=account, the default) or on the workspace (scope=workspace, workspace owner only), in which case every account of the workspace without its own watermark inherits it. action picks the operation: get (default): the current settings. For an account the answer also says whether it inherits the workspace watermark or opted out of it. set: saves image_url, opacity, size and position; fields left out keep their current values, so a first set needs image_url. On the workspace, force_account_ids names accounts whose own watermark is replaced by the workspace one. delete: removes the watermark and the stamped copies of images; needs confirm=true. On an account, skip_inherit=true also keeps it out of the workspace watermark. copy: copies the watermark of account_id to account_ids; accounts only. image_url must be an image uploaded through /api/media_upload_url by the workspace owner. Delete removes stamped images: Deleting a watermark also deletes the watermarked copies of images made for queued posts; those posts go out with the plain image. Images already published are not affected.",
+    description: "A watermark is stamped on every image at posting time. It is set on one social account (scope=account, the default) or on the workspace (scope=workspace, workspace owner only), in which case every account of the workspace without its own watermark inherits it. action picks the operation: get (default): the current settings. For an account the answer also says whether it inherits the workspace watermark or opted out of it. set: saves image_url, opacity, size and position; fields left out keep their current values, so a first set needs image_url. On the workspace, force_account_ids names accounts whose own watermark is replaced by the workspace one. delete: removes the watermark and the stamped copies of images; needs confirm=true. On an account, skip_inherit=true also keeps it out of the workspace watermark. copy: copies the watermark of account_id to account_ids; accounts only. image_url is any publicly reachable image URL, downloaded and stored in the owner's RecurPost storage. Delete removes stamped images: Deleting a watermark also deletes the watermarked copies of images made for queued posts; those posts go out with the plain image. Images already published are not affected.",
     readOnly: true,
     destructive: false,
     params: [
@@ -477,7 +477,7 @@ export const contentToolsTools: ToolSpec[] = [
         key: "image_url",
         type: "url",
         required: false,
-        description: "The watermark image, a URL from /api/media_upload_url under the owner's folder. Required when action is set and no watermark is saved yet.",
+        description: "The watermark image: a publicly reachable image URL, downloaded and stored in the owner's RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is). Required when action is set and no watermark is saved yet.",
         example: "https://cdn.example.com/u/1/watermark.png"
       },
       {
@@ -553,7 +553,7 @@ export const contentToolsTools: ToolSpec[] = [
     endpoint: "watermark",
     action: "set",
     summary: "Read, set, delete or copy the watermark stamped on images, per account or for the workspace. This tool runs the set action.",
-    description: "A watermark is stamped on every image at posting time. It is set on one social account (scope=account, the default) or on the workspace (scope=workspace, workspace owner only), in which case every account of the workspace without its own watermark inherits it. action picks the operation: get (default): the current settings. For an account the answer also says whether it inherits the workspace watermark or opted out of it. set: saves image_url, opacity, size and position; fields left out keep their current values, so a first set needs image_url. On the workspace, force_account_ids names accounts whose own watermark is replaced by the workspace one. delete: removes the watermark and the stamped copies of images; needs confirm=true. On an account, skip_inherit=true also keeps it out of the workspace watermark. copy: copies the watermark of account_id to account_ids; accounts only. image_url must be an image uploaded through /api/media_upload_url by the workspace owner. Delete removes stamped images: Deleting a watermark also deletes the watermarked copies of images made for queued posts; those posts go out with the plain image. Images already published are not affected.",
+    description: "A watermark is stamped on every image at posting time. It is set on one social account (scope=account, the default) or on the workspace (scope=workspace, workspace owner only), in which case every account of the workspace without its own watermark inherits it. action picks the operation: get (default): the current settings. For an account the answer also says whether it inherits the workspace watermark or opted out of it. set: saves image_url, opacity, size and position; fields left out keep their current values, so a first set needs image_url. On the workspace, force_account_ids names accounts whose own watermark is replaced by the workspace one. delete: removes the watermark and the stamped copies of images; needs confirm=true. On an account, skip_inherit=true also keeps it out of the workspace watermark. copy: copies the watermark of account_id to account_ids; accounts only. image_url is any publicly reachable image URL, downloaded and stored in the owner's RecurPost storage. Delete removes stamped images: Deleting a watermark also deletes the watermarked copies of images made for queued posts; those posts go out with the plain image. Images already published are not affected.",
     readOnly: false,
     destructive: false,
     params: [
@@ -561,7 +561,7 @@ export const contentToolsTools: ToolSpec[] = [
         key: "image_url",
         type: "url",
         required: true,
-        description: "The watermark image, a URL from /api/media_upload_url under the owner's folder. Required when action is set and no watermark is saved yet.",
+        description: "The watermark image: a publicly reachable image URL, downloaded and stored in the owner's RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is). Required when action is set and no watermark is saved yet.",
         example: "https://cdn.example.com/u/1/watermark.png"
       },
       {
@@ -657,7 +657,7 @@ export const contentToolsTools: ToolSpec[] = [
     action: "delete",
     confirm: true,
     summary: "Read, set, delete or copy the watermark stamped on images, per account or for the workspace. This tool runs the delete action.",
-    description: "A watermark is stamped on every image at posting time. It is set on one social account (scope=account, the default) or on the workspace (scope=workspace, workspace owner only), in which case every account of the workspace without its own watermark inherits it. action picks the operation: get (default): the current settings. For an account the answer also says whether it inherits the workspace watermark or opted out of it. set: saves image_url, opacity, size and position; fields left out keep their current values, so a first set needs image_url. On the workspace, force_account_ids names accounts whose own watermark is replaced by the workspace one. delete: removes the watermark and the stamped copies of images; needs confirm=true. On an account, skip_inherit=true also keeps it out of the workspace watermark. copy: copies the watermark of account_id to account_ids; accounts only. image_url must be an image uploaded through /api/media_upload_url by the workspace owner. Delete removes stamped images: Deleting a watermark also deletes the watermarked copies of images made for queued posts; those posts go out with the plain image. Images already published are not affected.",
+    description: "A watermark is stamped on every image at posting time. It is set on one social account (scope=account, the default) or on the workspace (scope=workspace, workspace owner only), in which case every account of the workspace without its own watermark inherits it. action picks the operation: get (default): the current settings. For an account the answer also says whether it inherits the workspace watermark or opted out of it. set: saves image_url, opacity, size and position; fields left out keep their current values, so a first set needs image_url. On the workspace, force_account_ids names accounts whose own watermark is replaced by the workspace one. delete: removes the watermark and the stamped copies of images; needs confirm=true. On an account, skip_inherit=true also keeps it out of the workspace watermark. copy: copies the watermark of account_id to account_ids; accounts only. image_url is any publicly reachable image URL, downloaded and stored in the owner's RecurPost storage. Delete removes stamped images: Deleting a watermark also deletes the watermarked copies of images made for queued posts; those posts go out with the plain image. Images already published are not affected.",
     readOnly: false,
     destructive: true,
     params: [
@@ -684,7 +684,7 @@ export const contentToolsTools: ToolSpec[] = [
         key: "image_url",
         type: "url",
         required: false,
-        description: "The watermark image, a URL from /api/media_upload_url under the owner's folder. Required when action is set and no watermark is saved yet.",
+        description: "The watermark image: a publicly reachable image URL, downloaded and stored in the owner's RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is). Required when action is set and no watermark is saved yet.",
         example: "https://cdn.example.com/u/1/watermark.png"
       },
       {
@@ -760,7 +760,7 @@ export const contentToolsTools: ToolSpec[] = [
     endpoint: "watermark",
     action: "copy",
     summary: "Read, set, delete or copy the watermark stamped on images, per account or for the workspace. This tool runs the copy action.",
-    description: "A watermark is stamped on every image at posting time. It is set on one social account (scope=account, the default) or on the workspace (scope=workspace, workspace owner only), in which case every account of the workspace without its own watermark inherits it. action picks the operation: get (default): the current settings. For an account the answer also says whether it inherits the workspace watermark or opted out of it. set: saves image_url, opacity, size and position; fields left out keep their current values, so a first set needs image_url. On the workspace, force_account_ids names accounts whose own watermark is replaced by the workspace one. delete: removes the watermark and the stamped copies of images; needs confirm=true. On an account, skip_inherit=true also keeps it out of the workspace watermark. copy: copies the watermark of account_id to account_ids; accounts only. image_url must be an image uploaded through /api/media_upload_url by the workspace owner. Delete removes stamped images: Deleting a watermark also deletes the watermarked copies of images made for queued posts; those posts go out with the plain image. Images already published are not affected.",
+    description: "A watermark is stamped on every image at posting time. It is set on one social account (scope=account, the default) or on the workspace (scope=workspace, workspace owner only), in which case every account of the workspace without its own watermark inherits it. action picks the operation: get (default): the current settings. For an account the answer also says whether it inherits the workspace watermark or opted out of it. set: saves image_url, opacity, size and position; fields left out keep their current values, so a first set needs image_url. On the workspace, force_account_ids names accounts whose own watermark is replaced by the workspace one. delete: removes the watermark and the stamped copies of images; needs confirm=true. On an account, skip_inherit=true also keeps it out of the workspace watermark. copy: copies the watermark of account_id to account_ids; accounts only. image_url is any publicly reachable image URL, downloaded and stored in the owner's RecurPost storage. Delete removes stamped images: Deleting a watermark also deletes the watermarked copies of images made for queued posts; those posts go out with the plain image. Images already published are not affected.",
     readOnly: false,
     destructive: false,
     params: [
@@ -798,7 +798,7 @@ export const contentToolsTools: ToolSpec[] = [
         key: "image_url",
         type: "url",
         required: false,
-        description: "The watermark image, a URL from /api/media_upload_url under the owner's folder. Required when action is set and no watermark is saved yet.",
+        description: "The watermark image: a publicly reachable image URL, downloaded and stored in the owner's RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is). Required when action is set and no watermark is saved yet.",
         example: "https://cdn.example.com/u/1/watermark.png"
       },
       {
@@ -863,7 +863,7 @@ export const contentToolsTools: ToolSpec[] = [
     endpoint: "testimonial_templates",
     action: "list",
     summary: "List, add or delete the owner's testimonial template images. This tool runs the list action.",
-    description: "Template images the owner lays testimonial text over when turning a review into a post. action picks the operation; every answer ends with the current list: list (default). add: stores image_url, an upload from /api/media_upload_url. delete: removes template template_id; needs confirm=true.",
+    description: "Template images the owner lays testimonial text over when turning a review into a post. action picks the operation; every answer ends with the current list: list (default). add: stores image_url, any publicly reachable image URL, downloaded into the owner's RecurPost storage. delete: removes template template_id; needs confirm=true.",
     readOnly: true,
     destructive: false,
     params: [
@@ -871,7 +871,7 @@ export const contentToolsTools: ToolSpec[] = [
         key: "image_url",
         type: "url",
         required: false,
-        description: "The template image, a URL from /api/media_upload_url under the owner's folder. Required when action is add.",
+        description: "The template image: a publicly reachable image URL, downloaded and stored in the owner's RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is). Required when action is add.",
         example: "https://cdn.example.com/u/1/testimonial-bg.png"
       },
       {
@@ -897,7 +897,7 @@ export const contentToolsTools: ToolSpec[] = [
     endpoint: "testimonial_templates",
     action: "add",
     summary: "List, add or delete the owner's testimonial template images. This tool runs the add action.",
-    description: "Template images the owner lays testimonial text over when turning a review into a post. action picks the operation; every answer ends with the current list: list (default). add: stores image_url, an upload from /api/media_upload_url. delete: removes template template_id; needs confirm=true.",
+    description: "Template images the owner lays testimonial text over when turning a review into a post. action picks the operation; every answer ends with the current list: list (default). add: stores image_url, any publicly reachable image URL, downloaded into the owner's RecurPost storage. delete: removes template template_id; needs confirm=true.",
     readOnly: false,
     destructive: false,
     params: [
@@ -905,7 +905,7 @@ export const contentToolsTools: ToolSpec[] = [
         key: "image_url",
         type: "url",
         required: true,
-        description: "The template image, a URL from /api/media_upload_url under the owner's folder. Required when action is add.",
+        description: "The template image: a publicly reachable image URL, downloaded and stored in the owner's RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is). Required when action is add.",
         example: "https://cdn.example.com/u/1/testimonial-bg.png"
       },
       {
@@ -932,7 +932,7 @@ export const contentToolsTools: ToolSpec[] = [
     action: "delete",
     confirm: true,
     summary: "List, add or delete the owner's testimonial template images. This tool runs the delete action.",
-    description: "Template images the owner lays testimonial text over when turning a review into a post. action picks the operation; every answer ends with the current list: list (default). add: stores image_url, an upload from /api/media_upload_url. delete: removes template template_id; needs confirm=true.",
+    description: "Template images the owner lays testimonial text over when turning a review into a post. action picks the operation; every answer ends with the current list: list (default). add: stores image_url, any publicly reachable image URL, downloaded into the owner's RecurPost storage. delete: removes template template_id; needs confirm=true.",
     readOnly: false,
     destructive: true,
     params: [
@@ -947,7 +947,7 @@ export const contentToolsTools: ToolSpec[] = [
         key: "image_url",
         type: "url",
         required: false,
-        description: "The template image, a URL from /api/media_upload_url under the owner's folder. Required when action is add.",
+        description: "The template image: a publicly reachable image URL, downloaded and stored in the owner's RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is). Required when action is add.",
         example: "https://cdn.example.com/u/1/testimonial-bg.png"
       },
       {
