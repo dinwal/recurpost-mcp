@@ -107,11 +107,10 @@
     "facebook_backgrounds",
     "tiktok_options",
     "youtube_options",
-    "x_wallet",
     "storage_usage",
     "connect_social_account_urls"
   ],
-  "notReadOnlyTools": ["queue_post_add_accounts", "history_to_library", "inbox_to_library", "ai_to_library"],
+  "notReadOnlyTools": ["queue_post_add_accounts", "history_to_library", "inbox_to_library", "ai_to_library", "x_wallet"],
   "destructiveActions": ["delete", "remove", "delete_value", "reject_all", "reset", "expire", "product_delete", "remove_client", "unassign"],
   "destructivePatterns": ["_(delete|remove|unpublish)$"]
 }
