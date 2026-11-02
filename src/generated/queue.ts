@@ -101,7 +101,7 @@ export const queueTools: ToolSpec[] = [
     module: "queue",
     endpoint: "queue_post_update",
     summary: "Move a queued item to a new time, replace its content, or both.",
-    description: "Send schedule_date_time to move the item, message plus any of the content fields of /api/post_content to rewrite it, or both together. Time only: the item must be in status scheduled. The new time is checked against the owner's daily post limit and written in place; sending the item's current time changes nothing. The answer is Post rescheduled. With content: the item is rebuilt from the fields you send, as /api/post_content would build a new post (media is fetched and hosted again, link previews resolved). The rewrite is copy-on-write: a new post content record is created and only this queue item is pointed at it, so the item keeps its id but gets a new post_id, while the other accounts of the original post keep the old content and post_id. Fields you leave out are not kept from the old content. The answer is Post updated. Only the per-network fields of this item's network take effect; the others are accepted and ignored. Copy-on-write ids: After a content change the item keeps its queue id but its post_id changes, and only this account's copy is rewritten. Re-read /api/queue_list if you track posts by post_id. Timezones: A bare schedule_date_time is read in the workspace owner's timezone, not the account's. Send an explicit offset to avoid ambiguity. The new time is then shown in /api/queue_list in the account's timezone. Content fields: The content parameters are the ones of /api/post_content; see that endpoint for the full rules per network. Media is downloaded and hosted during the call, so a rewrite with a video can take a while.",
+    description: "Send schedule_date_time to move the item, message plus any of the content fields of /api/post_content to rewrite it, or both together. Time only: the item must be in status scheduled. The new time is checked against the owner's daily post limit and written in place; sending the item's current time changes nothing. The answer is Post rescheduled. With content: the item is rebuilt from the fields you send, as /api/post_content would build a new post (media is fetched and hosted again, link previews resolved). The rewrite is copy-on-write: a new post content record is created and only this queue item is pointed at it, so the item keeps its id but gets a new post_id, while the other accounts of the original post keep the old content and post_id. Fields you leave out are not kept from the old content. The answer is Post updated. Only the per-network fields of this item's network take effect; the others are accepted and ignored. Copy-on-write ids: After a content change the item keeps its queue id but its post_id changes, and only this account's copy is rewritten. Re-read /api/queue_list if you track posts by post_id. Timezones: A bare schedule_date_time is read in the workspace owner's timezone, not the account's. Send an explicit offset to avoid ambiguity. The new time is then shown in /api/queue_list in the account's timezone. Content fields: The content parameters are the ones of /api/post_content; see that endpoint for the full rules per network. Media is downloaded and hosted during the call, so a rewrite with a video can take a while. Per-network media: A network can post media of its own: <prefix>_image_url and <prefix>_video_url (fb_, tw_, ln_, in_, gmb_, pi_, yt_, tk_, th_, bs_) replace image_url / video_url on that network only and mark its tab as customised. Each network keeps its own cap (Facebook 15, Twitter/X 4, LinkedIn 20, Instagram 10 in all, Google Business 1, Pinterest 1, TikTok 10, Threads 20 in all, Bluesky 4); only Instagram and Threads combine images with a video, ordered by in_media_order / th_media_order; YouTube takes yt_video_url only. A URL named by several networks is downloaded once. Covers (fb_thumb and the others) apply to whichever video that network ends up with; in_image_tags and in_product_tags positions count in in_image_url when Instagram has its own images. Removing all media from one network is not possible: an empty override answers 400.",
     readOnly: false,
     destructive: false,
     params: [
@@ -178,6 +178,265 @@ export const queueTools: ToolSpec[] = [
         description: "Alt text for the images, one string or a list in image_url order, 1000 characters each at most. Applied on Facebook, X, LinkedIn, Pinterest, Threads and Bluesky.",
         example: [
           "A monthly content calendar"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "fb_image_url",
+        type: "array",
+        required: false,
+        description: "Images for Facebook accounts instead of image_url, same rules and hosting as image_url. At most 15 images on Facebook. Replaces that network's whole media set and marks its tab as customised; the other networks keep the shared media. Cannot be combined with fb_video_url.",
+        example: [
+          "https://example.com/fb-square.jpg"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "fb_video_url",
+        type: "url",
+        required: false,
+        description: "A video for Facebook accounts instead of video_url, same rules and hosting as video_url (mp4 or mov, paid plan). Replaces that network's whole media set and marks its tab as customised. Cannot be combined with fb_image_url.",
+        example: "https://example.com/fb-clip.mp4"
+      },
+      {
+        key: "fb_alt_text",
+        type: "array",
+        required: false,
+        description: "Alternative text for the fb_image_url images, in that order; at most 1000 characters each. The shared alt_text is not applied to a network that has its own images.",
+        example: [
+          "Square crop of the sale banner"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "tw_image_url",
+        type: "array",
+        required: false,
+        description: "Images for Twitter/X accounts instead of image_url, same rules and hosting as image_url. At most 4 images on Twitter/X. Replaces that network's whole media set and marks its tab as customised; the other networks keep the shared media. Cannot be combined with tw_video_url.",
+        example: [
+          "https://example.com/tw-square.jpg"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "tw_video_url",
+        type: "url",
+        required: false,
+        description: "A video for Twitter/X accounts instead of video_url, same rules and hosting as video_url (mp4 or mov, paid plan). Replaces that network's whole media set and marks its tab as customised. Cannot be combined with tw_image_url.",
+        example: "https://example.com/tw-clip.mp4"
+      },
+      {
+        key: "tw_alt_text",
+        type: "array",
+        required: false,
+        description: "Alternative text for the tw_image_url images, in that order; at most 1000 characters each. The shared alt_text is not applied to a network that has its own images.",
+        example: [
+          "Square crop of the sale banner"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "ln_image_url",
+        type: "array",
+        required: false,
+        description: "Images for LinkedIn accounts instead of image_url, same rules and hosting as image_url. At most 20 images on LinkedIn. Replaces that network's whole media set and marks its tab as customised; the other networks keep the shared media. Cannot be combined with ln_video_url.",
+        example: [
+          "https://example.com/ln-square.jpg"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "ln_video_url",
+        type: "url",
+        required: false,
+        description: "A video for LinkedIn accounts instead of video_url, same rules and hosting as video_url (mp4 or mov, paid plan). Replaces that network's whole media set and marks its tab as customised. Cannot be combined with ln_image_url.",
+        example: "https://example.com/ln-clip.mp4"
+      },
+      {
+        key: "ln_alt_text",
+        type: "array",
+        required: false,
+        description: "Alternative text for the ln_image_url images, in that order; at most 1000 characters each. The shared alt_text is not applied to a network that has its own images.",
+        example: [
+          "Square crop of the sale banner"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "in_image_url",
+        type: "array",
+        required: false,
+        description: "Images for Instagram accounts instead of image_url, same rules and hosting as image_url. At most 10 media in all, images and video together on Instagram. Replaces that network's whole media set and marks its tab as customised; the other networks keep the shared media. May be combined with in_video_url into a carousel; in_media_order sets the order.",
+        example: [
+          "https://example.com/in-square.jpg"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "in_video_url",
+        type: "url",
+        required: false,
+        description: "A video for Instagram accounts instead of video_url, same rules and hosting as video_url (mp4 or mov, paid plan). Replaces that network's whole media set and marks its tab as customised. May be combined with in_image_url into a carousel.",
+        example: "https://example.com/in-clip.mp4"
+      },
+      {
+        key: "in_media_order",
+        type: "array",
+        required: false,
+        description: "The order of Instagram's own media as a list of the URLs given in in_image_url and in_video_url. Media left out of the list follow, video first. Only read when both are sent. Any other URL answers 400.",
+        example: [
+          "https://example.com/in-clip.mp4",
+          "https://example.com/in-square.jpg"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "gmb_image_url",
+        type: "array",
+        required: false,
+        description: "Images for Google Business accounts instead of image_url, same rules and hosting as image_url. At most 1 image on Google Business. Replaces that network's whole media set and marks its tab as customised; the other networks keep the shared media. Cannot be combined with gmb_video_url.",
+        example: [
+          "https://example.com/gmb-square.jpg"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "gmb_video_url",
+        type: "url",
+        required: false,
+        description: "A video for Google Business accounts instead of video_url, same rules and hosting as video_url (mp4 or mov, paid plan). Replaces that network's whole media set and marks its tab as customised. Cannot be combined with gmb_image_url.",
+        example: "https://example.com/gmb-clip.mp4"
+      },
+      {
+        key: "pi_image_url",
+        type: "array",
+        required: false,
+        description: "Images for Pinterest accounts instead of image_url, same rules and hosting as image_url. At most 1 image on Pinterest. Replaces that network's whole media set and marks its tab as customised; the other networks keep the shared media. Cannot be combined with pi_video_url.",
+        example: [
+          "https://example.com/pi-square.jpg"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "pi_video_url",
+        type: "url",
+        required: false,
+        description: "A video for Pinterest accounts instead of video_url, same rules and hosting as video_url (mp4 or mov, paid plan). Replaces that network's whole media set and marks its tab as customised. Cannot be combined with pi_image_url.",
+        example: "https://example.com/pi-clip.mp4"
+      },
+      {
+        key: "pi_alt_text",
+        type: "array",
+        required: false,
+        description: "Alternative text for the pi_image_url images, in that order; at most 1000 characters each. The shared alt_text is not applied to a network that has its own images.",
+        example: [
+          "Square crop of the sale banner"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "yt_video_url",
+        type: "url",
+        required: false,
+        description: "A video for YouTube accounts instead of video_url, same rules and hosting as video_url (mp4 or mov, paid plan). Replaces that network's whole media set and marks its tab as customised. YouTube takes a video only, so there is no yt_image_url.",
+        example: "https://example.com/yt-clip.mp4"
+      },
+      {
+        key: "tk_image_url",
+        type: "array",
+        required: false,
+        description: "Images for TikTok accounts instead of image_url, same rules and hosting as image_url. At most 10 images on TikTok. Replaces that network's whole media set and marks its tab as customised; the other networks keep the shared media. Cannot be combined with tk_video_url.",
+        example: [
+          "https://example.com/tk-square.jpg"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "tk_video_url",
+        type: "url",
+        required: false,
+        description: "A video for TikTok accounts instead of video_url, same rules and hosting as video_url (mp4 or mov, paid plan). Replaces that network's whole media set and marks its tab as customised. Cannot be combined with tk_image_url.",
+        example: "https://example.com/tk-clip.mp4"
+      },
+      {
+        key: "th_image_url",
+        type: "array",
+        required: false,
+        description: "Images for Threads accounts instead of image_url, same rules and hosting as image_url. At most 20 media in all, images and video together on Threads. Replaces that network's whole media set and marks its tab as customised; the other networks keep the shared media. May be combined with th_video_url into a carousel; th_media_order sets the order.",
+        example: [
+          "https://example.com/th-square.jpg"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "th_video_url",
+        type: "url",
+        required: false,
+        description: "A video for Threads accounts instead of video_url, same rules and hosting as video_url (mp4 or mov, paid plan). Replaces that network's whole media set and marks its tab as customised. May be combined with th_image_url into a carousel.",
+        example: "https://example.com/th-clip.mp4"
+      },
+      {
+        key: "th_media_order",
+        type: "array",
+        required: false,
+        description: "The order of Threads's own media as a list of the URLs given in th_image_url and th_video_url. Media left out of the list follow, video first. Only read when both are sent. Any other URL answers 400.",
+        example: [
+          "https://example.com/th-clip.mp4",
+          "https://example.com/th-square.jpg"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "th_alt_text",
+        type: "array",
+        required: false,
+        description: "Alternative text for the th_image_url images, in that order; at most 1000 characters each. The shared alt_text is not applied to a network that has its own images.",
+        example: [
+          "Square crop of the sale banner"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "bs_image_url",
+        type: "array",
+        required: false,
+        description: "Images for Bluesky accounts instead of image_url, same rules and hosting as image_url. At most 4 images on Bluesky. Replaces that network's whole media set and marks its tab as customised; the other networks keep the shared media. Cannot be combined with bs_video_url.",
+        example: [
+          "https://example.com/bs-square.jpg"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "bs_video_url",
+        type: "url",
+        required: false,
+        description: "A video for Bluesky accounts instead of video_url, same rules and hosting as video_url (mp4 or mov, paid plan). Replaces that network's whole media set and marks its tab as customised. Cannot be combined with bs_image_url.",
+        example: "https://example.com/bs-clip.mp4"
+      },
+      {
+        key: "bs_alt_text",
+        type: "array",
+        required: false,
+        description: "Alternative text for the bs_image_url images, in that order; at most 1000 characters each. The shared alt_text is not applied to a network that has its own images.",
+        example: [
+          "Square crop of the sale banner"
         ],
         items: "string",
         acceptsList: true
