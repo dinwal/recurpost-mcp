@@ -37,8 +37,8 @@ export const accountSettingsTools: ToolSpec[] = [
     title: "Account Update",
     module: "account_settings",
     endpoint: "account_update",
-    summary: "Update the name, email, persona or expected account count of the key owner's profile.",
-    description: "Updates the key owner's own profile. Send any of first_name, last_name, email, persona and min_social_accounts; fields left out keep their value (the current row is read first, because the app's own call blanks whatever it is not sent). There is no workspace_id. A new email is not swapped in. The app mails a verification link to the new address and keeps the old one until it is confirmed, so account.email still shows the old address, account.pending_email the new one and account.email_verification_sent is true.",
+    summary: "Update the name, email, persona, expected account count or profile photo of the key owner's profile.",
+    description: "Updates the key owner's own profile. Send any of first_name, last_name, email, persona, min_social_accounts and photo_url; fields left out keep their value (the current row is read first, because the app's own call blanks whatever it is not sent). There is no workspace_id. A new email is not swapped in. The app mails a verification link to the new address and keeps the old one until it is confirmed, so account.email still shows the old address, account.pending_email the new one and account.email_verification_sent is true.",
     readOnly: false,
     destructive: false,
     params: [
@@ -96,6 +96,13 @@ export const accountSettingsTools: ToolSpec[] = [
           "6"
         ],
         example: 2
+      },
+      {
+        key: "photo_url",
+        type: "string",
+        required: false,
+        description: "New profile photo: the URL of an image you uploaded with /api/media_upload_url under your own account. Any other URL is refused. The previous photo is removed from storage.",
+        example: "https://cdn.recurpost.com/media/12345/images/me.png"
       }
     ]
   },
