@@ -64,6 +64,10 @@
     "description": "Where a post stands on every account it was sent to."
   },
   {
+    "name": "post_details",
+    "description": "The full content of a post by its id, in the fields post_content takes, with its accounts."
+  },
+  {
     "name": "queue_list",
     "description": "Queued items of the workspace in a date window, one per account and time."
   },

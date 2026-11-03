@@ -213,6 +213,7 @@ export const firstClassToolNames: string[] = [
   "add_content_in_library",
   "post_content",
   "post_status",
+  "post_details",
   "queue_list",
   "queue_post",
   "queue_post_update",

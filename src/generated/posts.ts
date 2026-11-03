@@ -8,7 +8,7 @@ export const postsTools: ToolSpec[] = [
     module: "posts",
     endpoint: "post_status",
     summary: "Where a post stands on every account it was sent to.",
-    description: "Returns one entry per social account a post went to, with its queue item id, its state, the time it is or was published in that account's timezone, the permalink once published and the failure reason when it failed. id is the plain integer that /api/post_content returns as post_data.id and /api/history_data returns as id, so you store one value and poll it. Timezone per account: post_date is shown in each account's timezone, not the workspace owner's, so two accounts of one post can show different clock times for the same instant.",
+    description: "Returns one entry per social account a post went to, with its queue item id, its state, the time it is or was published in that account's timezone, the permalink once published and the failure reason when it failed. id is the plain integer that /api/post_content returns as post_data.id and /api/history_data returns as id, so you store one value and poll it. To read the post itself, in the fields /api/post_content takes, use /api/post_details. Timezone per account: post_date is shown in each account's timezone, not the workspace owner's, so two accounts of one post can show different clock times for the same instant.",
     readOnly: true,
     destructive: false,
     params: [
@@ -24,6 +24,32 @@ export const postsTools: ToolSpec[] = [
         type: "string",
         required: false,
         description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list. When given, only the post's accounts that sit in this workspace are listed.",
+        example: "wS9kLm2Qp1=="
+      }
+    ]
+  },
+  {
+    name: "post_details",
+    title: "Post Details",
+    module: "posts",
+    endpoint: "post_details",
+    summary: "The full content of a post by its id, in the fields post_content takes, with its accounts.",
+    description: "Returns the whole post behind post_id: the shared text and media, every per-network customisation and option the composer saved, and the accounts it went to with their state. The fields of post carry the names /api/post_content takes, so a published or failed post is published again in two calls: read it here, then send post to /api/post_content with the account ids and a new schedule_date_time. This is what the Reschedule button on the History page of the app prefills. post_id is the plain integer that /api/post_content returns as post_data.id, /api/history_list as id and /api/queue_list as post_id. Queued posts can be read the same way. Reschedule in two calls: Take post as it is, add id (the account ids from accounts, or any others) and schedule_date_time, and send it to /api/post_content. Nothing needs renaming. Media URLs are the stored copies: image_url, video_url, thumbnails and the LinkedIn document are the URLs on RecurPost storage. /api/post_content accepts them as they are and does not copy them again, as long as you post in a workspace of the same owner. post_content re-checks what it is sent: The fields are returned as they were saved; a new post is validated afresh. A reel still needs a video, a Facebook background only applies to a text-only post, reel tags need a video, and an account that was removed is refused. Drop a field that no longer fits before sending.",
+    readOnly: true,
+    destructive: false,
+    params: [
+      {
+        key: "post_id",
+        type: "integer",
+        required: true,
+        description: "Plain integer post id (post_data.id from /api/post_content, id from /api/history_list). Not encrypted.",
+        example: 901
+      },
+      {
+        key: "workspace_id",
+        type: "string",
+        required: false,
+        description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list. When given, only the accounts of the post that sit in this workspace are listed; the post itself must belong to the workspace owner.",
         example: "wS9kLm2Qp1=="
       }
     ]
