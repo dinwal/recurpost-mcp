@@ -127,7 +127,7 @@ export const modules: ModuleSpec[] = [
   {
     key: "queue",
     title: "Queue",
-    description: "Posts waiting to go out. A queue item is one account at one time, identified by a plain integer id; the post_id groups the items of one post across its accounts. List and read items, move or rewrite one, remove some, move a whole day, publish right now, or retry a failed post."
+    description: "Posts waiting to go out. A queue item is one account at one time, identified by an encrypted id; the post_id groups the items of one post across its accounts. List and read items, move or rewrite one, remove some, move a whole day, publish right now, or retry a failed post."
   },
   {
     key: "reports",

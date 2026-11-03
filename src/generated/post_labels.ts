@@ -161,16 +161,16 @@ export const postLabelsTools: ToolSpec[] = [
     module: "post_labels",
     endpoint: "label_assign_set",
     summary: "Replace the labels on one scheduled post or one library post.",
-    description: "Changes the labels on exactly one post: a scheduled post named by post_id (the same plain id /api/post_status takes, covering every account the post goes to) or a library post named by content_id. Replaces the current labels with label_ids; an empty or missing list clears every label from the post. The answer is the list of labels now on the post, sorted by name. Written directly: This endpoint writes the label rows itself and does not call the app, so there is no internal error path beyond the ones listed. Labels on a scheduled post apply to the post as a whole, not to one account's copy of it. Workspace scope: With workspace_id, a post_id must go to at least one account of that workspace; otherwise the answer is 404 Post not found. Without it the post only has to belong to the workspace owner.",
+    description: "Changes the labels on exactly one post: a scheduled post named by post_id (the same encrypted id /api/post_status takes, covering every account the post goes to) or a library post named by content_id. Replaces the current labels with label_ids; an empty or missing list clears every label from the post. The answer is the list of labels now on the post, sorted by name. Written directly: This endpoint writes the label rows itself and does not call the app, so there is no internal error path beyond the ones listed. Labels on a scheduled post apply to the post as a whole, not to one account's copy of it. Workspace scope: With workspace_id, a post_id must go to at least one account of that workspace; otherwise the answer is 404 Post not found. Without it the post only has to belong to the workspace owner.",
     readOnly: false,
     destructive: false,
     params: [
       {
         key: "post_id",
-        type: "integer",
+        type: "string",
         required: false,
-        description: "Plain integer id of a scheduled post, as returned by /api/post_content and the queue endpoints. Required when content_id is not sent; never send both.",
-        example: 918273
+        description: "Encrypted id of a scheduled post, as returned by /api/post_content and the queue endpoints. Required when content_id is not sent; never send both.",
+        example: "vLt+fmwoehmxeo2sqbRgBQ=="
       },
       {
         key: "content_id",
@@ -206,7 +206,7 @@ export const postLabelsTools: ToolSpec[] = [
     module: "post_labels",
     endpoint: "label_assign_add",
     summary: "Add labels to one scheduled post or one library post.",
-    description: "Changes the labels on exactly one post: a scheduled post named by post_id (the same plain id /api/post_status takes, covering every account the post goes to) or a library post named by content_id. Adds label_ids to the labels the post has. The answer is the list of labels now on the post, sorted by name. Written directly: This endpoint writes the label rows itself and does not call the app, so there is no internal error path beyond the ones listed. Labels on a scheduled post apply to the post as a whole, not to one account's copy of it. Workspace scope: With workspace_id, a post_id must go to at least one account of that workspace; otherwise the answer is 404 Post not found. Without it the post only has to belong to the workspace owner.",
+    description: "Changes the labels on exactly one post: a scheduled post named by post_id (the same encrypted id /api/post_status takes, covering every account the post goes to) or a library post named by content_id. Adds label_ids to the labels the post has. The answer is the list of labels now on the post, sorted by name. Written directly: This endpoint writes the label rows itself and does not call the app, so there is no internal error path beyond the ones listed. Labels on a scheduled post apply to the post as a whole, not to one account's copy of it. Workspace scope: With workspace_id, a post_id must go to at least one account of that workspace; otherwise the answer is 404 Post not found. Without it the post only has to belong to the workspace owner.",
     readOnly: false,
     destructive: false,
     params: [
@@ -224,10 +224,10 @@ export const postLabelsTools: ToolSpec[] = [
       },
       {
         key: "post_id",
-        type: "integer",
+        type: "string",
         required: false,
-        description: "Plain integer id of a scheduled post, as returned by /api/post_content and the queue endpoints. Required when content_id is not sent; never send both.",
-        example: 918273
+        description: "Encrypted id of a scheduled post, as returned by /api/post_content and the queue endpoints. Required when content_id is not sent; never send both.",
+        example: "XaqBEfWoFXPhbBwjdSJxJQ=="
       },
       {
         key: "content_id",
@@ -251,7 +251,7 @@ export const postLabelsTools: ToolSpec[] = [
     module: "post_labels",
     endpoint: "label_assign_remove",
     summary: "Remove labels from one scheduled post or one library post.",
-    description: "Changes the labels on exactly one post: a scheduled post named by post_id (the same plain id /api/post_status takes, covering every account the post goes to) or a library post named by content_id. Takes label_ids away from the post; ids that were not on the post are ignored. The answer is the list of labels now on the post, sorted by name. Written directly: This endpoint writes the label rows itself and does not call the app, so there is no internal error path beyond the ones listed. Labels on a scheduled post apply to the post as a whole, not to one account's copy of it. Workspace scope: With workspace_id, a post_id must go to at least one account of that workspace; otherwise the answer is 404 Post not found. Without it the post only has to belong to the workspace owner.",
+    description: "Changes the labels on exactly one post: a scheduled post named by post_id (the same encrypted id /api/post_status takes, covering every account the post goes to) or a library post named by content_id. Takes label_ids away from the post; ids that were not on the post are ignored. The answer is the list of labels now on the post, sorted by name. Written directly: This endpoint writes the label rows itself and does not call the app, so there is no internal error path beyond the ones listed. Labels on a scheduled post apply to the post as a whole, not to one account's copy of it. Workspace scope: With workspace_id, a post_id must go to at least one account of that workspace; otherwise the answer is 404 Post not found. Without it the post only has to belong to the workspace owner.",
     readOnly: false,
     destructive: true,
     params: [
@@ -269,10 +269,10 @@ export const postLabelsTools: ToolSpec[] = [
       },
       {
         key: "post_id",
-        type: "integer",
+        type: "string",
         required: false,
-        description: "Plain integer id of a scheduled post, as returned by /api/post_content and the queue endpoints. Required when content_id is not sent; never send both.",
-        example: 918273
+        description: "Encrypted id of a scheduled post, as returned by /api/post_content and the queue endpoints. Required when content_id is not sent; never send both.",
+        example: "PhOfccdbbCcmzkw9lESqxg=="
       },
       {
         key: "content_id",

@@ -272,10 +272,10 @@ export const sharedCalendarsTools: ToolSpec[] = [
     params: [
       {
         key: "post_id",
-        type: "integer",
+        type: "string",
         required: true,
-        description: "Plain post id, items[].post_id of /api/queue_list (the id shared by the queue items of one post).",
-        example: 48213
+        description: "Encrypted post id, items[].post_id of /api/queue_list (the id shared by the queue items of one post).",
+        example: "Nr0fzUdZk1RS5/SHCIMVVQ=="
       },
       {
         key: "page",
@@ -306,10 +306,10 @@ export const sharedCalendarsTools: ToolSpec[] = [
     params: [
       {
         key: "post_id",
-        type: "integer",
+        type: "string",
         required: true,
-        description: "Plain post id, items[].post_id of /api/queue_list (the id shared by the queue items of one post).",
-        example: 48213
+        description: "Encrypted post id, items[].post_id of /api/queue_list (the id shared by the queue items of one post).",
+        example: "6iPJSSCUjvGY8InmCKBJmA=="
       },
       {
         key: "comment",
@@ -339,10 +339,10 @@ export const sharedCalendarsTools: ToolSpec[] = [
     params: [
       {
         key: "post_id",
-        type: "integer",
+        type: "string",
         required: true,
-        description: "Plain post id, items[].post_id of /api/queue_list (the id shared by the queue items of one post).",
-        example: 48213
+        description: "Encrypted post id, items[].post_id of /api/queue_list (the id shared by the queue items of one post).",
+        example: "kFkkRDEAtok8DHn//umthA=="
       },
       {
         key: "read",

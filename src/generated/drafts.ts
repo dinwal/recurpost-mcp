@@ -72,10 +72,10 @@ export const draftsTools: ToolSpec[] = [
       },
       {
         key: "draft_id",
-        type: "integer",
+        type: "string",
         required: false,
-        description: "Plain numeric id of an existing draft (from /api/draft_list). When sent, that draft is replaced instead of a new one being created.",
-        example: 48213
+        description: "Encrypted id of an existing draft (from /api/draft_list). When sent, that draft is replaced instead of a new one being created.",
+        example: "DUzpByCw6IrjS0tBpUGKoQ=="
       },
       {
         key: "schedule_date_time",
@@ -993,10 +993,10 @@ export const draftsTools: ToolSpec[] = [
     params: [
       {
         key: "draft_id",
-        type: "integer",
+        type: "string",
         required: true,
-        description: "Plain numeric draft id from /api/draft_save or /api/draft_list.",
-        example: 48213
+        description: "Encrypted draft id from /api/draft_save or /api/draft_list.",
+        example: "oSdg+TF0FNszIb3bG+15wQ=="
       },
       {
         key: "schedule_date_time",
@@ -1026,10 +1026,10 @@ export const draftsTools: ToolSpec[] = [
     params: [
       {
         key: "draft_id",
-        type: "integer",
+        type: "string",
         required: true,
-        description: "Plain numeric draft id from /api/draft_save or /api/draft_list.",
-        example: 48213
+        description: "Encrypted draft id from /api/draft_save or /api/draft_list.",
+        example: "j6ppzLh9UN+JKEJyi9kpDA=="
       },
       {
         key: "workspace_id",

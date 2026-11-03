@@ -135,10 +135,10 @@ export const historyTools: ToolSpec[] = [
     params: [
       {
         key: "queue_item_id",
-        type: "integer",
+        type: "string",
         required: true,
-        description: "Plain integer id of the published item (one account at one time), from /api/history_list or /api/post_status.",
-        example: 9051
+        description: "Encrypted id of the published item (one account at one time), from /api/history_list or /api/post_status.",
+        example: "pEIg/ky+UpgByzPJC803wQ=="
       },
       {
         key: "workspace_id",
@@ -161,10 +161,10 @@ export const historyTools: ToolSpec[] = [
     params: [
       {
         key: "post_id",
-        type: "integer",
+        type: "string",
         required: true,
-        description: "Plain integer post id from /api/history_list (history_data[].id).",
-        example: 55120
+        description: "Encrypted post id from /api/history_list (history_data[].id).",
+        example: "DLf9B4Jc07wSL/vUnbgoFg=="
       },
       {
         key: "library_ids",

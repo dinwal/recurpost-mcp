@@ -8,7 +8,7 @@ export const queueTools: ToolSpec[] = [
     module: "queue",
     endpoint: "queue_list",
     summary: "Queued items of the workspace in a date window, one per account and time.",
-    description: "Returns the posts not yet published, failed or deleted, ordered by post time ascending. from and to are dates in the workspace owner's timezone; they default to today and 30 days ahead. Narrow the list with account_id and library_id. The id of each item is the plain integer the other queue endpoints take. post_id is shared by the items of one post on several accounts. For the same items laid out by day for a calendar view, empty days included, use /api/calendar. Two timezones: from and to are read in the workspace owner's timezone, but each item's post_date is shown in its own social account's timezone. Convert before comparing items across accounts. Failed posts are not here: The list holds items that are still to go out. Published and failed posts come from /api/history_list; a failed item can be retried with /api/post_retry.",
+    description: "Returns the posts not yet published, failed or deleted, ordered by post time ascending. from and to are dates in the workspace owner's timezone; they default to today and 30 days ahead. Narrow the list with account_id and library_id. The id of each item is the encrypted id the other queue endpoints take. post_id is shared by the items of one post on several accounts. For the same items laid out by day for a calendar view, empty days included, use /api/calendar. Two timezones: from and to are read in the workspace owner's timezone, but each item's post_date is shown in its own social account's timezone. Convert before comparing items across accounts. Failed posts are not here: The list holds items that are still to go out. Published and failed posts come from /api/history_list; a failed item can be retried with /api/post_retry.",
     readOnly: true,
     destructive: false,
     params: [
@@ -81,10 +81,10 @@ export const queueTools: ToolSpec[] = [
     params: [
       {
         key: "id",
-        type: "integer",
+        type: "string",
         required: true,
-        description: "Queue item id (plain integer) from /api/queue_list.",
-        example: 48213
+        description: "Queue item id (encrypted) from /api/queue_list.",
+        example: "j7FZxwNOiP8qHoh1hT8O1Q=="
       },
       {
         key: "workspace_id",
@@ -107,10 +107,10 @@ export const queueTools: ToolSpec[] = [
     params: [
       {
         key: "id",
-        type: "integer",
+        type: "string",
         required: true,
-        description: "Queue item id (plain integer) from /api/queue_list.",
-        example: 48213
+        description: "Queue item id (encrypted) from /api/queue_list.",
+        example: "5Y3BxP2rRt4TyDhJIk07SQ=="
       },
       {
         key: "schedule_date_time",
@@ -798,14 +798,13 @@ export const queueTools: ToolSpec[] = [
     params: [
       {
         key: "id",
-        type: "array",
+        type: "string",
         required: true,
-        description: "Queue item ids (plain integers): one id, a comma-separated list or an array, at most 50.",
+        description: "Encrypted queue item ids: one id, a comma-separated list or an array, at most 50.",
         example: [
-          48213,
-          48214
+          "wRV98y/85Q+5RGDYsdT0mg==",
+          "p21loH0mz86gett2I2hUFw=="
         ],
-        items: "string",
         acceptsList: true
       },
       {
@@ -836,14 +835,13 @@ export const queueTools: ToolSpec[] = [
       },
       {
         key: "id",
-        type: "array",
+        type: "string",
         required: false,
-        description: "Queue item ids (plain integers): one id, a comma-separated list or an array, at most 50. Required when from_date is not sent.",
+        description: "Encrypted queue item ids: one id, a comma-separated list or an array, at most 50. Required when from_date is not sent.",
         example: [
-          48213,
-          48214
+          "kdiPUm0R8GFWduSpAI2nZg==",
+          "+66q8VmNEIrnfqb3UIMFMA=="
         ],
-        items: "string",
         acceptsList: true
       },
       {
@@ -889,14 +887,13 @@ export const queueTools: ToolSpec[] = [
     params: [
       {
         key: "id",
-        type: "array",
+        type: "string",
         required: true,
-        description: "Queue item ids (plain integers) of one post: one id, a comma-separated list or an array, at most 50.",
+        description: "Encrypted queue item ids of one post: one id, a comma-separated list or an array, at most 50.",
         example: [
-          48213,
-          48214
+          "8MVllaZg79nrDIecMuzcQA==",
+          "I8UuEKxqe05VKgZlM0HB+w=="
         ],
-        items: "string",
         acceptsList: true
       },
       {
@@ -914,16 +911,16 @@ export const queueTools: ToolSpec[] = [
     module: "queue",
     endpoint: "post_retry",
     summary: "Retry a failed queue item now or at a new time.",
-    description: "Takes one item in status failed. The id is the queue item id (plain integer) you got from /api/queue_list before the post went out, or from accounts[].id in the answer of /api/queue_post_now, or as accounts[].queue_item_id from /api/post_status, which lists every account row of a post with its state and failure reason. Without schedule_date_time the item is published right away through the same path as /api/queue_post_now, with the app's retry flag, and the answer has the same per-account shape. With schedule_date_time the failure is cleared and the item is put back in the queue for that time, after the owner's daily post limit is checked. Account timezone: Unlike /api/queue_post_update, a bare schedule_date_time here is read in the social account's timezone. Send an offset to be explicit. Retry now is synchronous: Without a time the network is called inside the request; see the timeout note on /api/queue_post_now.",
+    description: "Takes one item in status failed. The id is the queue item id (encrypted) you got from /api/queue_list before the post went out, or from accounts[].id in the answer of /api/queue_post_now, or as accounts[].queue_item_id from /api/post_status, which lists every account row of a post with its state and failure reason. Without schedule_date_time the item is published right away through the same path as /api/queue_post_now, with the app's retry flag, and the answer has the same per-account shape. With schedule_date_time the failure is cleared and the item is put back in the queue for that time, after the owner's daily post limit is checked. Account timezone: Unlike /api/queue_post_update, a bare schedule_date_time here is read in the social account's timezone. Send an offset to be explicit. Retry now is synchronous: Without a time the network is called inside the request; see the timeout note on /api/queue_post_now.",
     readOnly: false,
     destructive: false,
     params: [
       {
         key: "id",
-        type: "integer",
+        type: "string",
         required: true,
-        description: "Queue item id (plain integer) of the failed post.",
-        example: 48190
+        description: "Queue item id (encrypted) of the failed post.",
+        example: "gV4yrTQAdLL+j9YH4Qglcg=="
       },
       {
         key: "schedule_date_time",
@@ -1008,10 +1005,10 @@ export const queueTools: ToolSpec[] = [
     params: [
       {
         key: "post_id",
-        type: "integer",
+        type: "string",
         required: true,
-        description: "Plain integer post id grouping the queue items of one post.",
-        example: 55120
+        description: "Encrypted post id grouping the queue items of one post.",
+        example: "eW7pA7LVYczm7DOHA10d3w=="
       },
       {
         key: "account_ids",
