@@ -107,7 +107,6 @@
     "facebook_backgrounds",
     "tiktok_options",
     "youtube_options",
-    "storage_usage",
     "connect_social_account_urls"
   ],
   "notReadOnlyTools": ["queue_post_add_accounts", "history_to_library", "inbox_to_library", "ai_to_library", "x_wallet"],

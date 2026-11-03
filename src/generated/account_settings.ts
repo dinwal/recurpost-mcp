@@ -111,8 +111,8 @@ export const accountSettingsTools: ToolSpec[] = [
     title: "Account Limits",
     module: "account_settings",
     endpoint: "account_limits",
-    summary: "Plan limits of the workspace owner and how much of each is used.",
-    description: "Returns the plan of the workspace owner with each limit paired with its current usage, add-ons included, so an integration can check before it creates something. Limits follow the owner of the workspace, not the caller: a team member calling with a shared workspace_id sees the owner's plan. posts_per_day is counted per social account per day. The response lists every account of the workspace (or only account_ids) with the posts it already has on date, today in the owner's timezone by default, and how many more it may take. Each account's day runs in that account's own timezone, exactly as the limit check on /api/post_content counts it.",
+    summary: "Plan limits of the workspace owner and how much of each is used, media storage included.",
+    description: "Returns the plan of the workspace owner with each limit paired with its current usage, add-ons included, so an integration can check before it creates something. Media storage is one of them: limits.storage gives the bytes used against the allowance, as the account settings page shows it; the app refreshes the used figure from storage at most once a minute, so last_checked_at says how fresh it is. Limits follow the owner of the workspace, not the caller: a team member calling with a shared workspace_id sees the owner's plan. posts_per_day is counted per social account per day. The response lists every account of the workspace (or only account_ids) with the posts it already has on date, today in the owner's timezone by default, and how many more it may take. Each account's day runs in that account's own timezone, exactly as the limit check on /api/post_content counts it.",
     readOnly: true,
     destructive: false,
     params: [
@@ -175,25 +175,6 @@ export const accountSettingsTools: ToolSpec[] = [
         type: "string",
         required: false,
         description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list. The caller must be the owner of that workspace.",
-        example: "nX2k9Qp7Lw=="
-      }
-    ]
-  },
-  {
-    name: "storage_usage",
-    title: "Storage Usage",
-    module: "account_settings",
-    endpoint: "storage_usage",
-    summary: "Media storage used against the workspace owner's allowance.",
-    description: "Returns how much media storage the workspace owner uses and how much the plan allows, add-on units included. Any member of the workspace may read it; the figures are the owner's. The app refreshes the used figure from storage at most once a minute, so last_checked_at says how fresh it is.",
-    readOnly: true,
-    destructive: false,
-    params: [
-      {
-        key: "workspace_id",
-        type: "string",
-        required: false,
-        description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list.",
         example: "nX2k9Qp7Lw=="
       }
     ]
