@@ -32,7 +32,7 @@ export const modules: ModuleSpec[] = [
   {
     key: "account_settings",
     title: "Account & Settings",
-    description: "Your own RecurPost account rather than a connected social profile: profile details and timezone, the plan of the workspace owner with its limits, invoices and storage, the posting queue switch, the X link-credit wallet, custom fields, and the preference pages (email and push notifications, working hours, branding)."
+    description: "Your own RecurPost account rather than a connected social profile: profile details and timezone, the plan of the workspace owner with its limits, invoices and storage, the posting queue switch, the X link-credit wallet, custom fields, and the preference pages (email and push notifications, working hours, white labeling)."
   },
   {
     key: "accounts",

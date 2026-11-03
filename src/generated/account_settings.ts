@@ -725,33 +725,25 @@ export const accountSettingsTools: ToolSpec[] = [
     ]
   },
   {
-    name: "branding_get",
-    title: "Branding (Get)",
+    name: "white_label_get",
+    title: "White Label (Get)",
     module: "account_settings",
-    endpoint: "branding",
+    endpoint: "white_label",
     action: "get",
-    summary: "Read, set or remove the workspace owner's white-label logo for reports. This tool runs the get action.",
-    description: "The logo printed on the owner's report PDFs in place of RecurPost's. action is get (the default, open to every member), set with a logo_url (any publicly reachable image URL, stored in the owner's RecurPost storage), or delete. set and delete need the workspace owner's own key.",
+    summary: "Read, set or remove the white-label logo printed on your reports, an account-level setting. This tool runs the get action.",
+    description: "The logo printed on your report PDFs in place of RecurPost's, the White labeling setting of the account settings page. action is get (the default), set with a logo_url (any publicly reachable image URL, stored in your RecurPost storage), or delete. This is an account-level setting: the call always acts on the account that owns the API key, so there is no workspace_id. The logo is the one printed on reports of the workspaces that account owns. A team member's key manages the member's own logo, never the workspace owner's; to change an agency's logo, call with the owner's key. Who can use it: Every API key, for its own account. There is no owner check because nobody else's setting is touched: a member of your workspace cannot change your logo through their key, and you cannot change theirs. A workspace_id sent along is ignored.",
     readOnly: true,
     destructive: false,
-    params: [
-      {
-        key: "workspace_id",
-        type: "string",
-        required: false,
-        description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list.",
-        example: "nX2k9Qp7Lw=="
-      }
-    ]
+    params: []
   },
   {
-    name: "branding_set",
-    title: "Branding (Set)",
+    name: "white_label_set",
+    title: "White Label (Set)",
     module: "account_settings",
-    endpoint: "branding",
+    endpoint: "white_label",
     action: "set",
-    summary: "Read, set or remove the workspace owner's white-label logo for reports. This tool runs the set action.",
-    description: "The logo printed on the owner's report PDFs in place of RecurPost's. action is get (the default, open to every member), set with a logo_url (any publicly reachable image URL, stored in the owner's RecurPost storage), or delete. set and delete need the workspace owner's own key.",
+    summary: "Read, set or remove the white-label logo printed on your reports, an account-level setting. This tool runs the set action.",
+    description: "The logo printed on your report PDFs in place of RecurPost's, the White labeling setting of the account settings page. action is get (the default), set with a logo_url (any publicly reachable image URL, stored in your RecurPost storage), or delete. This is an account-level setting: the call always acts on the account that owns the API key, so there is no workspace_id. The logo is the one printed on reports of the workspaces that account owns. A team member's key manages the member's own logo, never the workspace owner's; to change an agency's logo, call with the owner's key. Who can use it: Every API key, for its own account. There is no owner check because nobody else's setting is touched: a member of your workspace cannot change your logo through their key, and you cannot change theirs. A workspace_id sent along is ignored.",
     readOnly: false,
     destructive: false,
     params: [
@@ -759,36 +751,21 @@ export const accountSettingsTools: ToolSpec[] = [
         key: "logo_url",
         type: "url",
         required: false,
-        description: "For set, required there: a publicly reachable image URL, downloaded and stored in the owner's RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is).",
+        description: "For set, required there: a publicly reachable image URL, downloaded and stored in your RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is).",
         example: "https://cdn.recurpost.com/media/4821/images/logo.png"
-      },
-      {
-        key: "workspace_id",
-        type: "string",
-        required: false,
-        description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list.",
-        example: "nX2k9Qp7Lw=="
       }
     ]
   },
   {
-    name: "branding_delete",
-    title: "Branding (Delete)",
+    name: "white_label_delete",
+    title: "White Label (Delete)",
     module: "account_settings",
-    endpoint: "branding",
+    endpoint: "white_label",
     action: "delete",
-    summary: "Read, set or remove the workspace owner's white-label logo for reports. This tool runs the delete action.",
-    description: "The logo printed on the owner's report PDFs in place of RecurPost's. action is get (the default, open to every member), set with a logo_url (any publicly reachable image URL, stored in the owner's RecurPost storage), or delete. set and delete need the workspace owner's own key.",
+    summary: "Read, set or remove the white-label logo printed on your reports, an account-level setting. This tool runs the delete action.",
+    description: "The logo printed on your report PDFs in place of RecurPost's, the White labeling setting of the account settings page. action is get (the default), set with a logo_url (any publicly reachable image URL, stored in your RecurPost storage), or delete. This is an account-level setting: the call always acts on the account that owns the API key, so there is no workspace_id. The logo is the one printed on reports of the workspaces that account owns. A team member's key manages the member's own logo, never the workspace owner's; to change an agency's logo, call with the owner's key. Who can use it: Every API key, for its own account. There is no owner check because nobody else's setting is touched: a member of your workspace cannot change your logo through their key, and you cannot change theirs. A workspace_id sent along is ignored.",
     readOnly: false,
     destructive: true,
-    params: [
-      {
-        key: "workspace_id",
-        type: "string",
-        required: false,
-        description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list.",
-        example: "nX2k9Qp7Lw=="
-      }
-    ]
+    params: []
   }
 ];
