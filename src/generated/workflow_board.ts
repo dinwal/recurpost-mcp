@@ -72,8 +72,8 @@ export const workflowBoardTools: ToolSpec[] = [
       {
         key: "title",
         type: "string",
-        required: false,
-        description: "New title; blank or missing keeps the stored one.",
+        required: true,
+        description: "Card title.",
         example: "Launch teaser"
       },
       {
@@ -143,7 +143,7 @@ export const workflowBoardTools: ToolSpec[] = [
         key: "share_with_client",
         type: "boolean",
         required: false,
-        description: "Whether the card is shared with the client for approval.",
+        description: "Whether the card is shared with the client for approval. Defaults to the workflow setting.",
         example: true
       },
       {
@@ -1148,7 +1148,7 @@ export const workflowBoardTools: ToolSpec[] = [
         key: "workspace_id",
         type: "string",
         required: false,
-        description: "Workspace the board is read for. Defaults to your default workspace. Get ids from /api/workspace_list.",
+        description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list. The card is placed in this workspace; without it, or with the owner's signup default workspace, in the first board workspace by name.",
         example: "nX2k9Qp7Lw=="
       }
     ]
@@ -1181,7 +1181,7 @@ export const workflowBoardTools: ToolSpec[] = [
         key: "description",
         type: "string",
         required: false,
-        description: "Description or caption draft.",
+        description: "Description or caption draft. Send an empty string to clear it.",
         example: "Short teaser for the spring launch."
       },
       {
@@ -1200,7 +1200,7 @@ export const workflowBoardTools: ToolSpec[] = [
         key: "account_ids",
         type: "array",
         required: false,
-        description: "Encrypted social account ids (array or comma-separated) the card will publish to. They must belong to the workspace owner, and the app requires them to be connected to the card's workspace.",
+        description: "Encrypted social account ids (array or comma-separated) the card will publish to. They must belong to the workspace owner, and the app requires them to be connected to the card's workspace. Send an empty string or empty array to clear.",
         example: [
           "aB3cD4eF5g=="
         ],
@@ -1211,7 +1211,7 @@ export const workflowBoardTools: ToolSpec[] = [
         key: "target_date",
         type: "datetime",
         required: false,
-        description: "Target date in the owner's wall clock, YYYY-MM-DD or YYYY-MM-DD HH:MM.",
+        description: "Target date in the owner's wall clock, YYYY-MM-DD or YYYY-MM-DD HH:MM. Send an empty string to clear.",
         example: "2026-11-01 15:00"
       },
       {
@@ -1232,7 +1232,7 @@ export const workflowBoardTools: ToolSpec[] = [
         key: "label_ids",
         type: "array",
         required: false,
-        description: "Plain numeric label ids (array or comma-separated) of the owner's labels.",
+        description: "Plain numeric label ids (array or comma-separated) of the owner's labels. Replaces the current labels; an empty value clears them.",
         example: [
           3
         ],
@@ -1243,7 +1243,7 @@ export const workflowBoardTools: ToolSpec[] = [
         key: "media",
         type: "array",
         required: false,
-        description: "Up to 10 attachments as publicly reachable http or https URLs. Each entry is a URL string or {url, type} with type image or video; without a type, .mp4, .mov, .m4v and .webm count as video.",
+        description: "Up to 10 attachments as publicly reachable http or https URLs. Each entry is a URL string or {url, type} with type image or video; without a type, .mp4, .mov, .m4v and .webm count as video. Replaces the current media.",
         example: [
           "https://example.com/teaser.jpg",
           {
@@ -1258,7 +1258,7 @@ export const workflowBoardTools: ToolSpec[] = [
         key: "schedule",
         type: "array",
         required: false,
-        description: "Draft schedule slots, one object per slot: {account_id, at} with at as YYYY-MM-DD HH:MM (wall clock of that account's timezone), or {account_id, date, best_time: true} with date as YYYY-MM-DD to let RecurPost pick the best time that day. account_id is an encrypted account id.",
+        description: "Draft schedule slots, one object per slot: {account_id, at} with at as YYYY-MM-DD HH:MM (wall clock of that account's timezone), or {account_id, date, best_time: true} with date as YYYY-MM-DD to let RecurPost pick the best time that day. account_id is an encrypted account id. Replaces the current slots; an empty list clears them.",
         example: [
           {
             account_id: "aB3cD4eF5g==",
