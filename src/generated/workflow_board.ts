@@ -8,7 +8,7 @@ export const workflowBoardTools: ToolSpec[] = [
     module: "workflow_board",
     endpoint: "workflow_board",
     summary: "Columns and cards of the board, for one workspace or for every workspace of the owner you belong to.",
-    description: "Returns the board of the workspace owner: its columns (Ideas, the owner's stages, Scheduled) with the cards in each, the team members who can be assigned, and the workflow settings. Scoping. The board is the owner's, not yours. workspace_id (or your default workspace when omitted) picks the owner; the board then spans every workspace of that owner you are an active member of. The owner's signup default workspace is kept off the board while other workspaces exist, as on the dashboard; passing its id is the same as passing none. When you pass any other workspace_id only that workspace's cards are returned; otherwise all board workspaces are, unless workspace_ids narrows them. Every card carries its own workspace_id. Card shape. This is the full card object; /api/workflow_card, /api/workflow_card_create, /api/workflow_card_edit and /api/workflow_card_move return the same fields. Whose board: Team members see the board of the owner whose workspace they pass. Your own signup workspace is the default when you omit workspace_id, so as a team member pass the agency's workspace_id to reach their board. Timezones: target_date is the owner's wall clock as typed. schedule.first_at and the schedule times of /api/workflow_card are converted to the owner's timezone. created_at and updated_at are the app's stored UTC values.",
+    description: "Returns the board of the workspace owner: its columns (Ideas, the owner's stages, Scheduled) with the cards in each, the team members who can be assigned, and the workflow settings. Scoping. The board is the owner's, not yours. workspace_id (or your default workspace when omitted) picks the owner; the board then spans every workspace of that owner you are an active member of. The owner's signup default workspace is kept off the board while other workspaces exist, as on the dashboard; passing its id is the same as passing none. When you pass any other workspace_id only that workspace's cards are returned; otherwise all board workspaces are, unless workspace_ids narrows them. Every card carries its own workspace_id. Card shape. This is the full card object; /api/workflow_card, the idea and post create and edit calls and /api/workflow_card_move return the same fields. Whose board: Team members see the board of the owner whose workspace they pass. Your own signup workspace is the default when you omit workspace_id, so as a team member pass the agency's workspace_id to reach their board. Timezones: target_date is the owner's wall clock as typed. schedule.first_at and the schedule times of /api/workflow_card are converted to the owner's timezone. created_at and updated_at are the app's stored UTC values.",
     readOnly: true,
     destructive: false,
     params: [
@@ -60,12 +60,12 @@ export const workflowBoardTools: ToolSpec[] = [
     ]
   },
   {
-    name: "workflow_card_create",
-    title: "Workflow Card Create",
+    name: "workflow_idea_create",
+    title: "Workflow Idea Create",
     module: "workflow_board",
-    endpoint: "workflow_card_create",
-    summary: "Create an idea or a post card.",
-    description: "Creates a card: kind idea goes to the Ideas column, kind post starts in the stage you name with stage_id. title is required; every other field is optional and the card is created with what you send. Each field is checked against the owner before the app is called: platforms against the known keys, accounts and labels against the owner's, media URLs must be public, schedule slots well formed. The app then applies the dashboard rules (your role's create permission, the Ideas column being enabled, accounts belonging to the card's workspace, no schedule slot in the past). Per-network customisations take the fields of /api/post_content: first_comment, a network's own text (fb_message, in_message and so on), its own media (fb_image_url, in_video_url), alt text and the platform options (fb_post_type, in_post_type, yt_title, tk_privacy_status, gbp_cta, the AI labels). The card's description stands for message and its media for the shared image_url and video_url. The fields are checked and any media they name is fetched into the owner's storage exactly as on /api/post_content, and the app stores the result the way its composer does, so the card publishes with the same per-network content and options. Schedule slots are drafts: The slots you send stay on the card until it reaches the Scheduled column (/api/workflow_card_advance with to_scheduled, or client approval); only then do they become queue posts. The at time is read in the account's timezone, and the card reads it back in the owner's. Customisations are a set: Sending any customisation field replaces the card's stored customisations with the fields you send, so send the whole set you want kept. Send none to leave the stored ones alone; on /api/workflow_card_edit, clear_customizations true drops them. Read the stored set back as card.customizations of /api/workflow_card, in these same fields. Media hosting: Without customisation fields the media URLs are stored as sent (the app's own uploads are already on RecurPost storage). With customisation fields the shared media is fetched into the owner's storage the way /api/post_content does, the card reads back those URLs, and its tabs name the same files. A card with several videos carries only the first in the customised tabs.",
+    endpoint: "workflow_idea_create",
+    summary: "Create an idea card in the Ideas column.",
+    description: "Creates an idea in the Ideas column. title is required; description, platforms, target date, assignee, client sharing, labels and media are optional, as in the idea composer. An idea has no accounts, schedule or per-network customisations: turn it into a post with /api/workflow_card_convert, or create a post straight away with /api/workflow_post_create. Each field is checked against the owner before the app is called: platforms against the known keys, labels against the owner's, media URLs must be public. The app then applies the dashboard rules (the Ideas column being enabled; ideas are open to every member). Media is stored as sent: The media URLs are stored as given; the app's own uploads are already on RecurPost storage.",
     readOnly: false,
     destructive: false,
     params: [
@@ -77,22 +77,201 @@ export const workflowBoardTools: ToolSpec[] = [
         example: "Launch teaser"
       },
       {
-        key: "kind",
+        key: "description",
         type: "string",
         required: false,
-        description: "idea or post.",
-        values: [
-          "idea",
-          "post"
+        description: "Description or caption draft.",
+        example: "Short teaser for the spring launch."
+      },
+      {
+        key: "platforms",
+        type: "array",
+        required: false,
+        description: "Platform keys (array, JSON-encoded array string or comma-separated): instagram, facebook, linkedin, twitter, google, pinterest, youtube, tiktok, threads, bluesky.",
+        example: [
+          "facebook",
+          "instagram"
         ],
-        default: "idea",
-        example: "post"
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "target_date",
+        type: "datetime",
+        required: false,
+        description: "Target date in the owner's wall clock, YYYY-MM-DD or YYYY-MM-DD HH:MM.",
+        example: "2026-11-01 15:00"
+      },
+      {
+        key: "assignee_user_id",
+        type: "string",
+        required: false,
+        description: "Encrypted user id from members[] to assign the card to; 0 clears the assignee. The app checks the member may work the stage.",
+        example: "Sl7mN2vB4Q=="
+      },
+      {
+        key: "share_with_client",
+        type: "boolean",
+        required: false,
+        description: "Whether the idea is shared with the client. Defaults to the workflow setting for ideas; the app needs a client calendar in the workspace to share one.",
+        example: true
+      },
+      {
+        key: "label_ids",
+        type: "array",
+        required: false,
+        description: "Plain numeric label ids (array or comma-separated) of the owner's labels.",
+        example: [
+          3
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "media",
+        type: "array",
+        required: false,
+        description: "Up to 10 attachments as publicly reachable http or https URLs. Each entry is a URL string or {url, type} with type image or video; without a type, .mp4, .mov, .m4v and .webm count as video.",
+        example: [
+          "https://example.com/teaser.jpg",
+          {
+            url: "https://example.com/clip",
+            type: "video"
+          }
+        ],
+        items: "object",
+        acceptsList: false
+      },
+      {
+        key: "workspace_id",
+        type: "string",
+        required: false,
+        description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list. The card is placed in this workspace; without it, or with the owner's signup default workspace, in the first board workspace by name.",
+        example: "nX2k9Qp7Lw=="
+      }
+    ]
+  },
+  {
+    name: "workflow_idea_edit",
+    title: "Workflow Idea Edit",
+    module: "workflow_board",
+    endpoint: "workflow_idea_edit",
+    summary: "Change an idea card.",
+    description: "Changes the idea id. Fields left out keep their value, and only the fields you send are written: title, description, platforms, target date, assignee, client sharing, labels and media. A post card is refused here; change it with /api/workflow_post_edit. Each field is checked against the owner before the app is called. The app then applies the dashboard rules (your role's edit permissions). Updates are partial: Only fields present in the request are written. Clearing a field means sending it empty (description, target_date, label_ids, media as \"\" or []). Turn an idea into a post with /api/workflow_card_convert.",
+    readOnly: false,
+    destructive: false,
+    params: [
+      {
+        key: "id",
+        type: "integer",
+        required: true,
+        description: "Plain numeric id of the idea.",
+        example: 512
+      },
+      {
+        key: "title",
+        type: "string",
+        required: false,
+        description: "New title; blank or missing keeps the stored one.",
+        example: "Launch teaser"
+      },
+      {
+        key: "description",
+        type: "string",
+        required: false,
+        description: "Description or caption draft. Send an empty string to clear it.",
+        example: "Short teaser for the spring launch."
+      },
+      {
+        key: "platforms",
+        type: "array",
+        required: false,
+        description: "Platform keys (array, JSON-encoded array string or comma-separated): instagram, facebook, linkedin, twitter, google, pinterest, youtube, tiktok, threads, bluesky.",
+        example: [
+          "facebook",
+          "instagram"
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "target_date",
+        type: "datetime",
+        required: false,
+        description: "Target date in the owner's wall clock, YYYY-MM-DD or YYYY-MM-DD HH:MM. Send an empty string to clear.",
+        example: "2026-11-01 15:00"
+      },
+      {
+        key: "assignee_user_id",
+        type: "string",
+        required: false,
+        description: "Encrypted user id from members[] to assign the card to; 0 clears the assignee. The app checks the member may work the stage.",
+        example: "Sl7mN2vB4Q=="
+      },
+      {
+        key: "share_with_client",
+        type: "boolean",
+        required: false,
+        description: "Whether the card is shared with the client for approval.",
+        example: true
+      },
+      {
+        key: "label_ids",
+        type: "array",
+        required: false,
+        description: "Plain numeric label ids (array or comma-separated) of the owner's labels. Replaces the current labels; an empty value clears them.",
+        example: [
+          3
+        ],
+        items: "string",
+        acceptsList: true
+      },
+      {
+        key: "media",
+        type: "array",
+        required: false,
+        description: "Up to 10 attachments as publicly reachable http or https URLs. Each entry is a URL string or {url, type} with type image or video; without a type, .mp4, .mov, .m4v and .webm count as video. Replaces the current media.",
+        example: [
+          "https://example.com/teaser.jpg",
+          {
+            url: "https://example.com/clip",
+            type: "video"
+          }
+        ],
+        items: "object",
+        acceptsList: false
+      },
+      {
+        key: "workspace_id",
+        type: "string",
+        required: false,
+        description: "Workspace the board is read for. Defaults to your default workspace. Get ids from /api/workspace_list.",
+        example: "nX2k9Qp7Lw=="
+      }
+    ]
+  },
+  {
+    name: "workflow_post_create",
+    title: "Workflow Post Create",
+    module: "workflow_board",
+    endpoint: "workflow_post_create",
+    summary: "Create a post card in a stage.",
+    description: "Creates a post card in the stage you name with stage_id (required, with title). The idea fields plus accounts, a draft schedule and the per-network customisations, as in the post composer. Each field is checked against the owner before the app is called: platforms against the known keys, accounts and labels against the owner's, media URLs must be public, schedule slots well formed. The app then applies the dashboard rules (your role's create permission, accounts belonging to the card's workspace, no schedule slot in the past). Per-network customisations take the fields of /api/post_content: first_comment, a network's own text (fb_message, in_message and so on), its own media (fb_image_url, in_video_url), alt text and the platform options (fb_post_type, in_post_type, yt_title, tk_privacy_status, gbp_cta, the AI labels). The card's description stands for message and its media for the shared image_url and video_url. The fields are checked and any media they name is fetched into the owner's storage exactly as on /api/post_content, and the app stores the result the way its composer does, so the card publishes with the same per-network content and options. Schedule slots are drafts: The slots you send stay on the card until it reaches the Scheduled column (/api/workflow_card_advance with to_scheduled, or client approval); only then do they become queue posts. The at time is read in the account's timezone, and the card reads it back in the owner's. Customisations are a set: Sending any customisation field replaces the card's stored customisations with the fields you send, so send the whole set you want kept. Send none to leave the stored ones alone; on /api/workflow_post_edit, clear_customizations true drops them. Read the stored set back as card.customizations of /api/workflow_card, in these same fields. Media hosting: Without customisation fields the media URLs are stored as sent (the app's own uploads are already on RecurPost storage). With customisation fields the shared media is fetched into the owner's storage the way /api/post_content does, the card reads back those URLs, and its tabs name the same files. A card with several videos carries only the first in the customised tabs.",
+    readOnly: false,
+    destructive: false,
+    params: [
+      {
+        key: "title",
+        type: "string",
+        required: true,
+        description: "Card title.",
+        example: "Launch teaser"
       },
       {
         key: "stage_id",
         type: "integer",
-        required: false,
-        description: "Required for a post: the stage it starts in, from columns[].stage_id of /api/workflow_board. Ideas take none.",
+        required: true,
+        description: "The stage the post starts in, from columns[].stage_id of /api/workflow_board.",
         example: 7
       },
       {
@@ -1154,12 +1333,12 @@ export const workflowBoardTools: ToolSpec[] = [
     ]
   },
   {
-    name: "workflow_card_edit",
-    title: "Workflow Card Edit",
+    name: "workflow_post_edit",
+    title: "Workflow Post Edit",
     module: "workflow_board",
-    endpoint: "workflow_card_edit",
-    summary: "Change a card: its fields, media and per-network customisations.",
-    description: "Changes the card id. Fields left out keep their value, and only the fields you send are written. Everything the composer can change on a card is here: title, description, platforms, accounts, target date, assignee, client sharing, labels, media, draft schedule and the per-network customisations. Each field is checked against the owner before the app is called: platforms against the known keys, accounts and labels against the owner's, media URLs must be public, schedule slots well formed. The app then applies the dashboard rules (your role's edit permissions, the card's stage, accounts belonging to the card's workspace, no schedule slot in the past, and at Client Review or Scheduled the hand-over gate on the edited content). Per-network customisations take the fields of /api/post_content: first_comment, a network's own text (fb_message, in_message and so on), its own media (fb_image_url, in_video_url), alt text and the platform options (fb_post_type, in_post_type, yt_title, tk_privacy_status, gbp_cta, the AI labels). The card's description stands for message and its media for the shared image_url and video_url. The fields are checked and any media they name is fetched into the owner's storage exactly as on /api/post_content, and the app stores the result the way its composer does, so the card publishes with the same per-network content and options. Updates are partial: Only fields present in the request are written. Clearing a field means sending it empty (description, target_date, account_ids, label_ids, media, schedule as \"\" or []). Move cards between stages with /api/workflow_card_move. Schedule slots are drafts: The slots you send stay on the card until it reaches the Scheduled column (/api/workflow_card_advance with to_scheduled, or client approval); only then do they become queue posts. The at time is read in the account's timezone, and the card reads it back in the owner's. Customisations are a set: Sending any customisation field replaces the card's stored customisations with the fields you send, so send the whole set you want kept. Send none to leave the stored ones alone; on /api/workflow_card_edit, clear_customizations true drops them. Read the stored set back as card.customizations of /api/workflow_card, in these same fields. Media hosting: Without customisation fields the media URLs are stored as sent (the app's own uploads are already on RecurPost storage). With customisation fields the shared media is fetched into the owner's storage the way /api/post_content does, the card reads back those URLs, and its tabs name the same files. A card with several videos carries only the first in the customised tabs.",
+    endpoint: "workflow_post_edit",
+    summary: "Change a post card: its fields, media and per-network customisations.",
+    description: "Changes the post card id. Fields left out keep their value, and only the fields you send are written. Everything the composer can change on a post is here: title, description, platforms, accounts, target date, assignee, client sharing, labels, media, draft schedule and the per-network customisations. An idea is refused here; change it with /api/workflow_idea_edit. Each field is checked against the owner before the app is called: platforms against the known keys, accounts and labels against the owner's, media URLs must be public, schedule slots well formed. The app then applies the dashboard rules (your role's edit permissions, the card's stage, accounts belonging to the card's workspace, no schedule slot in the past, and at Client Review or Scheduled the hand-over gate on the edited content). Per-network customisations take the fields of /api/post_content: first_comment, a network's own text (fb_message, in_message and so on), its own media (fb_image_url, in_video_url), alt text and the platform options (fb_post_type, in_post_type, yt_title, tk_privacy_status, gbp_cta, the AI labels). The card's description stands for message and its media for the shared image_url and video_url. The fields are checked and any media they name is fetched into the owner's storage exactly as on /api/post_content, and the app stores the result the way its composer does, so the card publishes with the same per-network content and options. Updates are partial: Only fields present in the request are written. Clearing a field means sending it empty (description, target_date, account_ids, label_ids, media, schedule as \"\" or []). Move cards between stages with /api/workflow_card_move. Schedule slots are drafts: The slots you send stay on the card until it reaches the Scheduled column (/api/workflow_card_advance with to_scheduled, or client approval); only then do they become queue posts. The at time is read in the account's timezone, and the card reads it back in the owner's. Customisations are a set: Sending any customisation field replaces the card's stored customisations with the fields you send, so send the whole set you want kept. Send none to leave the stored ones alone; on /api/workflow_post_edit, clear_customizations true drops them. Read the stored set back as card.customizations of /api/workflow_card, in these same fields. Media hosting: Without customisation fields the media URLs are stored as sent (the app's own uploads are already on RecurPost storage). With customisation fields the shared media is fetched into the owner's storage the way /api/post_content does, the card reads back those URLs, and its tabs name the same files. A card with several videos carries only the first in the customised tabs.",
     readOnly: false,
     destructive: false,
     params: [
@@ -1167,7 +1346,7 @@ export const workflowBoardTools: ToolSpec[] = [
         key: "id",
         type: "integer",
         required: true,
-        description: "Plain numeric card id.",
+        description: "Plain numeric id of the post card.",
         example: 512
       },
       {
