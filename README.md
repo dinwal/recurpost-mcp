@@ -1,6 +1,6 @@
 # RecurPost MCP Server
 
-An [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that gives AI assistants access to the whole [RecurPost](https://recurpost.com) public API: 297 operations across 27 modules, generated from the [API documentation](https://developers.recurpost.com/).
+An [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that gives AI assistants access to the whole [RecurPost](https://recurpost.com) public API: 296 operations across 27 modules, generated from the [API documentation](https://developers.recurpost.com/).
 
 ## What can it do?
 
@@ -241,7 +241,7 @@ All of these are reachable through `list_operations`, `describe_operation` and `
 | `dm_automations` | DM Automations | 9 |
 | `drafts` | Drafts | 4 |
 | `feeds` | RSS Feeds | 12 |
-| `groups` | Account Groups | 5 |
+| `groups` | Account Groups | 4 |
 | `history` | History | 4 |
 | `import` | Import | 5 |
 | `inbox` | Inbox | 28 |

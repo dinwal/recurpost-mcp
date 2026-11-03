@@ -3,46 +3,27 @@ import type { ToolSpec } from "../types.js";
 
 export const groupsTools: ToolSpec[] = [
   {
-    name: "account_group_list",
-    title: "Account Group List",
+    name: "account_groups",
+    title: "Account Groups",
     module: "groups",
-    endpoint: "account_group_list",
-    summary: "List every account group of the workspace owner with the ids of its accounts.",
-    description: "Returns all groups of the workspace owner, sorted by name, empty groups included. Each group carries the encrypted ids of its accounts; call /api/account_group for the account names and states.",
-    readOnly: true,
-    destructive: false,
-    params: [
-      {
-        key: "workspace_id",
-        type: "string",
-        required: false,
-        description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list. Groups are read for that workspace's owner.",
-        example: "nX2k9Qp7Lw=="
-      }
-    ]
-  },
-  {
-    name: "account_group",
-    title: "Account Group",
-    module: "groups",
-    endpoint: "account_group",
-    summary: "Read one group with its accounts.",
-    description: "Returns one group of the workspace owner with its accounts listed by name, each with its network key and state. The accounts are sorted by name.",
+    endpoint: "account_groups",
+    summary: "List the account groups of the workspace owner with their accounts, or read one group by id.",
+    description: "Returns the groups of the workspace owner, sorted by name, empty groups included. Each group carries its accounts listed by name, each with its network key and state, the same ids /api/social_account_list returns. Send id to read one group: the answer has the same shape with a single entry.",
     readOnly: true,
     destructive: false,
     params: [
       {
         key: "id",
         type: "string",
-        required: true,
-        description: "Encrypted group id from /api/account_group_list. Exactly one id.",
+        required: false,
+        description: "Encrypted group id, to read one group. Exactly one id. Left out, every group of the owner is returned.",
         example: "gR1pQ2sT=="
       },
       {
         key: "workspace_id",
         type: "string",
         required: false,
-        description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list.",
+        description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list. Groups are read for that workspace's owner.",
         example: "nX2k9Qp7Lw=="
       }
     ]
@@ -107,7 +88,7 @@ export const groupsTools: ToolSpec[] = [
         key: "id",
         type: "string",
         required: true,
-        description: "Encrypted group id from /api/account_group_list.",
+        description: "Encrypted group id from /api/account_groups.",
         example: "gR1pQ2sT=="
       },
       {
@@ -158,7 +139,7 @@ export const groupsTools: ToolSpec[] = [
         key: "id",
         type: "string",
         required: true,
-        description: "Encrypted group id from /api/account_group_list.",
+        description: "Encrypted group id from /api/account_groups.",
         example: "gR1pQ2sT=="
       },
       {
