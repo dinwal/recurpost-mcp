@@ -112,7 +112,7 @@ export const postsTools: ToolSpec[] = [
     module: "posts",
     endpoint: "shorten_url",
     summary: "Shorten a link with one of the key owner's attached URL shortener accounts.",
-    description: "Shortens a public URL with a shortener account attached to the key owner's RecurPost account (Bitly or a self-hosted Shlink, as set up under Settings or with /api/shortener_accounts). shortener_id picks the account; the first attached account is used when it is left out. A URL that is already short comes back as it is. No workspace_id: shortener accounts belong to the key owner. shortener_id is a plain integer.",
+    description: "Shortens a public URL with a shortener account attached to the key owner's RecurPost account (Bitly or a self-hosted Shlink, as set up under Settings or with /api/shortener_accounts_list). shortener_id picks the account; the first attached account is used when it is left out. A URL that is already short comes back as it is. No workspace_id: shortener accounts belong to the key owner. shortener_id is a plain integer.",
     readOnly: false,
     destructive: false,
     params: [
@@ -127,7 +127,7 @@ export const postsTools: ToolSpec[] = [
         key: "shortener_id",
         type: "integer",
         required: false,
-        description: "Plain integer id of one of your shortener accounts (see /api/shortener_accounts). Defaults to the first one.",
+        description: "Plain integer id of one of your shortener accounts (see /api/shortener_accounts_list). Defaults to the first one.",
         example: 12
       }
     ]

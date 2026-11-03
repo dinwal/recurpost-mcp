@@ -4,121 +4,14 @@ import type { ToolSpec } from "../types.js";
 export const customReportsTools: ToolSpec[] = [
   {
     name: "custom_reports_list",
-    title: "Custom Reports (List)",
+    title: "Custom Reports List",
     module: "custom_reports",
-    endpoint: "custom_reports",
-    action: "list",
-    summary: "List, read, create or update, duplicate and delete the workspace's custom report canvases. This tool runs the list action.",
-    description: "One endpoint for the saved custom reports of the workspace: canvases of metric and note tiles over chosen accounts, with a default date mode, as built on the Custom Reports page. action picks the operation: list (default): every report of the workspace, without tiles. get: one report with its tiles. save: create a report (no report_id) or change one (report_id). On a change, every field left out keeps its value; on a create, name is required and date_mode defaults to Last Week. duplicate: copy a report and return the copy. delete: remove a report; needs confirm=true. Reports belong to the workspace and its owner; every member of the workspace reads and edits them. report_id is a plain integer. data reads the numbers behind the report's metric tiles, per account and combined, for the report's own date_mode or for period / start_date and end_date, with the comparison window the canvas uses (the same length of days just before). Note and custom tiles carry no numbers. force_refresh=true asks the networks again instead of the stored figures. X tiles may charge the caller's X wallet for data not yet stored, as in the app. Messages per action: save answers Report created. or Report saved., delete answers Report deleted. with no report, the others Success. Metric keys: The API does not list the metric keys the canvas knows; they are the metricId values you see on reports built in the app (read one with get). An unknown key is accepted by this call and shows as an empty tile in the app. A save replaces the tile list: tiles and accounts are whole lists: send the complete list you want, not only the additions. Leave the field out to keep the current list. Reading the numbers: Action data answers with report_id, period, accounts and metrics instead of report. Example: {\"status\":200,\"message\":\"Success\",\"report_id\":5,\"period\":{\"start\":\"2026-09-01\",\"end\":\"2026-09-07\",\"compare_start\":\"2026-08-25\",\"compare_end\":\"2026-08-31\"},\"accounts\":[{\"account_id\":\"aB3dE5fG==\",\"name\":\"Page\",\"network\":\"facebook\",\"status\":\"active\"}],\"metrics\":{\"followers\":{\"per_account\":{\"aB3dE5fG==\":{\"value\":120,\"previous\":100,\"available\":true}},\"combined\":{\"value\":120,\"previous\":100}}}}",
+    endpoint: "custom_reports_list",
+    summary: "List the workspace's custom reports.",
+    description: "The saved custom reports of the workspace are canvases of metric and note tiles over chosen accounts, with a default date mode, as built on the Custom Reports page. Reports belong to the workspace and its owner; every member of the workspace reads and edits them. report_id is a plain integer. This call lists every report of the workspace, without tiles.",
     readOnly: true,
     destructive: false,
     params: [
-      {
-        key: "report_id",
-        type: "integer",
-        required: false,
-        description: "Plain report id from list. Required when action is get, duplicate or delete; on save it names the report to change, leave it out to create one.",
-        example: 5
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Report name, 1 to 255 characters. Required when action is save and no report_id is sent (a create); optional on a change.",
-        example: "Weekly client overview"
-      },
-      {
-        key: "accounts",
-        type: "array",
-        required: false,
-        description: "save: the social accounts the report covers, as encrypted ids from /api/social_account_list (a JSON array, a form array or a comma-separated string; up to 50). They must be the workspace owner's and, when workspace_id is sent, inside that workspace. Send an empty value to clear the list.",
-        example: [
-          "nX2k9Qp7Lw==",
-          "qR5tY8uI1o=="
-        ],
-        items: "string",
-        acceptsList: true
-      },
-      {
-        key: "tiles",
-        type: "array",
-        required: false,
-        description: "save: the tiles of the canvas, in display order, as a JSON array or a JSON string. Each tile is an object. A metric tile: metricId (a metric key of the app's custom report canvas, 1 to 60 lowercase letters, digits and hyphens, for example followers or impressions), title (up to 120 characters), viz (number, line, area, bar, pie, list, table, funnel, gauge, heat or map; default number), size (quarter, third, half, threeq or full; default quarter) and compare (blank, previous for the comparison window or network). A note tile: metricId note, title, size and body (up to 5000 characters). At most 60 tiles and 200000 bytes of JSON.",
-        example: [
-          {
-            metricId: "followers",
-            title: "Followers",
-            viz: "number",
-            size: "quarter",
-            compare: "previous"
-          },
-          {
-            metricId: "impressions",
-            title: "Impressions by day",
-            viz: "line",
-            size: "half",
-            compare: ""
-          },
-          {
-            metricId: "note",
-            title: "Reading guide",
-            size: "full",
-            body: "Numbers compare with the previous period."
-          }
-        ],
-        items: "object",
-        acceptsList: false
-      },
-      {
-        key: "date_mode",
-        type: "string",
-        required: false,
-        description: "save: the period the report opens with: Last Week, Last Month, Today, Yesterday or a fixed range YYYY-MM-DD|YYYY-MM-DD (first day, a pipe, last day). Case matters.",
-        default: "Last Week",
-        example: "Last Month"
-      },
-      {
-        key: "template_key",
-        type: "string",
-        required: false,
-        description: "save: the template the canvas was started from, up to 50 letters, digits, - and _; blank for none. Kept for the app's own use.",
-        example: "overview"
-      },
-      {
-        key: "period",
-        type: "string",
-        required: false,
-        description: "With action data: today, yesterday, last_week or last_month in the owner's timezone. Defaults to the report's own date_mode.",
-        values: [
-          "today",
-          "yesterday",
-          "last_week",
-          "last_month"
-        ],
-        example: "last_week"
-      },
-      {
-        key: "start_date",
-        type: "date",
-        required: false,
-        description: "With action data: first day, YYYY-MM-DD, with end_date; wins over period.",
-        example: "2026-10-01"
-      },
-      {
-        key: "end_date",
-        type: "date",
-        required: false,
-        description: "With action data: last day, YYYY-MM-DD, at most a year after start_date.",
-        example: "2026-10-07"
-      },
-      {
-        key: "force_refresh",
-        type: "boolean",
-        required: false,
-        description: "With action data: ask the networks again instead of the stored figures.",
-        default: "false",
-        example: false
-      },
       {
         key: "workspace_id",
         type: "string",
@@ -130,12 +23,11 @@ export const customReportsTools: ToolSpec[] = [
   },
   {
     name: "custom_reports_get",
-    title: "Custom Reports (Get)",
+    title: "Custom Reports Get",
     module: "custom_reports",
-    endpoint: "custom_reports",
-    action: "get",
-    summary: "List, read, create or update, duplicate and delete the workspace's custom report canvases. This tool runs the get action.",
-    description: "One endpoint for the saved custom reports of the workspace: canvases of metric and note tiles over chosen accounts, with a default date mode, as built on the Custom Reports page. action picks the operation: list (default): every report of the workspace, without tiles. get: one report with its tiles. save: create a report (no report_id) or change one (report_id). On a change, every field left out keeps its value; on a create, name is required and date_mode defaults to Last Week. duplicate: copy a report and return the copy. delete: remove a report; needs confirm=true. Reports belong to the workspace and its owner; every member of the workspace reads and edits them. report_id is a plain integer. data reads the numbers behind the report's metric tiles, per account and combined, for the report's own date_mode or for period / start_date and end_date, with the comparison window the canvas uses (the same length of days just before). Note and custom tiles carry no numbers. force_refresh=true asks the networks again instead of the stored figures. X tiles may charge the caller's X wallet for data not yet stored, as in the app. Messages per action: save answers Report created. or Report saved., delete answers Report deleted. with no report, the others Success. Metric keys: The API does not list the metric keys the canvas knows; they are the metricId values you see on reports built in the app (read one with get). An unknown key is accepted by this call and shows as an empty tile in the app. A save replaces the tile list: tiles and accounts are whole lists: send the complete list you want, not only the additions. Leave the field out to keep the current list. Reading the numbers: Action data answers with report_id, period, accounts and metrics instead of report. Example: {\"status\":200,\"message\":\"Success\",\"report_id\":5,\"period\":{\"start\":\"2026-09-01\",\"end\":\"2026-09-07\",\"compare_start\":\"2026-08-25\",\"compare_end\":\"2026-08-31\"},\"accounts\":[{\"account_id\":\"aB3dE5fG==\",\"name\":\"Page\",\"network\":\"facebook\",\"status\":\"active\"}],\"metrics\":{\"followers\":{\"per_account\":{\"aB3dE5fG==\":{\"value\":120,\"previous\":100,\"available\":true}},\"combined\":{\"value\":120,\"previous\":100}}}}",
+    endpoint: "custom_reports_get",
+    summary: "Read one custom report with its tiles.",
+    description: "The saved custom reports of the workspace are canvases of metric and note tiles over chosen accounts, with a default date mode, as built on the Custom Reports page. Reports belong to the workspace and its owner; every member of the workspace reads and edits them. report_id is a plain integer. This call reads one report with its tiles; the numbers behind the tiles come from /api/custom_reports_data. Metric keys: The API does not list the metric keys the canvas knows; they are the metricId values you see on reports built in the app (read one with get). An unknown key is accepted by this call and shows as an empty tile in the app.",
     readOnly: true,
     destructive: false,
     params: [
@@ -143,107 +35,8 @@ export const customReportsTools: ToolSpec[] = [
         key: "report_id",
         type: "integer",
         required: true,
-        description: "Plain report id from list. Required when action is get, duplicate or delete; on save it names the report to change, leave it out to create one.",
+        description: "Plain report id from /api/custom_reports_list.",
         example: 5
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Report name, 1 to 255 characters. Required when action is save and no report_id is sent (a create); optional on a change.",
-        example: "Weekly client overview"
-      },
-      {
-        key: "accounts",
-        type: "array",
-        required: false,
-        description: "save: the social accounts the report covers, as encrypted ids from /api/social_account_list (a JSON array, a form array or a comma-separated string; up to 50). They must be the workspace owner's and, when workspace_id is sent, inside that workspace. Send an empty value to clear the list.",
-        example: [
-          "nX2k9Qp7Lw==",
-          "qR5tY8uI1o=="
-        ],
-        items: "string",
-        acceptsList: true
-      },
-      {
-        key: "tiles",
-        type: "array",
-        required: false,
-        description: "save: the tiles of the canvas, in display order, as a JSON array or a JSON string. Each tile is an object. A metric tile: metricId (a metric key of the app's custom report canvas, 1 to 60 lowercase letters, digits and hyphens, for example followers or impressions), title (up to 120 characters), viz (number, line, area, bar, pie, list, table, funnel, gauge, heat or map; default number), size (quarter, third, half, threeq or full; default quarter) and compare (blank, previous for the comparison window or network). A note tile: metricId note, title, size and body (up to 5000 characters). At most 60 tiles and 200000 bytes of JSON.",
-        example: [
-          {
-            metricId: "followers",
-            title: "Followers",
-            viz: "number",
-            size: "quarter",
-            compare: "previous"
-          },
-          {
-            metricId: "impressions",
-            title: "Impressions by day",
-            viz: "line",
-            size: "half",
-            compare: ""
-          },
-          {
-            metricId: "note",
-            title: "Reading guide",
-            size: "full",
-            body: "Numbers compare with the previous period."
-          }
-        ],
-        items: "object",
-        acceptsList: false
-      },
-      {
-        key: "date_mode",
-        type: "string",
-        required: false,
-        description: "save: the period the report opens with: Last Week, Last Month, Today, Yesterday or a fixed range YYYY-MM-DD|YYYY-MM-DD (first day, a pipe, last day). Case matters.",
-        default: "Last Week",
-        example: "Last Month"
-      },
-      {
-        key: "template_key",
-        type: "string",
-        required: false,
-        description: "save: the template the canvas was started from, up to 50 letters, digits, - and _; blank for none. Kept for the app's own use.",
-        example: "overview"
-      },
-      {
-        key: "period",
-        type: "string",
-        required: false,
-        description: "With action data: today, yesterday, last_week or last_month in the owner's timezone. Defaults to the report's own date_mode.",
-        values: [
-          "today",
-          "yesterday",
-          "last_week",
-          "last_month"
-        ],
-        example: "last_week"
-      },
-      {
-        key: "start_date",
-        type: "date",
-        required: false,
-        description: "With action data: first day, YYYY-MM-DD, with end_date; wins over period.",
-        example: "2026-10-01"
-      },
-      {
-        key: "end_date",
-        type: "date",
-        required: false,
-        description: "With action data: last day, YYYY-MM-DD, at most a year after start_date.",
-        example: "2026-10-07"
-      },
-      {
-        key: "force_refresh",
-        type: "boolean",
-        required: false,
-        description: "With action data: ask the networks again instead of the stored figures.",
-        default: "false",
-        example: false
       },
       {
         key: "workspace_id",
@@ -256,91 +49,26 @@ export const customReportsTools: ToolSpec[] = [
   },
   {
     name: "custom_reports_data",
-    title: "Custom Reports (Data)",
+    title: "Custom Reports Data",
     module: "custom_reports",
-    endpoint: "custom_reports",
-    action: "data",
-    summary: "List, read, create or update, duplicate and delete the workspace's custom report canvases. This tool runs the data action.",
-    description: "One endpoint for the saved custom reports of the workspace: canvases of metric and note tiles over chosen accounts, with a default date mode, as built on the Custom Reports page. action picks the operation: list (default): every report of the workspace, without tiles. get: one report with its tiles. save: create a report (no report_id) or change one (report_id). On a change, every field left out keeps its value; on a create, name is required and date_mode defaults to Last Week. duplicate: copy a report and return the copy. delete: remove a report; needs confirm=true. Reports belong to the workspace and its owner; every member of the workspace reads and edits them. report_id is a plain integer. data reads the numbers behind the report's metric tiles, per account and combined, for the report's own date_mode or for period / start_date and end_date, with the comparison window the canvas uses (the same length of days just before). Note and custom tiles carry no numbers. force_refresh=true asks the networks again instead of the stored figures. X tiles may charge the caller's X wallet for data not yet stored, as in the app. Messages per action: save answers Report created. or Report saved., delete answers Report deleted. with no report, the others Success. Metric keys: The API does not list the metric keys the canvas knows; they are the metricId values you see on reports built in the app (read one with get). An unknown key is accepted by this call and shows as an empty tile in the app. A save replaces the tile list: tiles and accounts are whole lists: send the complete list you want, not only the additions. Leave the field out to keep the current list. Reading the numbers: Action data answers with report_id, period, accounts and metrics instead of report. Example: {\"status\":200,\"message\":\"Success\",\"report_id\":5,\"period\":{\"start\":\"2026-09-01\",\"end\":\"2026-09-07\",\"compare_start\":\"2026-08-25\",\"compare_end\":\"2026-08-31\"},\"accounts\":[{\"account_id\":\"aB3dE5fG==\",\"name\":\"Page\",\"network\":\"facebook\",\"status\":\"active\"}],\"metrics\":{\"followers\":{\"per_account\":{\"aB3dE5fG==\":{\"value\":120,\"previous\":100,\"available\":true}},\"combined\":{\"value\":120,\"previous\":100}}}}",
+    endpoint: "custom_reports_data",
+    summary: "The numbers behind the metric tiles of a custom report.",
+    description: "The saved custom reports of the workspace are canvases of metric and note tiles over chosen accounts, with a default date mode, as built on the Custom Reports page. Reports belong to the workspace and its owner; every member of the workspace reads and edits them. report_id is a plain integer. This call reads the numbers behind the report's metric tiles, per account and combined, for the report's own date_mode or for period / start_date and end_date, with the comparison window the canvas uses (the same length of days just before). Note and custom tiles carry no numbers. force_refresh=true asks the networks again instead of the stored figures. X tiles may charge the caller's X wallet for data not yet stored, as in the app.",
     readOnly: true,
     destructive: false,
     params: [
       {
         key: "report_id",
         type: "integer",
-        required: false,
-        description: "Plain report id from list. Required when action is get, duplicate or delete; on save it names the report to change, leave it out to create one.",
+        required: true,
+        description: "Plain report id from /api/custom_reports_list.",
         example: 5
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Report name, 1 to 255 characters. Required when action is save and no report_id is sent (a create); optional on a change.",
-        example: "Weekly client overview"
-      },
-      {
-        key: "accounts",
-        type: "array",
-        required: false,
-        description: "save: the social accounts the report covers, as encrypted ids from /api/social_account_list (a JSON array, a form array or a comma-separated string; up to 50). They must be the workspace owner's and, when workspace_id is sent, inside that workspace. Send an empty value to clear the list.",
-        example: [
-          "nX2k9Qp7Lw==",
-          "qR5tY8uI1o=="
-        ],
-        items: "string",
-        acceptsList: true
-      },
-      {
-        key: "tiles",
-        type: "array",
-        required: false,
-        description: "save: the tiles of the canvas, in display order, as a JSON array or a JSON string. Each tile is an object. A metric tile: metricId (a metric key of the app's custom report canvas, 1 to 60 lowercase letters, digits and hyphens, for example followers or impressions), title (up to 120 characters), viz (number, line, area, bar, pie, list, table, funnel, gauge, heat or map; default number), size (quarter, third, half, threeq or full; default quarter) and compare (blank, previous for the comparison window or network). A note tile: metricId note, title, size and body (up to 5000 characters). At most 60 tiles and 200000 bytes of JSON.",
-        example: [
-          {
-            metricId: "followers",
-            title: "Followers",
-            viz: "number",
-            size: "quarter",
-            compare: "previous"
-          },
-          {
-            metricId: "impressions",
-            title: "Impressions by day",
-            viz: "line",
-            size: "half",
-            compare: ""
-          },
-          {
-            metricId: "note",
-            title: "Reading guide",
-            size: "full",
-            body: "Numbers compare with the previous period."
-          }
-        ],
-        items: "object",
-        acceptsList: false
-      },
-      {
-        key: "date_mode",
-        type: "string",
-        required: false,
-        description: "save: the period the report opens with: Last Week, Last Month, Today, Yesterday or a fixed range YYYY-MM-DD|YYYY-MM-DD (first day, a pipe, last day). Case matters.",
-        default: "Last Week",
-        example: "Last Month"
-      },
-      {
-        key: "template_key",
-        type: "string",
-        required: false,
-        description: "save: the template the canvas was started from, up to 50 letters, digits, - and _; blank for none. Kept for the app's own use.",
-        example: "overview"
       },
       {
         key: "period",
         type: "string",
         required: false,
-        description: "With action data: today, yesterday, last_week or last_month in the owner's timezone. Defaults to the report's own date_mode.",
+        description: "today, yesterday, last_week or last_month in the owner's timezone. Defaults to the report's own date_mode.",
         values: [
           "today",
           "yesterday",
@@ -353,21 +81,21 @@ export const customReportsTools: ToolSpec[] = [
         key: "start_date",
         type: "date",
         required: false,
-        description: "With action data: first day, YYYY-MM-DD, with end_date; wins over period.",
+        description: "First day, YYYY-MM-DD, with end_date; wins over period.",
         example: "2026-10-01"
       },
       {
         key: "end_date",
         type: "date",
         required: false,
-        description: "With action data: last day, YYYY-MM-DD, at most a year after start_date.",
+        description: "Last day, YYYY-MM-DD, at most a year after start_date.",
         example: "2026-10-07"
       },
       {
         key: "force_refresh",
         type: "boolean",
         required: false,
-        description: "With action data: ask the networks again instead of the stored figures.",
+        description: "Ask the networks again instead of the stored figures.",
         default: "false",
         example: false
       },
@@ -382,28 +110,27 @@ export const customReportsTools: ToolSpec[] = [
   },
   {
     name: "custom_reports_save",
-    title: "Custom Reports (Save)",
+    title: "Custom Reports Save",
     module: "custom_reports",
-    endpoint: "custom_reports",
-    action: "save",
-    summary: "List, read, create or update, duplicate and delete the workspace's custom report canvases. This tool runs the save action.",
-    description: "One endpoint for the saved custom reports of the workspace: canvases of metric and note tiles over chosen accounts, with a default date mode, as built on the Custom Reports page. action picks the operation: list (default): every report of the workspace, without tiles. get: one report with its tiles. save: create a report (no report_id) or change one (report_id). On a change, every field left out keeps its value; on a create, name is required and date_mode defaults to Last Week. duplicate: copy a report and return the copy. delete: remove a report; needs confirm=true. Reports belong to the workspace and its owner; every member of the workspace reads and edits them. report_id is a plain integer. data reads the numbers behind the report's metric tiles, per account and combined, for the report's own date_mode or for period / start_date and end_date, with the comparison window the canvas uses (the same length of days just before). Note and custom tiles carry no numbers. force_refresh=true asks the networks again instead of the stored figures. X tiles may charge the caller's X wallet for data not yet stored, as in the app. Messages per action: save answers Report created. or Report saved., delete answers Report deleted. with no report, the others Success. Metric keys: The API does not list the metric keys the canvas knows; they are the metricId values you see on reports built in the app (read one with get). An unknown key is accepted by this call and shows as an empty tile in the app. A save replaces the tile list: tiles and accounts are whole lists: send the complete list you want, not only the additions. Leave the field out to keep the current list. Reading the numbers: Action data answers with report_id, period, accounts and metrics instead of report. Example: {\"status\":200,\"message\":\"Success\",\"report_id\":5,\"period\":{\"start\":\"2026-09-01\",\"end\":\"2026-09-07\",\"compare_start\":\"2026-08-25\",\"compare_end\":\"2026-08-31\"},\"accounts\":[{\"account_id\":\"aB3dE5fG==\",\"name\":\"Page\",\"network\":\"facebook\",\"status\":\"active\"}],\"metrics\":{\"followers\":{\"per_account\":{\"aB3dE5fG==\":{\"value\":120,\"previous\":100,\"available\":true}},\"combined\":{\"value\":120,\"previous\":100}}}}",
+    endpoint: "custom_reports_save",
+    summary: "Create a custom report or change one.",
+    description: "The saved custom reports of the workspace are canvases of metric and note tiles over chosen accounts, with a default date mode, as built on the Custom Reports page. Reports belong to the workspace and its owner; every member of the workspace reads and edits them. report_id is a plain integer. This call creates a report (no report_id) or changes one (report_id). On a change, every field left out keeps its value; on a create, name is required and date_mode defaults to Last Week. Answers with the report as saved. Metric keys: The API does not list the metric keys the canvas knows; they are the metricId values you see on reports built in the app (read one with get). An unknown key is accepted by this call and shows as an empty tile in the app. A save replaces the tile list: tiles and accounts are whole lists: send the complete list you want, not only the additions. Leave the field out to keep the current list.",
     readOnly: false,
     destructive: false,
     params: [
       {
-        key: "name",
-        type: "string",
-        required: true,
-        description: "Report name, 1 to 255 characters. Required when action is save and no report_id is sent (a create); optional on a change.",
-        example: "Weekly client overview"
-      },
-      {
         key: "report_id",
         type: "integer",
         required: false,
-        description: "Plain report id from list. Required when action is get, duplicate or delete; on save it names the report to change, leave it out to create one.",
+        description: "The report to change. Leave it out to create one.",
         example: 5
+      },
+      {
+        key: "name",
+        type: "string",
+        required: false,
+        description: "Report name, 1 to 255 characters. Required on a create; optional on a change.",
+        example: "Weekly client overview"
       },
       {
         key: "accounts",
@@ -461,41 +188,6 @@ export const customReportsTools: ToolSpec[] = [
         required: false,
         description: "save: the template the canvas was started from, up to 50 letters, digits, - and _; blank for none. Kept for the app's own use.",
         example: "overview"
-      },
-      {
-        key: "period",
-        type: "string",
-        required: false,
-        description: "With action data: today, yesterday, last_week or last_month in the owner's timezone. Defaults to the report's own date_mode.",
-        values: [
-          "today",
-          "yesterday",
-          "last_week",
-          "last_month"
-        ],
-        example: "last_week"
-      },
-      {
-        key: "start_date",
-        type: "date",
-        required: false,
-        description: "With action data: first day, YYYY-MM-DD, with end_date; wins over period.",
-        example: "2026-10-01"
-      },
-      {
-        key: "end_date",
-        type: "date",
-        required: false,
-        description: "With action data: last day, YYYY-MM-DD, at most a year after start_date.",
-        example: "2026-10-07"
-      },
-      {
-        key: "force_refresh",
-        type: "boolean",
-        required: false,
-        description: "With action data: ask the networks again instead of the stored figures.",
-        default: "false",
-        example: false
       },
       {
         key: "workspace_id",
@@ -508,12 +200,11 @@ export const customReportsTools: ToolSpec[] = [
   },
   {
     name: "custom_reports_duplicate",
-    title: "Custom Reports (Duplicate)",
+    title: "Custom Reports Duplicate",
     module: "custom_reports",
-    endpoint: "custom_reports",
-    action: "duplicate",
-    summary: "List, read, create or update, duplicate and delete the workspace's custom report canvases. This tool runs the duplicate action.",
-    description: "One endpoint for the saved custom reports of the workspace: canvases of metric and note tiles over chosen accounts, with a default date mode, as built on the Custom Reports page. action picks the operation: list (default): every report of the workspace, without tiles. get: one report with its tiles. save: create a report (no report_id) or change one (report_id). On a change, every field left out keeps its value; on a create, name is required and date_mode defaults to Last Week. duplicate: copy a report and return the copy. delete: remove a report; needs confirm=true. Reports belong to the workspace and its owner; every member of the workspace reads and edits them. report_id is a plain integer. data reads the numbers behind the report's metric tiles, per account and combined, for the report's own date_mode or for period / start_date and end_date, with the comparison window the canvas uses (the same length of days just before). Note and custom tiles carry no numbers. force_refresh=true asks the networks again instead of the stored figures. X tiles may charge the caller's X wallet for data not yet stored, as in the app. Messages per action: save answers Report created. or Report saved., delete answers Report deleted. with no report, the others Success. Metric keys: The API does not list the metric keys the canvas knows; they are the metricId values you see on reports built in the app (read one with get). An unknown key is accepted by this call and shows as an empty tile in the app. A save replaces the tile list: tiles and accounts are whole lists: send the complete list you want, not only the additions. Leave the field out to keep the current list. Reading the numbers: Action data answers with report_id, period, accounts and metrics instead of report. Example: {\"status\":200,\"message\":\"Success\",\"report_id\":5,\"period\":{\"start\":\"2026-09-01\",\"end\":\"2026-09-07\",\"compare_start\":\"2026-08-25\",\"compare_end\":\"2026-08-31\"},\"accounts\":[{\"account_id\":\"aB3dE5fG==\",\"name\":\"Page\",\"network\":\"facebook\",\"status\":\"active\"}],\"metrics\":{\"followers\":{\"per_account\":{\"aB3dE5fG==\":{\"value\":120,\"previous\":100,\"available\":true}},\"combined\":{\"value\":120,\"previous\":100}}}}",
+    endpoint: "custom_reports_duplicate",
+    summary: "Copy a custom report.",
+    description: "The saved custom reports of the workspace are canvases of metric and note tiles over chosen accounts, with a default date mode, as built on the Custom Reports page. Reports belong to the workspace and its owner; every member of the workspace reads and edits them. report_id is a plain integer. This call copies a report and answers with the copy.",
     readOnly: false,
     destructive: false,
     params: [
@@ -521,107 +212,8 @@ export const customReportsTools: ToolSpec[] = [
         key: "report_id",
         type: "integer",
         required: true,
-        description: "Plain report id from list. Required when action is get, duplicate or delete; on save it names the report to change, leave it out to create one.",
+        description: "Plain report id from /api/custom_reports_list.",
         example: 5
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Report name, 1 to 255 characters. Required when action is save and no report_id is sent (a create); optional on a change.",
-        example: "Weekly client overview"
-      },
-      {
-        key: "accounts",
-        type: "array",
-        required: false,
-        description: "save: the social accounts the report covers, as encrypted ids from /api/social_account_list (a JSON array, a form array or a comma-separated string; up to 50). They must be the workspace owner's and, when workspace_id is sent, inside that workspace. Send an empty value to clear the list.",
-        example: [
-          "nX2k9Qp7Lw==",
-          "qR5tY8uI1o=="
-        ],
-        items: "string",
-        acceptsList: true
-      },
-      {
-        key: "tiles",
-        type: "array",
-        required: false,
-        description: "save: the tiles of the canvas, in display order, as a JSON array or a JSON string. Each tile is an object. A metric tile: metricId (a metric key of the app's custom report canvas, 1 to 60 lowercase letters, digits and hyphens, for example followers or impressions), title (up to 120 characters), viz (number, line, area, bar, pie, list, table, funnel, gauge, heat or map; default number), size (quarter, third, half, threeq or full; default quarter) and compare (blank, previous for the comparison window or network). A note tile: metricId note, title, size and body (up to 5000 characters). At most 60 tiles and 200000 bytes of JSON.",
-        example: [
-          {
-            metricId: "followers",
-            title: "Followers",
-            viz: "number",
-            size: "quarter",
-            compare: "previous"
-          },
-          {
-            metricId: "impressions",
-            title: "Impressions by day",
-            viz: "line",
-            size: "half",
-            compare: ""
-          },
-          {
-            metricId: "note",
-            title: "Reading guide",
-            size: "full",
-            body: "Numbers compare with the previous period."
-          }
-        ],
-        items: "object",
-        acceptsList: false
-      },
-      {
-        key: "date_mode",
-        type: "string",
-        required: false,
-        description: "save: the period the report opens with: Last Week, Last Month, Today, Yesterday or a fixed range YYYY-MM-DD|YYYY-MM-DD (first day, a pipe, last day). Case matters.",
-        default: "Last Week",
-        example: "Last Month"
-      },
-      {
-        key: "template_key",
-        type: "string",
-        required: false,
-        description: "save: the template the canvas was started from, up to 50 letters, digits, - and _; blank for none. Kept for the app's own use.",
-        example: "overview"
-      },
-      {
-        key: "period",
-        type: "string",
-        required: false,
-        description: "With action data: today, yesterday, last_week or last_month in the owner's timezone. Defaults to the report's own date_mode.",
-        values: [
-          "today",
-          "yesterday",
-          "last_week",
-          "last_month"
-        ],
-        example: "last_week"
-      },
-      {
-        key: "start_date",
-        type: "date",
-        required: false,
-        description: "With action data: first day, YYYY-MM-DD, with end_date; wins over period.",
-        example: "2026-10-01"
-      },
-      {
-        key: "end_date",
-        type: "date",
-        required: false,
-        description: "With action data: last day, YYYY-MM-DD, at most a year after start_date.",
-        example: "2026-10-07"
-      },
-      {
-        key: "force_refresh",
-        type: "boolean",
-        required: false,
-        description: "With action data: ask the networks again instead of the stored figures.",
-        default: "false",
-        example: false
       },
       {
         key: "workspace_id",
@@ -634,13 +226,12 @@ export const customReportsTools: ToolSpec[] = [
   },
   {
     name: "custom_reports_delete",
-    title: "Custom Reports (Delete)",
+    title: "Custom Reports Delete",
     module: "custom_reports",
-    endpoint: "custom_reports",
-    action: "delete",
+    endpoint: "custom_reports_delete",
     confirm: true,
-    summary: "List, read, create or update, duplicate and delete the workspace's custom report canvases. This tool runs the delete action.",
-    description: "One endpoint for the saved custom reports of the workspace: canvases of metric and note tiles over chosen accounts, with a default date mode, as built on the Custom Reports page. action picks the operation: list (default): every report of the workspace, without tiles. get: one report with its tiles. save: create a report (no report_id) or change one (report_id). On a change, every field left out keeps its value; on a create, name is required and date_mode defaults to Last Week. duplicate: copy a report and return the copy. delete: remove a report; needs confirm=true. Reports belong to the workspace and its owner; every member of the workspace reads and edits them. report_id is a plain integer. data reads the numbers behind the report's metric tiles, per account and combined, for the report's own date_mode or for period / start_date and end_date, with the comparison window the canvas uses (the same length of days just before). Note and custom tiles carry no numbers. force_refresh=true asks the networks again instead of the stored figures. X tiles may charge the caller's X wallet for data not yet stored, as in the app. Messages per action: save answers Report created. or Report saved., delete answers Report deleted. with no report, the others Success. Metric keys: The API does not list the metric keys the canvas knows; they are the metricId values you see on reports built in the app (read one with get). An unknown key is accepted by this call and shows as an empty tile in the app. A save replaces the tile list: tiles and accounts are whole lists: send the complete list you want, not only the additions. Leave the field out to keep the current list. Reading the numbers: Action data answers with report_id, period, accounts and metrics instead of report. Example: {\"status\":200,\"message\":\"Success\",\"report_id\":5,\"period\":{\"start\":\"2026-09-01\",\"end\":\"2026-09-07\",\"compare_start\":\"2026-08-25\",\"compare_end\":\"2026-08-31\"},\"accounts\":[{\"account_id\":\"aB3dE5fG==\",\"name\":\"Page\",\"network\":\"facebook\",\"status\":\"active\"}],\"metrics\":{\"followers\":{\"per_account\":{\"aB3dE5fG==\":{\"value\":120,\"previous\":100,\"available\":true}},\"combined\":{\"value\":120,\"previous\":100}}}}",
+    summary: "Delete a custom report.",
+    description: "The saved custom reports of the workspace are canvases of metric and note tiles over chosen accounts, with a default date mode, as built on the Custom Reports page. Reports belong to the workspace and its owner; every member of the workspace reads and edits them. report_id is a plain integer. This call removes a report; needs confirm=true.",
     readOnly: false,
     destructive: true,
     params: [
@@ -648,107 +239,8 @@ export const customReportsTools: ToolSpec[] = [
         key: "report_id",
         type: "integer",
         required: true,
-        description: "Plain report id from list. Required when action is get, duplicate or delete; on save it names the report to change, leave it out to create one.",
+        description: "Plain report id from /api/custom_reports_list.",
         example: 5
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Report name, 1 to 255 characters. Required when action is save and no report_id is sent (a create); optional on a change.",
-        example: "Weekly client overview"
-      },
-      {
-        key: "accounts",
-        type: "array",
-        required: false,
-        description: "save: the social accounts the report covers, as encrypted ids from /api/social_account_list (a JSON array, a form array or a comma-separated string; up to 50). They must be the workspace owner's and, when workspace_id is sent, inside that workspace. Send an empty value to clear the list.",
-        example: [
-          "nX2k9Qp7Lw==",
-          "qR5tY8uI1o=="
-        ],
-        items: "string",
-        acceptsList: true
-      },
-      {
-        key: "tiles",
-        type: "array",
-        required: false,
-        description: "save: the tiles of the canvas, in display order, as a JSON array or a JSON string. Each tile is an object. A metric tile: metricId (a metric key of the app's custom report canvas, 1 to 60 lowercase letters, digits and hyphens, for example followers or impressions), title (up to 120 characters), viz (number, line, area, bar, pie, list, table, funnel, gauge, heat or map; default number), size (quarter, third, half, threeq or full; default quarter) and compare (blank, previous for the comparison window or network). A note tile: metricId note, title, size and body (up to 5000 characters). At most 60 tiles and 200000 bytes of JSON.",
-        example: [
-          {
-            metricId: "followers",
-            title: "Followers",
-            viz: "number",
-            size: "quarter",
-            compare: "previous"
-          },
-          {
-            metricId: "impressions",
-            title: "Impressions by day",
-            viz: "line",
-            size: "half",
-            compare: ""
-          },
-          {
-            metricId: "note",
-            title: "Reading guide",
-            size: "full",
-            body: "Numbers compare with the previous period."
-          }
-        ],
-        items: "object",
-        acceptsList: false
-      },
-      {
-        key: "date_mode",
-        type: "string",
-        required: false,
-        description: "save: the period the report opens with: Last Week, Last Month, Today, Yesterday or a fixed range YYYY-MM-DD|YYYY-MM-DD (first day, a pipe, last day). Case matters.",
-        default: "Last Week",
-        example: "Last Month"
-      },
-      {
-        key: "template_key",
-        type: "string",
-        required: false,
-        description: "save: the template the canvas was started from, up to 50 letters, digits, - and _; blank for none. Kept for the app's own use.",
-        example: "overview"
-      },
-      {
-        key: "period",
-        type: "string",
-        required: false,
-        description: "With action data: today, yesterday, last_week or last_month in the owner's timezone. Defaults to the report's own date_mode.",
-        values: [
-          "today",
-          "yesterday",
-          "last_week",
-          "last_month"
-        ],
-        example: "last_week"
-      },
-      {
-        key: "start_date",
-        type: "date",
-        required: false,
-        description: "With action data: first day, YYYY-MM-DD, with end_date; wins over period.",
-        example: "2026-10-01"
-      },
-      {
-        key: "end_date",
-        type: "date",
-        required: false,
-        description: "With action data: last day, YYYY-MM-DD, at most a year after start_date.",
-        example: "2026-10-07"
-      },
-      {
-        key: "force_refresh",
-        type: "boolean",
-        required: false,
-        description: "With action data: ask the networks again instead of the stored figures.",
-        default: "false",
-        example: false
       },
       {
         key: "workspace_id",
@@ -773,7 +265,7 @@ export const customReportsTools: ToolSpec[] = [
         key: "report_id",
         type: "integer",
         required: true,
-        description: "Plain report id from /api/custom_reports.",
+        description: "Plain report id from /api/custom_reports_list.",
         example: 5
       },
       {

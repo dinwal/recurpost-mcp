@@ -4,12 +4,11 @@ import type { ToolSpec } from "../types.js";
 export const contentToolsTools: ToolSpec[] = [
   {
     name: "hashtag_groups_list",
-    title: "Hashtag Groups (List)",
+    title: "Hashtag Groups List",
     module: "content_tools",
-    endpoint: "hashtag_groups",
-    action: "list",
-    summary: "List, add, update, delete or copy the hashtag groups of a library. This tool runs the list action.",
-    description: "A hashtag group turns a short text written in a post into its hashtags when the post is published from library library_id. action picks the operation: list (default): the groups of the library. add: a new group from text and hashtags. update: changes group tag_id. delete: removes group tag_id from the library; workspace owner only, needs confirm=true. copy: copies every group of the library into to_library_id. A group copied into another library is shared between the two: an update changes it in both. Copied groups are shared: copy does not clone the groups: the destination library points at the same rows. Updating a group in either library changes it in both; delete only unlinks it from the library you name.",
+    endpoint: "hashtag_groups_list",
+    summary: "List the hashtag groups of a library.",
+    description: "A hashtag group turns a short text written in a post into its hashtags when the post is published from library library_id. This call lists the groups of the library. A group copied into another library is shared between the two: an update changes it in both.",
     readOnly: true,
     destructive: false,
     params: [
@@ -19,34 +18,6 @@ export const contentToolsTools: ToolSpec[] = [
         required: true,
         description: "Encrypted library id.",
         example: "nX2k9Qp7Lw=="
-      },
-      {
-        key: "text",
-        type: "string",
-        required: false,
-        description: "The text that triggers the group, 1 to 100 characters. Required when action is add or update.",
-        example: "promo"
-      },
-      {
-        key: "hashtags",
-        type: "string",
-        required: false,
-        description: "The hashtags the text becomes, 1 to 100 characters. Required when action is add or update.",
-        example: "#promo #sale"
-      },
-      {
-        key: "tag_id",
-        type: "integer",
-        required: false,
-        description: "Plain integer id of the group, from the list. Required when action is update or delete.",
-        example: 77
-      },
-      {
-        key: "to_library_id",
-        type: "string",
-        required: false,
-        description: "Encrypted id of the library that receives the groups; another library of the owner. Required when action is copy.",
-        example: "bT4r8Vz1Kc=="
       },
       {
         key: "workspace_id",
@@ -59,12 +30,11 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "hashtag_groups_add",
-    title: "Hashtag Groups (Add)",
+    title: "Hashtag Groups Add",
     module: "content_tools",
-    endpoint: "hashtag_groups",
-    action: "add",
-    summary: "List, add, update, delete or copy the hashtag groups of a library. This tool runs the add action.",
-    description: "A hashtag group turns a short text written in a post into its hashtags when the post is published from library library_id. action picks the operation: list (default): the groups of the library. add: a new group from text and hashtags. update: changes group tag_id. delete: removes group tag_id from the library; workspace owner only, needs confirm=true. copy: copies every group of the library into to_library_id. A group copied into another library is shared between the two: an update changes it in both. Copied groups are shared: copy does not clone the groups: the destination library points at the same rows. Updating a group in either library changes it in both; delete only unlinks it from the library you name.",
+    endpoint: "hashtag_groups_add",
+    summary: "Add a hashtag group to a library.",
+    description: "A hashtag group turns a short text written in a post into its hashtags when the post is published from library library_id. Adds a new group from text and hashtags. A group copied into another library is shared between the two: an update changes it in both.",
     readOnly: false,
     destructive: false,
     params: [
@@ -79,29 +49,15 @@ export const contentToolsTools: ToolSpec[] = [
         key: "text",
         type: "string",
         required: true,
-        description: "The text that triggers the group, 1 to 100 characters. Required when action is add or update.",
+        description: "The text that triggers the group, 1 to 100 characters.",
         example: "promo"
       },
       {
         key: "hashtags",
         type: "string",
         required: true,
-        description: "The hashtags the text becomes, 1 to 100 characters. Required when action is add or update.",
+        description: "The hashtags the text becomes, 1 to 100 characters.",
         example: "#promo #sale"
-      },
-      {
-        key: "tag_id",
-        type: "integer",
-        required: false,
-        description: "Plain integer id of the group, from the list. Required when action is update or delete.",
-        example: 77
-      },
-      {
-        key: "to_library_id",
-        type: "string",
-        required: false,
-        description: "Encrypted id of the library that receives the groups; another library of the owner. Required when action is copy.",
-        example: "bT4r8Vz1Kc=="
       },
       {
         key: "workspace_id",
@@ -114,12 +70,11 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "hashtag_groups_update",
-    title: "Hashtag Groups (Update)",
+    title: "Hashtag Groups Update",
     module: "content_tools",
-    endpoint: "hashtag_groups",
-    action: "update",
-    summary: "List, add, update, delete or copy the hashtag groups of a library. This tool runs the update action.",
-    description: "A hashtag group turns a short text written in a post into its hashtags when the post is published from library library_id. action picks the operation: list (default): the groups of the library. add: a new group from text and hashtags. update: changes group tag_id. delete: removes group tag_id from the library; workspace owner only, needs confirm=true. copy: copies every group of the library into to_library_id. A group copied into another library is shared between the two: an update changes it in both. Copied groups are shared: copy does not clone the groups: the destination library points at the same rows. Updating a group in either library changes it in both; delete only unlinks it from the library you name.",
+    endpoint: "hashtag_groups_update",
+    summary: "Change the text or hashtags of a hashtag group.",
+    description: "A hashtag group turns a short text written in a post into its hashtags when the post is published from library library_id. Changes group tag_id; both text and hashtags are sent. A group copied into another library is shared between the two: an update changes it in both. Shared groups change everywhere: A group copied into other libraries is the same row there; the update shows in every library that holds it.",
     readOnly: false,
     destructive: false,
     params: [
@@ -134,29 +89,22 @@ export const contentToolsTools: ToolSpec[] = [
         key: "text",
         type: "string",
         required: true,
-        description: "The text that triggers the group, 1 to 100 characters. Required when action is add or update.",
+        description: "The text that triggers the group, 1 to 100 characters.",
         example: "promo"
       },
       {
         key: "hashtags",
         type: "string",
         required: true,
-        description: "The hashtags the text becomes, 1 to 100 characters. Required when action is add or update.",
+        description: "The hashtags the text becomes, 1 to 100 characters.",
         example: "#promo #sale"
       },
       {
         key: "tag_id",
         type: "integer",
         required: true,
-        description: "Plain integer id of the group, from the list. Required when action is update or delete.",
+        description: "Plain integer id of the group, from /api/hashtag_groups_list.",
         example: 77
-      },
-      {
-        key: "to_library_id",
-        type: "string",
-        required: false,
-        description: "Encrypted id of the library that receives the groups; another library of the owner. Required when action is copy.",
-        example: "bT4r8Vz1Kc=="
       },
       {
         key: "workspace_id",
@@ -169,13 +117,12 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "hashtag_groups_delete",
-    title: "Hashtag Groups (Delete)",
+    title: "Hashtag Groups Delete",
     module: "content_tools",
-    endpoint: "hashtag_groups",
-    action: "delete",
+    endpoint: "hashtag_groups_delete",
     confirm: true,
-    summary: "List, add, update, delete or copy the hashtag groups of a library. This tool runs the delete action.",
-    description: "A hashtag group turns a short text written in a post into its hashtags when the post is published from library library_id. action picks the operation: list (default): the groups of the library. add: a new group from text and hashtags. update: changes group tag_id. delete: removes group tag_id from the library; workspace owner only, needs confirm=true. copy: copies every group of the library into to_library_id. A group copied into another library is shared between the two: an update changes it in both. Copied groups are shared: copy does not clone the groups: the destination library points at the same rows. Updating a group in either library changes it in both; delete only unlinks it from the library you name.",
+    summary: "Remove a hashtag group from a library.",
+    description: "A hashtag group turns a short text written in a post into its hashtags when the post is published from library library_id. Removes group tag_id from the library; workspace owner only, needs confirm=true. A group shared with other libraries stays in them. A group copied into another library is shared between the two: an update changes it in both.",
     readOnly: false,
     destructive: true,
     params: [
@@ -190,29 +137,8 @@ export const contentToolsTools: ToolSpec[] = [
         key: "tag_id",
         type: "integer",
         required: true,
-        description: "Plain integer id of the group, from the list. Required when action is update or delete.",
+        description: "Plain integer id of the group, from /api/hashtag_groups_list.",
         example: 77
-      },
-      {
-        key: "text",
-        type: "string",
-        required: false,
-        description: "The text that triggers the group, 1 to 100 characters. Required when action is add or update.",
-        example: "promo"
-      },
-      {
-        key: "hashtags",
-        type: "string",
-        required: false,
-        description: "The hashtags the text becomes, 1 to 100 characters. Required when action is add or update.",
-        example: "#promo #sale"
-      },
-      {
-        key: "to_library_id",
-        type: "string",
-        required: false,
-        description: "Encrypted id of the library that receives the groups; another library of the owner. Required when action is copy.",
-        example: "bT4r8Vz1Kc=="
       },
       {
         key: "workspace_id",
@@ -225,12 +151,11 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "hashtag_groups_copy",
-    title: "Hashtag Groups (Copy)",
+    title: "Hashtag Groups Copy",
     module: "content_tools",
-    endpoint: "hashtag_groups",
-    action: "copy",
-    summary: "List, add, update, delete or copy the hashtag groups of a library. This tool runs the copy action.",
-    description: "A hashtag group turns a short text written in a post into its hashtags when the post is published from library library_id. action picks the operation: list (default): the groups of the library. add: a new group from text and hashtags. update: changes group tag_id. delete: removes group tag_id from the library; workspace owner only, needs confirm=true. copy: copies every group of the library into to_library_id. A group copied into another library is shared between the two: an update changes it in both. Copied groups are shared: copy does not clone the groups: the destination library points at the same rows. Updating a group in either library changes it in both; delete only unlinks it from the library you name.",
+    endpoint: "hashtag_groups_copy",
+    summary: "Copy every hashtag group of a library into another library.",
+    description: "A hashtag group turns a short text written in a post into its hashtags when the post is published from library library_id. Copies every group of the library into to_library_id. A group copied into another library is shared between the two: an update changes it in both. Copied groups are shared: The copy does not clone the groups: the destination library points at the same rows. Updating a group in either library changes it in both; a delete only unlinks it from the library you name.",
     readOnly: false,
     destructive: false,
     params: [
@@ -245,29 +170,8 @@ export const contentToolsTools: ToolSpec[] = [
         key: "to_library_id",
         type: "string",
         required: true,
-        description: "Encrypted id of the library that receives the groups; another library of the owner. Required when action is copy.",
+        description: "Encrypted id of the library that receives the groups; another library of the owner.",
         example: "bT4r8Vz1Kc=="
-      },
-      {
-        key: "text",
-        type: "string",
-        required: false,
-        description: "The text that triggers the group, 1 to 100 characters. Required when action is add or update.",
-        example: "promo"
-      },
-      {
-        key: "hashtags",
-        type: "string",
-        required: false,
-        description: "The hashtags the text becomes, 1 to 100 characters. Required when action is add or update.",
-        example: "#promo #sale"
-      },
-      {
-        key: "tag_id",
-        type: "integer",
-        required: false,
-        description: "Plain integer id of the group, from the list. Required when action is update or delete.",
-        example: 77
       },
       {
         key: "workspace_id",
@@ -280,36 +184,14 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "tag_bags_list",
-    title: "Bags of Tags (List)",
+    title: "Bags of Tags List",
     module: "content_tools",
-    endpoint: "tag_bags",
-    action: "list",
-    summary: "List, add, update or delete the owner's named hashtag sets. This tool runs the list action.",
-    description: "A bag of tags is a named set of hashtags the workspace owner keeps to paste into posts. action picks the operation: list (default): every bag. add: a new bag from name and hashtags. update: changes bag bag_id; name and hashtags left out keep their values. delete: removes bag bag_id; workspace owner only, needs confirm=true.",
+    endpoint: "tag_bags_list",
+    summary: "List the owner's bags of tags.",
+    description: "A bag of tags is a named set of hashtags the workspace owner keeps to paste into posts. This call lists every bag.",
     readOnly: true,
     destructive: false,
     params: [
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Bag name, 1 to 500 characters, unique for the owner. Required when action is add; optional on update.",
-        example: "Launch"
-      },
-      {
-        key: "hashtags",
-        type: "string",
-        required: false,
-        description: "The hashtags, 1 to 1000 characters. Required when action is add; optional on update.",
-        example: "#launch #new #acme"
-      },
-      {
-        key: "bag_id",
-        type: "integer",
-        required: false,
-        description: "Plain integer id of the bag, from the list. Required when action is update or delete.",
-        example: 12
-      },
       {
         key: "workspace_id",
         type: "string",
@@ -321,12 +203,11 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "tag_bags_add",
-    title: "Bags of Tags (Add)",
+    title: "Bags of Tags Add",
     module: "content_tools",
-    endpoint: "tag_bags",
-    action: "add",
-    summary: "List, add, update or delete the owner's named hashtag sets. This tool runs the add action.",
-    description: "A bag of tags is a named set of hashtags the workspace owner keeps to paste into posts. action picks the operation: list (default): every bag. add: a new bag from name and hashtags. update: changes bag bag_id; name and hashtags left out keep their values. delete: removes bag bag_id; workspace owner only, needs confirm=true.",
+    endpoint: "tag_bags_add",
+    summary: "Add a bag of tags.",
+    description: "A bag of tags is a named set of hashtags the workspace owner keeps to paste into posts. Adds a new bag from name and hashtags.",
     readOnly: false,
     destructive: false,
     params: [
@@ -334,22 +215,15 @@ export const contentToolsTools: ToolSpec[] = [
         key: "name",
         type: "string",
         required: true,
-        description: "Bag name, 1 to 500 characters, unique for the owner. Required when action is add; optional on update.",
+        description: "Bag name, 1 to 500 characters, unique for the owner.",
         example: "Launch"
       },
       {
         key: "hashtags",
         type: "string",
         required: true,
-        description: "The hashtags, 1 to 1000 characters. Required when action is add; optional on update.",
+        description: "The hashtags, 1 to 1000 characters.",
         example: "#launch #new #acme"
-      },
-      {
-        key: "bag_id",
-        type: "integer",
-        required: false,
-        description: "Plain integer id of the bag, from the list. Required when action is update or delete.",
-        example: 12
       },
       {
         key: "workspace_id",
@@ -362,12 +236,11 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "tag_bags_update",
-    title: "Bags of Tags (Update)",
+    title: "Bags of Tags Update",
     module: "content_tools",
-    endpoint: "tag_bags",
-    action: "update",
-    summary: "List, add, update or delete the owner's named hashtag sets. This tool runs the update action.",
-    description: "A bag of tags is a named set of hashtags the workspace owner keeps to paste into posts. action picks the operation: list (default): every bag. add: a new bag from name and hashtags. update: changes bag bag_id; name and hashtags left out keep their values. delete: removes bag bag_id; workspace owner only, needs confirm=true.",
+    endpoint: "tag_bags_update",
+    summary: "Change the name or hashtags of a bag of tags.",
+    description: "A bag of tags is a named set of hashtags the workspace owner keeps to paste into posts. Changes bag bag_id; name and hashtags left out keep their values.",
     readOnly: false,
     destructive: false,
     params: [
@@ -375,21 +248,21 @@ export const contentToolsTools: ToolSpec[] = [
         key: "bag_id",
         type: "integer",
         required: true,
-        description: "Plain integer id of the bag, from the list. Required when action is update or delete.",
+        description: "Plain integer id of the bag, from /api/tag_bags_list.",
         example: 12
       },
       {
         key: "name",
         type: "string",
         required: false,
-        description: "Bag name, 1 to 500 characters, unique for the owner. Required when action is add; optional on update.",
+        description: "New bag name, 1 to 500 characters, unique for the owner. Left out, the name is kept.",
         example: "Launch"
       },
       {
         key: "hashtags",
         type: "string",
         required: false,
-        description: "The hashtags, 1 to 1000 characters. Required when action is add; optional on update.",
+        description: "The hashtags, 1 to 1000 characters. Left out, they are kept.",
         example: "#launch #new #acme"
       },
       {
@@ -403,13 +276,12 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "tag_bags_delete",
-    title: "Bags of Tags (Delete)",
+    title: "Bags of Tags Delete",
     module: "content_tools",
-    endpoint: "tag_bags",
-    action: "delete",
+    endpoint: "tag_bags_delete",
     confirm: true,
-    summary: "List, add, update or delete the owner's named hashtag sets. This tool runs the delete action.",
-    description: "A bag of tags is a named set of hashtags the workspace owner keeps to paste into posts. action picks the operation: list (default): every bag. add: a new bag from name and hashtags. update: changes bag bag_id; name and hashtags left out keep their values. delete: removes bag bag_id; workspace owner only, needs confirm=true.",
+    summary: "Delete a bag of tags.",
+    description: "A bag of tags is a named set of hashtags the workspace owner keeps to paste into posts. Removes bag bag_id; workspace owner only, needs confirm=true.",
     readOnly: false,
     destructive: true,
     params: [
@@ -417,22 +289,8 @@ export const contentToolsTools: ToolSpec[] = [
         key: "bag_id",
         type: "integer",
         required: true,
-        description: "Plain integer id of the bag, from the list. Required when action is update or delete.",
+        description: "Plain integer id of the bag, from /api/tag_bags_list.",
         example: 12
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Bag name, 1 to 500 characters, unique for the owner. Required when action is add; optional on update.",
-        example: "Launch"
-      },
-      {
-        key: "hashtags",
-        type: "string",
-        required: false,
-        description: "The hashtags, 1 to 1000 characters. Required when action is add; optional on update.",
-        example: "#launch #new #acme"
       },
       {
         key: "workspace_id",
@@ -445,12 +303,11 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "watermark_get",
-    title: "Watermark (Get)",
+    title: "Watermark Get",
     module: "content_tools",
-    endpoint: "watermark",
-    action: "get",
-    summary: "Read, set, delete or copy the watermark stamped on images, per account or for the workspace. This tool runs the get action.",
-    description: "A watermark is stamped on every image at posting time. It is set on one social account (scope=account, the default) or on the workspace (scope=workspace, workspace owner only), in which case every account of the workspace without its own watermark inherits it. action picks the operation: get (default): the current settings. For an account the answer also says whether it inherits the workspace watermark or opted out of it. set: saves image_url, opacity, size and position; fields left out keep their current values, so a first set needs image_url. On the workspace, force_account_ids names accounts whose own watermark is replaced by the workspace one. delete: removes the watermark and the stamped copies of images; needs confirm=true. On an account, skip_inherit=true also keeps it out of the workspace watermark. copy: copies the watermark of account_id to account_ids; accounts only. image_url is any publicly reachable image URL, downloaded and stored in the owner's RecurPost storage. Delete removes stamped images: Deleting a watermark also deletes the watermarked copies of images made for queued posts; those posts go out with the plain image. Images already published are not affected.",
+    endpoint: "watermark_get",
+    summary: "Read the watermark of a social account or of the workspace.",
+    description: "A watermark is stamped on every image at posting time. It is set on one social account (scope=account, the default) or on the workspace (scope=workspace, workspace owner only), in which case every account of the workspace without its own watermark inherits it. This call reads the current settings. For an account the answer also says whether it inherits the workspace watermark or opted out of it.",
     readOnly: true,
     destructive: false,
     params: [
@@ -470,72 +327,8 @@ export const contentToolsTools: ToolSpec[] = [
         key: "account_id",
         type: "string",
         required: false,
-        description: "Encrypted social account id. Required when scope is account; for copy it is the source account.",
+        description: "Encrypted social account id. Required when scope is account.",
         example: "aK3mZ8vQr1=="
-      },
-      {
-        key: "image_url",
-        type: "url",
-        required: false,
-        description: "The watermark image: a publicly reachable image URL, downloaded and stored in the owner's RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is). Required when action is set and no watermark is saved yet.",
-        example: "https://cdn.example.com/u/1/watermark.png"
-      },
-      {
-        key: "opacity",
-        type: "integer",
-        required: false,
-        description: "set: 1 to 100 percent. Keeps the current value when omitted (50 on a first set).",
-        example: 50
-      },
-      {
-        key: "size",
-        type: "integer",
-        required: false,
-        description: "set: 5 to 100, the watermark's width as a percentage of the image. Keeps the current value when omitted (50 on a first set).",
-        example: 40
-      },
-      {
-        key: "position",
-        type: "string",
-        required: false,
-        description: "set: corner the watermark sits in. Keeps the current value when omitted (bottom_left on a first set).",
-        values: [
-          "top_left",
-          "top_right",
-          "bottom_left",
-          "bottom_right"
-        ],
-        example: "bottom_right"
-      },
-      {
-        key: "force_account_ids",
-        type: "array",
-        required: false,
-        description: "set with scope workspace: encrypted ids of accounts whose own watermark is replaced by the workspace one, at most 50. Accounts not listed keep their own.",
-        example: [
-          "gB9xT4nWp2=="
-        ],
-        items: "string",
-        acceptsList: true
-      },
-      {
-        key: "skip_inherit",
-        type: "boolean",
-        required: false,
-        description: "delete with scope account: true also opts the account out of the workspace watermark.",
-        default: "false",
-        example: false
-      },
-      {
-        key: "account_ids",
-        type: "array",
-        required: false,
-        description: "Encrypted ids of the accounts that receive the copy, at most 50. Required when action is copy.",
-        example: [
-          "gB9xT4nWp2=="
-        ],
-        items: "string",
-        acceptsList: true
       },
       {
         key: "workspace_id",
@@ -548,22 +341,14 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "watermark_set",
-    title: "Watermark (Set)",
+    title: "Watermark Set",
     module: "content_tools",
-    endpoint: "watermark",
-    action: "set",
-    summary: "Read, set, delete or copy the watermark stamped on images, per account or for the workspace. This tool runs the set action.",
-    description: "A watermark is stamped on every image at posting time. It is set on one social account (scope=account, the default) or on the workspace (scope=workspace, workspace owner only), in which case every account of the workspace without its own watermark inherits it. action picks the operation: get (default): the current settings. For an account the answer also says whether it inherits the workspace watermark or opted out of it. set: saves image_url, opacity, size and position; fields left out keep their current values, so a first set needs image_url. On the workspace, force_account_ids names accounts whose own watermark is replaced by the workspace one. delete: removes the watermark and the stamped copies of images; needs confirm=true. On an account, skip_inherit=true also keeps it out of the workspace watermark. copy: copies the watermark of account_id to account_ids; accounts only. image_url is any publicly reachable image URL, downloaded and stored in the owner's RecurPost storage. Delete removes stamped images: Deleting a watermark also deletes the watermarked copies of images made for queued posts; those posts go out with the plain image. Images already published are not affected.",
+    endpoint: "watermark_set",
+    summary: "Set the watermark of a social account or of the workspace.",
+    description: "A watermark is stamped on every image at posting time. It is set on one social account (scope=account, the default) or on the workspace (scope=workspace, workspace owner only), in which case every account of the workspace without its own watermark inherits it. Saves image_url, opacity, size and position; fields left out keep their current values, so a first set needs image_url. On the workspace, force_account_ids names accounts whose own watermark is replaced by the workspace one. image_url is any publicly reachable image URL, downloaded and stored in the owner's RecurPost storage.",
     readOnly: false,
     destructive: false,
     params: [
-      {
-        key: "image_url",
-        type: "url",
-        required: true,
-        description: "The watermark image: a publicly reachable image URL, downloaded and stored in the owner's RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is). Required when action is set and no watermark is saved yet.",
-        example: "https://cdn.example.com/u/1/watermark.png"
-      },
       {
         key: "scope",
         type: "string",
@@ -580,28 +365,35 @@ export const contentToolsTools: ToolSpec[] = [
         key: "account_id",
         type: "string",
         required: false,
-        description: "Encrypted social account id. Required when scope is account; for copy it is the source account.",
+        description: "Encrypted social account id. Required when scope is account.",
         example: "aK3mZ8vQr1=="
+      },
+      {
+        key: "image_url",
+        type: "url",
+        required: false,
+        description: "The watermark image: a publicly reachable image URL, downloaded and stored in the owner's RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is). Required when no watermark is saved yet.",
+        example: "https://cdn.example.com/u/1/watermark.png"
       },
       {
         key: "opacity",
         type: "integer",
         required: false,
-        description: "set: 1 to 100 percent. Keeps the current value when omitted (50 on a first set).",
+        description: "1 to 100 percent. Keeps the current value when omitted (50 on a first set).",
         example: 50
       },
       {
         key: "size",
         type: "integer",
         required: false,
-        description: "set: 5 to 100, the watermark's width as a percentage of the image. Keeps the current value when omitted (50 on a first set).",
+        description: "5 to 100, the watermark's width as a percentage of the image. Keeps the current value when omitted (50 on a first set).",
         example: 40
       },
       {
         key: "position",
         type: "string",
         required: false,
-        description: "set: corner the watermark sits in. Keeps the current value when omitted (bottom_left on a first set).",
+        description: "Corner the watermark sits in: top_left, top_right, bottom_left or bottom_right. Keeps the current value when omitted (bottom_left on a first set).",
         values: [
           "top_left",
           "top_right",
@@ -614,26 +406,7 @@ export const contentToolsTools: ToolSpec[] = [
         key: "force_account_ids",
         type: "array",
         required: false,
-        description: "set with scope workspace: encrypted ids of accounts whose own watermark is replaced by the workspace one, at most 50. Accounts not listed keep their own.",
-        example: [
-          "gB9xT4nWp2=="
-        ],
-        items: "string",
-        acceptsList: true
-      },
-      {
-        key: "skip_inherit",
-        type: "boolean",
-        required: false,
-        description: "delete with scope account: true also opts the account out of the workspace watermark.",
-        default: "false",
-        example: false
-      },
-      {
-        key: "account_ids",
-        type: "array",
-        required: false,
-        description: "Encrypted ids of the accounts that receive the copy, at most 50. Required when action is copy.",
+        description: "With scope workspace: encrypted ids of accounts whose own watermark is replaced by the workspace one, at most 50. Accounts not listed keep their own.",
         example: [
           "gB9xT4nWp2=="
         ],
@@ -651,13 +424,12 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "watermark_delete",
-    title: "Watermark (Delete)",
+    title: "Watermark Delete",
     module: "content_tools",
-    endpoint: "watermark",
-    action: "delete",
+    endpoint: "watermark_delete",
     confirm: true,
-    summary: "Read, set, delete or copy the watermark stamped on images, per account or for the workspace. This tool runs the delete action.",
-    description: "A watermark is stamped on every image at posting time. It is set on one social account (scope=account, the default) or on the workspace (scope=workspace, workspace owner only), in which case every account of the workspace without its own watermark inherits it. action picks the operation: get (default): the current settings. For an account the answer also says whether it inherits the workspace watermark or opted out of it. set: saves image_url, opacity, size and position; fields left out keep their current values, so a first set needs image_url. On the workspace, force_account_ids names accounts whose own watermark is replaced by the workspace one. delete: removes the watermark and the stamped copies of images; needs confirm=true. On an account, skip_inherit=true also keeps it out of the workspace watermark. copy: copies the watermark of account_id to account_ids; accounts only. image_url is any publicly reachable image URL, downloaded and stored in the owner's RecurPost storage. Delete removes stamped images: Deleting a watermark also deletes the watermarked copies of images made for queued posts; those posts go out with the plain image. Images already published are not affected.",
+    summary: "Remove the watermark of a social account or of the workspace.",
+    description: "A watermark is stamped on every image at posting time. It is set on one social account (scope=account, the default) or on the workspace (scope=workspace, workspace owner only), in which case every account of the workspace without its own watermark inherits it. Removes the watermark and the stamped copies of images; needs confirm=true. On an account, skip_inherit=true also keeps it out of the workspace watermark. Delete removes stamped images: Deleting a watermark also deletes the watermarked copies of images made for queued posts; those posts go out with the plain image. Images already published are not affected.",
     readOnly: false,
     destructive: true,
     params: [
@@ -677,72 +449,16 @@ export const contentToolsTools: ToolSpec[] = [
         key: "account_id",
         type: "string",
         required: false,
-        description: "Encrypted social account id. Required when scope is account; for copy it is the source account.",
+        description: "Encrypted social account id. Required when scope is account.",
         example: "aK3mZ8vQr1=="
-      },
-      {
-        key: "image_url",
-        type: "url",
-        required: false,
-        description: "The watermark image: a publicly reachable image URL, downloaded and stored in the owner's RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is). Required when action is set and no watermark is saved yet.",
-        example: "https://cdn.example.com/u/1/watermark.png"
-      },
-      {
-        key: "opacity",
-        type: "integer",
-        required: false,
-        description: "set: 1 to 100 percent. Keeps the current value when omitted (50 on a first set).",
-        example: 50
-      },
-      {
-        key: "size",
-        type: "integer",
-        required: false,
-        description: "set: 5 to 100, the watermark's width as a percentage of the image. Keeps the current value when omitted (50 on a first set).",
-        example: 40
-      },
-      {
-        key: "position",
-        type: "string",
-        required: false,
-        description: "set: corner the watermark sits in. Keeps the current value when omitted (bottom_left on a first set).",
-        values: [
-          "top_left",
-          "top_right",
-          "bottom_left",
-          "bottom_right"
-        ],
-        example: "bottom_right"
-      },
-      {
-        key: "force_account_ids",
-        type: "array",
-        required: false,
-        description: "set with scope workspace: encrypted ids of accounts whose own watermark is replaced by the workspace one, at most 50. Accounts not listed keep their own.",
-        example: [
-          "gB9xT4nWp2=="
-        ],
-        items: "string",
-        acceptsList: true
       },
       {
         key: "skip_inherit",
         type: "boolean",
         required: false,
-        description: "delete with scope account: true also opts the account out of the workspace watermark.",
+        description: "With scope account: true also opts the account out of the workspace watermark.",
         default: "false",
         example: false
-      },
-      {
-        key: "account_ids",
-        type: "array",
-        required: false,
-        description: "Encrypted ids of the accounts that receive the copy, at most 50. Required when action is copy.",
-        example: [
-          "gB9xT4nWp2=="
-        ],
-        items: "string",
-        acceptsList: true
       },
       {
         key: "workspace_id",
@@ -755,20 +471,26 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "watermark_copy",
-    title: "Watermark (Copy)",
+    title: "Watermark Copy",
     module: "content_tools",
-    endpoint: "watermark",
-    action: "copy",
-    summary: "Read, set, delete or copy the watermark stamped on images, per account or for the workspace. This tool runs the copy action.",
-    description: "A watermark is stamped on every image at posting time. It is set on one social account (scope=account, the default) or on the workspace (scope=workspace, workspace owner only), in which case every account of the workspace without its own watermark inherits it. action picks the operation: get (default): the current settings. For an account the answer also says whether it inherits the workspace watermark or opted out of it. set: saves image_url, opacity, size and position; fields left out keep their current values, so a first set needs image_url. On the workspace, force_account_ids names accounts whose own watermark is replaced by the workspace one. delete: removes the watermark and the stamped copies of images; needs confirm=true. On an account, skip_inherit=true also keeps it out of the workspace watermark. copy: copies the watermark of account_id to account_ids; accounts only. image_url is any publicly reachable image URL, downloaded and stored in the owner's RecurPost storage. Delete removes stamped images: Deleting a watermark also deletes the watermarked copies of images made for queued posts; those posts go out with the plain image. Images already published are not affected.",
+    endpoint: "watermark_copy",
+    summary: "Copy the watermark of one social account to other accounts.",
+    description: "Copies the watermark of account_id to the accounts in account_ids. Accounts only: scope must be account or left out.",
     readOnly: false,
     destructive: false,
     params: [
       {
+        key: "account_id",
+        type: "string",
+        required: true,
+        description: "Encrypted id of the source account.",
+        example: "aK3mZ8vQr1=="
+      },
+      {
         key: "account_ids",
         type: "array",
         required: true,
-        description: "Encrypted ids of the accounts that receive the copy, at most 50. Required when action is copy.",
+        description: "Encrypted ids of the accounts that receive the copy, at most 50.",
         example: [
           "gB9xT4nWp2=="
         ],
@@ -779,73 +501,13 @@ export const contentToolsTools: ToolSpec[] = [
         key: "scope",
         type: "string",
         required: false,
-        description: "account acts on one social account, workspace on the watermark every account of the workspace inherits.",
+        description: "Must be account (the default); copy works between accounts.",
         values: [
           "account",
           "workspace"
         ],
         default: "account",
         example: "account"
-      },
-      {
-        key: "account_id",
-        type: "string",
-        required: false,
-        description: "Encrypted social account id. Required when scope is account; for copy it is the source account.",
-        example: "aK3mZ8vQr1=="
-      },
-      {
-        key: "image_url",
-        type: "url",
-        required: false,
-        description: "The watermark image: a publicly reachable image URL, downloaded and stored in the owner's RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is). Required when action is set and no watermark is saved yet.",
-        example: "https://cdn.example.com/u/1/watermark.png"
-      },
-      {
-        key: "opacity",
-        type: "integer",
-        required: false,
-        description: "set: 1 to 100 percent. Keeps the current value when omitted (50 on a first set).",
-        example: 50
-      },
-      {
-        key: "size",
-        type: "integer",
-        required: false,
-        description: "set: 5 to 100, the watermark's width as a percentage of the image. Keeps the current value when omitted (50 on a first set).",
-        example: 40
-      },
-      {
-        key: "position",
-        type: "string",
-        required: false,
-        description: "set: corner the watermark sits in. Keeps the current value when omitted (bottom_left on a first set).",
-        values: [
-          "top_left",
-          "top_right",
-          "bottom_left",
-          "bottom_right"
-        ],
-        example: "bottom_right"
-      },
-      {
-        key: "force_account_ids",
-        type: "array",
-        required: false,
-        description: "set with scope workspace: encrypted ids of accounts whose own watermark is replaced by the workspace one, at most 50. Accounts not listed keep their own.",
-        example: [
-          "gB9xT4nWp2=="
-        ],
-        items: "string",
-        acceptsList: true
-      },
-      {
-        key: "skip_inherit",
-        type: "boolean",
-        required: false,
-        description: "delete with scope account: true also opts the account out of the workspace watermark.",
-        default: "false",
-        example: false
       },
       {
         key: "workspace_id",
@@ -858,29 +520,14 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "testimonial_templates_list",
-    title: "Testimonial Templates (List)",
+    title: "Testimonial Templates List",
     module: "content_tools",
-    endpoint: "testimonial_templates",
-    action: "list",
-    summary: "List, add or delete the owner's testimonial template images. This tool runs the list action.",
-    description: "Template images the owner lays testimonial text over when turning a review into a post. action picks the operation; every answer ends with the current list: list (default). add: stores image_url, any publicly reachable image URL, downloaded into the owner's RecurPost storage. delete: removes template template_id; needs confirm=true.",
+    endpoint: "testimonial_templates_list",
+    summary: "List the owner's testimonial template images.",
+    description: "Template images the owner lays testimonial text over when turning a review into a post. This call lists them.",
     readOnly: true,
     destructive: false,
     params: [
-      {
-        key: "image_url",
-        type: "url",
-        required: false,
-        description: "The template image: a publicly reachable image URL, downloaded and stored in the owner's RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is). Required when action is add.",
-        example: "https://cdn.example.com/u/1/testimonial-bg.png"
-      },
-      {
-        key: "template_id",
-        type: "integer",
-        required: false,
-        description: "Plain integer id of the template, from the list. Required when action is delete.",
-        example: 4
-      },
       {
         key: "workspace_id",
         type: "string",
@@ -892,12 +539,11 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "testimonial_templates_add",
-    title: "Testimonial Templates (Add)",
+    title: "Testimonial Templates Add",
     module: "content_tools",
-    endpoint: "testimonial_templates",
-    action: "add",
-    summary: "List, add or delete the owner's testimonial template images. This tool runs the add action.",
-    description: "Template images the owner lays testimonial text over when turning a review into a post. action picks the operation; every answer ends with the current list: list (default). add: stores image_url, any publicly reachable image URL, downloaded into the owner's RecurPost storage. delete: removes template template_id; needs confirm=true.",
+    endpoint: "testimonial_templates_add",
+    summary: "Add a testimonial template image from a URL.",
+    description: "Template images the owner lays testimonial text over when turning a review into a post. Stores image_url, any publicly reachable image URL, downloaded into the owner's RecurPost storage. Answers with the current list.",
     readOnly: false,
     destructive: false,
     params: [
@@ -905,15 +551,8 @@ export const contentToolsTools: ToolSpec[] = [
         key: "image_url",
         type: "url",
         required: true,
-        description: "The template image: a publicly reachable image URL, downloaded and stored in the owner's RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is). Required when action is add.",
+        description: "The template image: a publicly reachable image URL, downloaded and stored in the owner's RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is).",
         example: "https://cdn.example.com/u/1/testimonial-bg.png"
-      },
-      {
-        key: "template_id",
-        type: "integer",
-        required: false,
-        description: "Plain integer id of the template, from the list. Required when action is delete.",
-        example: 4
       },
       {
         key: "workspace_id",
@@ -926,13 +565,12 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "testimonial_templates_delete",
-    title: "Testimonial Templates (Delete)",
+    title: "Testimonial Templates Delete",
     module: "content_tools",
-    endpoint: "testimonial_templates",
-    action: "delete",
+    endpoint: "testimonial_templates_delete",
     confirm: true,
-    summary: "List, add or delete the owner's testimonial template images. This tool runs the delete action.",
-    description: "Template images the owner lays testimonial text over when turning a review into a post. action picks the operation; every answer ends with the current list: list (default). add: stores image_url, any publicly reachable image URL, downloaded into the owner's RecurPost storage. delete: removes template template_id; needs confirm=true.",
+    summary: "Delete a testimonial template image.",
+    description: "Template images the owner lays testimonial text over when turning a review into a post. Removes template template_id; needs confirm=true. Answers with the current list.",
     readOnly: false,
     destructive: true,
     params: [
@@ -940,15 +578,8 @@ export const contentToolsTools: ToolSpec[] = [
         key: "template_id",
         type: "integer",
         required: true,
-        description: "Plain integer id of the template, from the list. Required when action is delete.",
+        description: "Plain integer id of the template, from /api/testimonial_templates_list.",
         example: 4
-      },
-      {
-        key: "image_url",
-        type: "url",
-        required: false,
-        description: "The template image: a publicly reachable image URL, downloaded and stored in the owner's RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is). Required when action is add.",
-        example: "https://cdn.example.com/u/1/testimonial-bg.png"
       },
       {
         key: "workspace_id",
@@ -961,40 +592,14 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "shortener_accounts_list",
-    title: "Shortener Accounts (List)",
+    title: "Shortener Accounts List",
     module: "content_tools",
-    endpoint: "shortener_accounts",
-    action: "list",
-    summary: "List the owner's URL shortener accounts and attach or detach social accounts to one of their domains. This tool runs the list action.",
-    description: "Links in posts of a social account are shortened through the shortener (Bitly) account and domain the social account is attached to. action picks the operation; every answer carries the shorteners and the current attachments: list (default). attach: attaches account_ids to domain domain_id of shortener shortener_id. An account already attached elsewhere is moved. detach: stops shortening for account_ids. Connecting a Bitly account itself is a browser flow in RecurPost; no token is returned here.",
+    endpoint: "shortener_accounts_list",
+    summary: "List the owner's URL shortener accounts and which social accounts use them.",
+    description: "Links in posts of a social account are shortened through the shortener (Bitly) account and domain the social account is attached to. This call lists the shorteners with their domains and the social accounts attached to them. Every answer carries the shorteners and the current attachments. Connecting a Bitly account itself is a browser flow in RecurPost; no token is returned here.",
     readOnly: true,
     destructive: false,
     params: [
-      {
-        key: "account_ids",
-        type: "array",
-        required: false,
-        description: "Encrypted social account ids: one id, a comma-separated string or an array, at most 50. Required when action is attach or detach.",
-        example: [
-          "aK3mZ8vQr1=="
-        ],
-        items: "string",
-        acceptsList: true
-      },
-      {
-        key: "shortener_id",
-        type: "integer",
-        required: false,
-        description: "Plain integer id of the shortener account, from shorteners[].id. Required when action is attach.",
-        example: 3
-      },
-      {
-        key: "domain_id",
-        type: "integer",
-        required: false,
-        description: "Plain integer id of one of that shortener's domains, from shorteners[].domains[].id. Required when action is attach.",
-        example: 8
-      },
       {
         key: "workspace_id",
         type: "string",
@@ -1006,12 +611,11 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "shortener_accounts_attach",
-    title: "Shortener Accounts (Attach)",
+    title: "Shortener Accounts Attach",
     module: "content_tools",
-    endpoint: "shortener_accounts",
-    action: "attach",
-    summary: "List the owner's URL shortener accounts and attach or detach social accounts to one of their domains. This tool runs the attach action.",
-    description: "Links in posts of a social account are shortened through the shortener (Bitly) account and domain the social account is attached to. action picks the operation; every answer carries the shorteners and the current attachments: list (default). attach: attaches account_ids to domain domain_id of shortener shortener_id. An account already attached elsewhere is moved. detach: stops shortening for account_ids. Connecting a Bitly account itself is a browser flow in RecurPost; no token is returned here.",
+    endpoint: "shortener_accounts_attach",
+    summary: "Attach social accounts to a shortener domain.",
+    description: "Links in posts of a social account are shortened through the shortener (Bitly) account and domain the social account is attached to. Attaches account_ids to domain domain_id of shortener shortener_id. An account already attached elsewhere is moved. Every answer carries the shorteners and the current attachments. Connecting a Bitly account itself is a browser flow in RecurPost; no token is returned here.",
     readOnly: false,
     destructive: false,
     params: [
@@ -1019,7 +623,7 @@ export const contentToolsTools: ToolSpec[] = [
         key: "account_ids",
         type: "array",
         required: true,
-        description: "Encrypted social account ids: one id, a comma-separated string or an array, at most 50. Required when action is attach or detach.",
+        description: "Encrypted social account ids: one id, a comma-separated string or an array, at most 50.",
         example: [
           "aK3mZ8vQr1=="
         ],
@@ -1030,14 +634,14 @@ export const contentToolsTools: ToolSpec[] = [
         key: "shortener_id",
         type: "integer",
         required: true,
-        description: "Plain integer id of the shortener account, from shorteners[].id. Required when action is attach.",
+        description: "Plain integer id of the shortener account, from shorteners[].id.",
         example: 3
       },
       {
         key: "domain_id",
         type: "integer",
         required: true,
-        description: "Plain integer id of one of that shortener's domains, from shorteners[].domains[].id. Required when action is attach.",
+        description: "Plain integer id of one of that shortener's domains, from shorteners[].domains[].id.",
         example: 8
       },
       {
@@ -1051,12 +655,11 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "shortener_accounts_detach",
-    title: "Shortener Accounts (Detach)",
+    title: "Shortener Accounts Detach",
     module: "content_tools",
-    endpoint: "shortener_accounts",
-    action: "detach",
-    summary: "List the owner's URL shortener accounts and attach or detach social accounts to one of their domains. This tool runs the detach action.",
-    description: "Links in posts of a social account are shortened through the shortener (Bitly) account and domain the social account is attached to. action picks the operation; every answer carries the shorteners and the current attachments: list (default). attach: attaches account_ids to domain domain_id of shortener shortener_id. An account already attached elsewhere is moved. detach: stops shortening for account_ids. Connecting a Bitly account itself is a browser flow in RecurPost; no token is returned here.",
+    endpoint: "shortener_accounts_detach",
+    summary: "Stop shortening links for social accounts.",
+    description: "Links in posts of a social account are shortened through the shortener (Bitly) account and domain the social account is attached to. Detaches account_ids from their shortener, so their links are posted as written. Every answer carries the shorteners and the current attachments. Connecting a Bitly account itself is a browser flow in RecurPost; no token is returned here.",
     readOnly: false,
     destructive: false,
     params: [
@@ -1064,26 +667,12 @@ export const contentToolsTools: ToolSpec[] = [
         key: "account_ids",
         type: "array",
         required: true,
-        description: "Encrypted social account ids: one id, a comma-separated string or an array, at most 50. Required when action is attach or detach.",
+        description: "Encrypted social account ids: one id, a comma-separated string or an array, at most 50.",
         example: [
           "aK3mZ8vQr1=="
         ],
         items: "string",
         acceptsList: true
-      },
-      {
-        key: "shortener_id",
-        type: "integer",
-        required: false,
-        description: "Plain integer id of the shortener account, from shorteners[].id. Required when action is attach.",
-        example: 3
-      },
-      {
-        key: "domain_id",
-        type: "integer",
-        required: false,
-        description: "Plain integer id of one of that shortener's domains, from shorteners[].domains[].id. Required when action is attach.",
-        example: 8
       },
       {
         key: "workspace_id",
@@ -1096,12 +685,11 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "catalog_businesses",
-    title: "Instagram Product Catalog (Businesses)",
+    title: "Catalog Businesses",
     module: "content_tools",
-    endpoint: "catalog",
-    action: "businesses",
-    summary: "Create a product catalog on Meta for an Instagram account and manage its products. This tool runs the businesses action.",
-    description: "The product catalog behind Instagram product tags (in_product_tags and in_reel_product_tags on /api/post_content; products are read with /api/instagram_products). Every call acts through Instagram business account account_id and is for the workspace owner only. action picks the operation: businesses (default): the Meta businesses a catalog can be created under. create: a new catalog named name under business_id. product_save: adds a product to catalog_id, or changes product product_id; send one of the two. product_delete: removes product product_id from Meta; needs confirm=true. Meta's own refusals come back as 400 with Meta's reason; an account whose token Meta no longer accepts answers 409 with reconnect_required. Changes happen on Meta: Catalogs and products live in Meta's Commerce Manager, not in RecurPost. A new catalog must be connected to the Instagram shop in Commerce Manager before its products can be tagged, and Meta reviews new products for a few minutes before /api/instagram_products lists them.",
+    endpoint: "catalog_businesses",
+    summary: "The Meta businesses a product catalog can be created under.",
+    description: "The product catalog behind Instagram product tags (in_product_tags and in_reel_product_tags on /api/post_content; products are read with /api/instagram_products). Every call acts through Instagram business account account_id and is for the workspace owner only. This call lists the Meta businesses a catalog can be created under with /api/catalog_create. Meta's own refusals come back as 400 with Meta's reason; an account whose token Meta no longer accepts answers 409 with reconnect_required. Changes happen on Meta: Catalogs and products live in Meta's Commerce Manager, not in RecurPost. A new catalog must be connected to the Instagram shop in Commerce Manager before its products can be tagged, and Meta reviews new products for a few minutes before /api/instagram_products lists them.",
     readOnly: true,
     destructive: false,
     params: [
@@ -1111,90 +699,6 @@ export const contentToolsTools: ToolSpec[] = [
         required: true,
         description: "Encrypted id of the Instagram business account.",
         example: "aK3mZ8vQr1=="
-      },
-      {
-        key: "business_id",
-        type: "string",
-        required: false,
-        description: "Meta business id from the businesses list. Required when action is create.",
-        example: "555000111222333"
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Catalog name, 1 to 100 characters, required when action is create. For product_save: the product name, 1 to 150 characters, required for a new product.",
-        example: "Summer collection"
-      },
-      {
-        key: "catalog_id",
-        type: "string",
-        required: false,
-        description: "Meta catalog id to add a product to. product_save: send this for a new product, or product_id for an existing one, not both.",
-        example: "777000111222333"
-      },
-      {
-        key: "product_id",
-        type: "string",
-        required: false,
-        description: "Meta product id, from /api/instagram_products. Required when action is product_delete; product_save: send it to change the product.",
-        example: "901000111222333"
-      },
-      {
-        key: "price",
-        type: "string",
-        required: false,
-        description: "product_save: the price as a number in the currency's units, for example 12.50. Required for a new product.",
-        example: "12.50"
-      },
-      {
-        key: "currency",
-        type: "string",
-        required: false,
-        description: "product_save: ISO currency code. Required for a new product.",
-        example: "USD"
-      },
-      {
-        key: "url",
-        type: "url",
-        required: false,
-        description: "product_save: the product page, starting with http:// or https://.",
-        example: "https://shop.example.com/hat"
-      },
-      {
-        key: "image_url",
-        type: "url",
-        required: false,
-        description: "product_save: the product image, starting with http:// or https://.",
-        example: "https://shop.example.com/img/hat.jpg"
-      },
-      {
-        key: "description",
-        type: "string",
-        required: false,
-        description: "product_save: up to 5000 characters.",
-        example: "Wide-brim straw hat."
-      },
-      {
-        key: "availability",
-        type: "string",
-        required: false,
-        description: "product_save: Meta availability value, for example in stock or out of stock.",
-        example: "in stock"
-      },
-      {
-        key: "brand",
-        type: "string",
-        required: false,
-        description: "product_save: brand name.",
-        example: "Acme"
-      },
-      {
-        key: "retailer_id",
-        type: "string",
-        required: false,
-        description: "product_save: your own SKU or id for the product.",
-        example: "HAT-001"
       },
       {
         key: "workspace_id",
@@ -1207,12 +711,11 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "catalog_create",
-    title: "Instagram Product Catalog (Create)",
+    title: "Catalog Create",
     module: "content_tools",
-    endpoint: "catalog",
-    action: "create",
-    summary: "Create a product catalog on Meta for an Instagram account and manage its products. This tool runs the create action.",
-    description: "The product catalog behind Instagram product tags (in_product_tags and in_reel_product_tags on /api/post_content; products are read with /api/instagram_products). Every call acts through Instagram business account account_id and is for the workspace owner only. action picks the operation: businesses (default): the Meta businesses a catalog can be created under. create: a new catalog named name under business_id. product_save: adds a product to catalog_id, or changes product product_id; send one of the two. product_delete: removes product product_id from Meta; needs confirm=true. Meta's own refusals come back as 400 with Meta's reason; an account whose token Meta no longer accepts answers 409 with reconnect_required. Changes happen on Meta: Catalogs and products live in Meta's Commerce Manager, not in RecurPost. A new catalog must be connected to the Instagram shop in Commerce Manager before its products can be tagged, and Meta reviews new products for a few minutes before /api/instagram_products lists them.",
+    endpoint: "catalog_create",
+    summary: "Create a product catalog on Meta under a business.",
+    description: "The product catalog behind Instagram product tags (in_product_tags and in_reel_product_tags on /api/post_content; products are read with /api/instagram_products). Every call acts through Instagram business account account_id and is for the workspace owner only. Creates a new catalog named name under business_id. Meta's own refusals come back as 400 with Meta's reason; an account whose token Meta no longer accepts answers 409 with reconnect_required. Changes happen on Meta: Catalogs and products live in Meta's Commerce Manager, not in RecurPost. A new catalog must be connected to the Instagram shop in Commerce Manager before its products can be tagged, and Meta reviews new products for a few minutes before /api/instagram_products lists them.",
     readOnly: false,
     destructive: false,
     params: [
@@ -1227,85 +730,15 @@ export const contentToolsTools: ToolSpec[] = [
         key: "business_id",
         type: "string",
         required: true,
-        description: "Meta business id from the businesses list. Required when action is create.",
+        description: "Meta business id from /api/catalog_businesses.",
         example: "555000111222333"
       },
       {
         key: "name",
         type: "string",
         required: true,
-        description: "Catalog name, 1 to 100 characters, required when action is create. For product_save: the product name, 1 to 150 characters, required for a new product.",
+        description: "Catalog name, 1 to 100 characters.",
         example: "Summer collection"
-      },
-      {
-        key: "catalog_id",
-        type: "string",
-        required: false,
-        description: "Meta catalog id to add a product to. product_save: send this for a new product, or product_id for an existing one, not both.",
-        example: "777000111222333"
-      },
-      {
-        key: "product_id",
-        type: "string",
-        required: false,
-        description: "Meta product id, from /api/instagram_products. Required when action is product_delete; product_save: send it to change the product.",
-        example: "901000111222333"
-      },
-      {
-        key: "price",
-        type: "string",
-        required: false,
-        description: "product_save: the price as a number in the currency's units, for example 12.50. Required for a new product.",
-        example: "12.50"
-      },
-      {
-        key: "currency",
-        type: "string",
-        required: false,
-        description: "product_save: ISO currency code. Required for a new product.",
-        example: "USD"
-      },
-      {
-        key: "url",
-        type: "url",
-        required: false,
-        description: "product_save: the product page, starting with http:// or https://.",
-        example: "https://shop.example.com/hat"
-      },
-      {
-        key: "image_url",
-        type: "url",
-        required: false,
-        description: "product_save: the product image, starting with http:// or https://.",
-        example: "https://shop.example.com/img/hat.jpg"
-      },
-      {
-        key: "description",
-        type: "string",
-        required: false,
-        description: "product_save: up to 5000 characters.",
-        example: "Wide-brim straw hat."
-      },
-      {
-        key: "availability",
-        type: "string",
-        required: false,
-        description: "product_save: Meta availability value, for example in stock or out of stock.",
-        example: "in stock"
-      },
-      {
-        key: "brand",
-        type: "string",
-        required: false,
-        description: "product_save: brand name.",
-        example: "Acme"
-      },
-      {
-        key: "retailer_id",
-        type: "string",
-        required: false,
-        description: "product_save: your own SKU or id for the product.",
-        example: "HAT-001"
       },
       {
         key: "workspace_id",
@@ -1318,12 +751,11 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "catalog_product_save",
-    title: "Instagram Product Catalog (Product Save)",
+    title: "Catalog Product Save",
     module: "content_tools",
-    endpoint: "catalog",
-    action: "product_save",
-    summary: "Create a product catalog on Meta for an Instagram account and manage its products. This tool runs the product_save action.",
-    description: "The product catalog behind Instagram product tags (in_product_tags and in_reel_product_tags on /api/post_content; products are read with /api/instagram_products). Every call acts through Instagram business account account_id and is for the workspace owner only. action picks the operation: businesses (default): the Meta businesses a catalog can be created under. create: a new catalog named name under business_id. product_save: adds a product to catalog_id, or changes product product_id; send one of the two. product_delete: removes product product_id from Meta; needs confirm=true. Meta's own refusals come back as 400 with Meta's reason; an account whose token Meta no longer accepts answers 409 with reconnect_required. Changes happen on Meta: Catalogs and products live in Meta's Commerce Manager, not in RecurPost. A new catalog must be connected to the Instagram shop in Commerce Manager before its products can be tagged, and Meta reviews new products for a few minutes before /api/instagram_products lists them.",
+    endpoint: "catalog_product_save",
+    summary: "Add a product to a catalog on Meta, or change one.",
+    description: "The product catalog behind Instagram product tags (in_product_tags and in_reel_product_tags on /api/post_content; products are read with /api/instagram_products). Every call acts through Instagram business account account_id and is for the workspace owner only. Adds a product to catalog_id, or changes product product_id; send one of the two. A new product needs name, price and currency. Meta's own refusals come back as 400 with Meta's reason; an account whose token Meta no longer accepts answers 409 with reconnect_required. Changes happen on Meta: Catalogs and products live in Meta's Commerce Manager, not in RecurPost. A new catalog must be connected to the Instagram shop in Commerce Manager before its products can be tagged, and Meta reviews new products for a few minutes before /api/instagram_products lists them.",
     readOnly: false,
     destructive: false,
     params: [
@@ -1335,87 +767,80 @@ export const contentToolsTools: ToolSpec[] = [
         example: "aK3mZ8vQr1=="
       },
       {
-        key: "business_id",
-        type: "string",
-        required: false,
-        description: "Meta business id from the businesses list. Required when action is create.",
-        example: "555000111222333"
-      },
-      {
         key: "name",
         type: "string",
         required: false,
-        description: "Catalog name, 1 to 100 characters, required when action is create. For product_save: the product name, 1 to 150 characters, required for a new product.",
+        description: "The product name, 1 to 150 characters. Required for a new product.",
         example: "Summer collection"
       },
       {
         key: "catalog_id",
         type: "string",
         required: false,
-        description: "Meta catalog id to add a product to. product_save: send this for a new product, or product_id for an existing one, not both.",
+        description: "Meta catalog id to add a product to. Send this for a new product, or product_id for an existing one, not both.",
         example: "777000111222333"
       },
       {
         key: "product_id",
         type: "string",
         required: false,
-        description: "Meta product id, from /api/instagram_products. Required when action is product_delete; product_save: send it to change the product.",
+        description: "Meta product id, from /api/instagram_products. Send it to change the product.",
         example: "901000111222333"
       },
       {
         key: "price",
         type: "string",
         required: false,
-        description: "product_save: the price as a number in the currency's units, for example 12.50. Required for a new product.",
+        description: "The price as a number in the currency's units, for example 12.50. Required for a new product.",
         example: "12.50"
       },
       {
         key: "currency",
         type: "string",
         required: false,
-        description: "product_save: ISO currency code. Required for a new product.",
+        description: "ISO currency code. Required for a new product.",
         example: "USD"
       },
       {
         key: "url",
         type: "url",
         required: false,
-        description: "product_save: the product page, starting with http:// or https://.",
+        description: "The product page, starting with http:// or https://.",
         example: "https://shop.example.com/hat"
       },
       {
         key: "image_url",
         type: "url",
         required: false,
-        description: "product_save: the product image, starting with http:// or https://.",
+        description: "The product image, starting with http:// or https://.",
         example: "https://shop.example.com/img/hat.jpg"
       },
       {
         key: "description",
         type: "string",
         required: false,
-        description: "product_save: up to 5000 characters.",
+        description: "Up to 5000 characters.",
         example: "Wide-brim straw hat."
       },
       {
         key: "availability",
         type: "string",
         required: false,
-        description: "product_save: Meta availability value, for example in stock or out of stock.",
+        description: "Meta availability value, for example in stock or out of stock.",
         example: "in stock"
       },
       {
         key: "brand",
         type: "string",
         required: false,
-        description: "product_save: brand name.",
+        description: "Brand name.",
         example: "Acme"
       },
       {
         key: "retailer_id",
         type: "string",
         required: false,
-        description: "product_save: your own SKU or id for the product.",
+        description: "Your own SKU or id for the product.",
         example: "HAT-001"
       },
       {
@@ -1429,13 +854,12 @@ export const contentToolsTools: ToolSpec[] = [
   },
   {
     name: "catalog_product_delete",
-    title: "Instagram Product Catalog (Product Delete)",
+    title: "Catalog Product Delete",
     module: "content_tools",
-    endpoint: "catalog",
-    action: "product_delete",
+    endpoint: "catalog_product_delete",
     confirm: true,
-    summary: "Create a product catalog on Meta for an Instagram account and manage its products. This tool runs the product_delete action.",
-    description: "The product catalog behind Instagram product tags (in_product_tags and in_reel_product_tags on /api/post_content; products are read with /api/instagram_products). Every call acts through Instagram business account account_id and is for the workspace owner only. action picks the operation: businesses (default): the Meta businesses a catalog can be created under. create: a new catalog named name under business_id. product_save: adds a product to catalog_id, or changes product product_id; send one of the two. product_delete: removes product product_id from Meta; needs confirm=true. Meta's own refusals come back as 400 with Meta's reason; an account whose token Meta no longer accepts answers 409 with reconnect_required. Changes happen on Meta: Catalogs and products live in Meta's Commerce Manager, not in RecurPost. A new catalog must be connected to the Instagram shop in Commerce Manager before its products can be tagged, and Meta reviews new products for a few minutes before /api/instagram_products lists them.",
+    summary: "Remove a product from a catalog on Meta.",
+    description: "The product catalog behind Instagram product tags (in_product_tags and in_reel_product_tags on /api/post_content; products are read with /api/instagram_products). Every call acts through Instagram business account account_id and is for the workspace owner only. Removes product product_id from Meta; needs confirm=true. Meta's own refusals come back as 400 with Meta's reason; an account whose token Meta no longer accepts answers 409 with reconnect_required. Changes happen on Meta: Catalogs and products live in Meta's Commerce Manager, not in RecurPost. A new catalog must be connected to the Instagram shop in Commerce Manager before its products can be tagged, and Meta reviews new products for a few minutes before /api/instagram_products lists them.",
     readOnly: false,
     destructive: true,
     params: [
@@ -1450,85 +874,8 @@ export const contentToolsTools: ToolSpec[] = [
         key: "product_id",
         type: "string",
         required: true,
-        description: "Meta product id, from /api/instagram_products. Required when action is product_delete; product_save: send it to change the product.",
+        description: "Meta product id, from /api/instagram_products.",
         example: "901000111222333"
-      },
-      {
-        key: "business_id",
-        type: "string",
-        required: false,
-        description: "Meta business id from the businesses list. Required when action is create.",
-        example: "555000111222333"
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Catalog name, 1 to 100 characters, required when action is create. For product_save: the product name, 1 to 150 characters, required for a new product.",
-        example: "Summer collection"
-      },
-      {
-        key: "catalog_id",
-        type: "string",
-        required: false,
-        description: "Meta catalog id to add a product to. product_save: send this for a new product, or product_id for an existing one, not both.",
-        example: "777000111222333"
-      },
-      {
-        key: "price",
-        type: "string",
-        required: false,
-        description: "product_save: the price as a number in the currency's units, for example 12.50. Required for a new product.",
-        example: "12.50"
-      },
-      {
-        key: "currency",
-        type: "string",
-        required: false,
-        description: "product_save: ISO currency code. Required for a new product.",
-        example: "USD"
-      },
-      {
-        key: "url",
-        type: "url",
-        required: false,
-        description: "product_save: the product page, starting with http:// or https://.",
-        example: "https://shop.example.com/hat"
-      },
-      {
-        key: "image_url",
-        type: "url",
-        required: false,
-        description: "product_save: the product image, starting with http:// or https://.",
-        example: "https://shop.example.com/img/hat.jpg"
-      },
-      {
-        key: "description",
-        type: "string",
-        required: false,
-        description: "product_save: up to 5000 characters.",
-        example: "Wide-brim straw hat."
-      },
-      {
-        key: "availability",
-        type: "string",
-        required: false,
-        description: "product_save: Meta availability value, for example in stock or out of stock.",
-        example: "in stock"
-      },
-      {
-        key: "brand",
-        type: "string",
-        required: false,
-        description: "product_save: brand name.",
-        example: "Acme"
-      },
-      {
-        key: "retailer_id",
-        type: "string",
-        required: false,
-        description: "product_save: your own SKU or id for the product.",
-        example: "HAT-001"
       },
       {
         key: "workspace_id",
