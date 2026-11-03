@@ -503,6 +503,18 @@ export const approvalsTools: ToolSpec[] = [
         example: "Summer sale is here! #twitter"
       },
       {
+        key: "tw_made_with_ai",
+        type: "integer",
+        required: false,
+        description: "Label the post as made with AI on Twitter/X. X shows the label on the post.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
         key: "ln_message",
         type: "string",
         required: false,
@@ -626,6 +638,32 @@ export const approvalsTools: ToolSpec[] = [
         required: false,
         description: "Custom cover image URL for the video on Facebook. Public image URL; copied to RecurPost storage unless host_images_on_recurpost is off. Ignored when the post has no video_url.",
         example: "https://example.com/fb-cover.jpg"
+      },
+      {
+        key: "fb_is_ai_generated",
+        type: "integer",
+        required: false,
+        description: "Label the Facebook post as made with AI. On a reel (fb_post_type=reel) Facebook shows its AI label on the reel; on an image post every image on the Facebook tab is labelled as an AI-generated photo, declared by you. Use fb_ai_images to label only some images or to give the provenance type.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "fb_ai_images",
+        type: "array",
+        required: false,
+        description: "Images to label as AI-generated photos on Facebook, named by the original URLs given in image_url (or fb_image_url when Facebook has its own images). A JSON array of URL strings, or of objects with image_url and provenance_type: EXPLICIT (declared by you, the default), EXPLICIT_AI_EDIT (edited with AI), C2PA (content credentials in the file), IPTC (IPTC AI metadata in the file) or INVISIBLE_WATERMARK. Labels the Facebook tab on its own, without fb_is_ai_generated. A URL that is not one of the post's Facebook images, or any other provenance type, answers 400.",
+        example: [
+          {
+            image_url: "https://example.com/hero.jpg",
+            provenance_type: "EXPLICIT_AI_EDIT"
+          }
+        ],
+        items: "object",
+        acceptsList: false
       },
       {
         key: "ln_document",
@@ -853,11 +891,47 @@ export const approvalsTools: ToolSpec[] = [
         acceptsList: false
       },
       {
+        key: "in_is_ai_generated",
+        type: "integer",
+        required: false,
+        description: "Label the Instagram post as AI-generated. Instagram shows its AI label on the post.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
         key: "pi_title",
         type: "string",
         required: false,
         description: "Pin title. The destination link of the pin is url or the first link in the text.",
         example: "Summer Sale - Best Deals of the Season"
+      },
+      {
+        key: "pi_ai_modified",
+        type: "integer",
+        required: false,
+        description: "Pinterest AI disclosure: the Pin's content was generated or modified with AI.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "pi_synthetic_performer",
+        type: "integer",
+        required: false,
+        description: "Pinterest AI disclosure: a person shown or heard in the Pin is AI-generated.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
       },
       {
         key: "gbp_cta",
@@ -998,6 +1072,18 @@ export const approvalsTools: ToolSpec[] = [
         example: "no"
       },
       {
+        key: "yt_contains_synthetic_media",
+        type: "integer",
+        required: false,
+        description: "Tell viewers the video contains realistic content that was altered or generated with AI. YouTube shows a label on the video.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
         key: "tk_privacy_status",
         type: "string",
         required: false,
@@ -1062,6 +1148,18 @@ export const approvalsTools: ToolSpec[] = [
         type: "integer",
         required: false,
         description: "Set to 1 to mark the video as branded content for a third party.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "tk_is_aigc",
+        type: "integer",
+        required: false,
+        description: "Add TikTok's AI-generated content label to the video.",
         values: [
           "0",
           "1"

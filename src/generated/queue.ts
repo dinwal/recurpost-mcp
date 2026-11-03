@@ -238,6 +238,44 @@ export const queueTools: ToolSpec[] = [
         example: "106"
       },
       {
+        key: "fb_is_ai_generated",
+        type: "integer",
+        required: false,
+        description: "Label the Facebook post as made with AI. On a reel (fb_post_type=reel) Facebook shows its AI label on the reel; on an image post every image on the Facebook tab is labelled as an AI-generated photo, declared by you. Use fb_ai_images to label only some images or to give the provenance type.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "fb_ai_images",
+        type: "array",
+        required: false,
+        description: "Images to label as AI-generated photos on Facebook, named by the original URLs given in image_url (or fb_image_url when Facebook has its own images). A JSON array of URL strings, or of objects with image_url and provenance_type: EXPLICIT (declared by you, the default), EXPLICIT_AI_EDIT (edited with AI), C2PA (content credentials in the file), IPTC (IPTC AI metadata in the file) or INVISIBLE_WATERMARK. Labels the Facebook tab on its own, without fb_is_ai_generated. A URL that is not one of the post's Facebook images, or any other provenance type, answers 400.",
+        example: [
+          {
+            image_url: "https://example.com/hero.jpg",
+            provenance_type: "EXPLICIT_AI_EDIT"
+          }
+        ],
+        items: "object",
+        acceptsList: false
+      },
+      {
+        key: "tw_made_with_ai",
+        type: "integer",
+        required: false,
+        description: "Label the post as made with AI on Twitter/X. X shows the label on the post.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
         key: "ln_document",
         type: "url",
         required: false,
@@ -476,11 +514,47 @@ export const queueTools: ToolSpec[] = [
         acceptsList: false
       },
       {
+        key: "in_is_ai_generated",
+        type: "integer",
+        required: false,
+        description: "Label the Instagram post as AI-generated. Instagram shows its AI label on the post.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
         key: "pi_title",
         type: "string",
         required: false,
         description: "Pinterest pin title.",
         example: "Plan a month of posts"
+      },
+      {
+        key: "pi_ai_modified",
+        type: "integer",
+        required: false,
+        description: "Pinterest AI disclosure: the Pin's content was generated or modified with AI.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "pi_synthetic_performer",
+        type: "integer",
+        required: false,
+        description: "Pinterest AI disclosure: a person shown or heard in the Pin is AI-generated.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
       },
       {
         key: "gbp_cta",
@@ -602,6 +676,18 @@ export const queueTools: ToolSpec[] = [
         example: "no"
       },
       {
+        key: "yt_contains_synthetic_media",
+        type: "integer",
+        required: false,
+        description: "Tell viewers the video contains realistic content that was altered or generated with AI. YouTube shows a label on the video.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
         key: "tk_privacy_status",
         type: "string",
         required: false,
@@ -666,6 +752,18 @@ export const queueTools: ToolSpec[] = [
         type: "integer",
         required: false,
         description: "1 marks the TikTok post as branded content for a third party.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "tk_is_aigc",
+        type: "integer",
+        required: false,
+        description: "Add TikTok's AI-generated content label to the video.",
         values: [
           "0",
           "1"

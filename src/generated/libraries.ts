@@ -278,7 +278,7 @@ export const librariesTools: ToolSpec[] = [
     module: "libraries",
     endpoint: "add_content_in_library",
     summary: "Add a recurring post to a content library.",
-    description: "Adds one post to the library in id. Library content is published again and again by the schedules attached to the library, so there is no post time here; content_livedate and content_expiredate bound when the post may go out and is_top_of_queue makes it the next one. The content fields are the same as /api/post_content: message, url, image_url or video_url, and the per-network prefixed overrides. The post is saved as one tab per network from these fields. Two differences from one-off posts: a library post holds either images or a video, not both (video_url wins and image_url is ignored), and twitter_thread is not supported. The post counts against the workspace owner's library content limit. The call does not return the new content id; read it from /api/library_content_list. Images or video, not both: When video_url is sent, image_url is ignored. media_order and twitter_thread are not read by the library calls. Dates are plain days: content_livedate and content_expiredate are stored as dates in the workspace owner's timezone; any time part is discarded. Plan rules follow the workspace owner: The library content limit and the paid-plan check for video apply to the workspace owner's plan, not the caller's. Option checks: The option rules of /api/post_content (at most 20 images, 1000 characters of alt text, 3 collaborators, a location name with a location id, image tag positions) are checked here too and answer 400 before any media is fetched. Bulk upload from a CSV: There is no CSV endpoint. The app's CSV import is this call applied once per row: map the sheet's columns to message, url, image_url or video_url, content_livedate and content_expiredate, and send one request per row into the same library id. Keep the calls sequential and inside your plan's per-minute allowance (see the rate-limit headers); a 429 says when to continue. Media must be public URLs. Per-network media: A network can post media of its own: <prefix>_image_url and <prefix>_video_url (fb_, tw_, ln_, in_, gmb_, pi_, yt_, tk_, th_, bs_) replace image_url / video_url on that network only and mark its tab as customised. Each network keeps its own cap (Facebook 15, Twitter/X 4, LinkedIn 20, Instagram 10 in all, Google Business 1, Pinterest 1, TikTok 10, Threads 20 in all, Bluesky 4); only Instagram and Threads combine images with a video, ordered by in_media_order / th_media_order; YouTube takes yt_video_url only. A URL named by several networks is downloaded once. Covers (fb_thumb and the others) apply to whichever video that network ends up with; in_image_tags and in_product_tags positions count in in_image_url when Instagram has its own images. Removing all media from one network is not possible: an empty override answers 400.",
+    description: "Adds one post to the library in id. Library content is published again and again by the schedules attached to the library, so there is no post time here; content_livedate and content_expiredate bound when the post may go out and is_top_of_queue makes it the next one. The content fields are the same as /api/post_content: message, url, image_url or video_url, and the per-network prefixed overrides. The post is saved as one tab per network from these fields. Two differences from one-off posts: a library post holds either images or a video, not both (video_url wins and image_url is ignored), and twitter_thread is not supported. The post counts against the workspace owner's library content limit. The call does not return the new content id; read it from /api/library_content_list. Images or video, not both: When video_url is sent, image_url is ignored. media_order and twitter_thread are not read by the library calls. Dates are plain days: content_livedate and content_expiredate are stored as dates in the workspace owner's timezone; any time part is discarded. Plan rules follow the workspace owner: The library content limit and the paid-plan check for video apply to the workspace owner's plan, not the caller's. Option checks: The option rules of /api/post_content (at most 20 images, 1000 characters of alt text, 3 collaborators, a location name with a location id, image tag positions) are checked here too and answer 400 before any media is fetched. Bulk upload from a CSV: There is no CSV endpoint. The app's CSV import is this call applied once per row: map the sheet's columns to message, url, image_url or video_url, content_livedate and content_expiredate, and send one request per row into the same library id. Keep the calls sequential and inside your plan's per-minute allowance (see the rate-limit headers); a 429 says when to continue. Media must be public URLs. Per-network media: A network can post media of its own: <prefix>_image_url and <prefix>_video_url (fb_, tw_, ln_, in_, gmb_, pi_, yt_, tk_, th_, bs_) replace image_url / video_url on that network only and mark its tab as customised. Each network keeps its own cap (Facebook 15, Twitter/X 4, LinkedIn 20, Instagram 10 in all, Google Business 1, Pinterest 1, TikTok 10, Threads 20 in all, Bluesky 4); only Instagram and Threads combine images with a video, ordered by in_media_order / th_media_order; YouTube takes yt_video_url only. A URL named by several networks is downloaded once. Covers (fb_thumb and the others) apply to whichever video that network ends up with; in_image_tags and in_product_tags positions count in in_image_url when Instagram has its own images. Removing all media from one network is not possible: an empty override answers 400. AI disclosure labels: Each network has the same switch as the composer's network tab: fb_is_ai_generated and fb_ai_images (Facebook), tw_made_with_ai (Twitter/X), in_is_ai_generated (Instagram), pi_ai_modified and pi_synthetic_performer (Pinterest), yt_contains_synthetic_media (YouTube) and tk_is_aigc (TikTok). Only 1 switches a label on, and a label marks that network's tab as customised. LinkedIn, Google Business, Threads and Bluesky have no label.",
     readOnly: false,
     destructive: false,
     params: [
@@ -642,6 +642,18 @@ export const librariesTools: ToolSpec[] = [
         example: "Summer sale is here! #twitter"
       },
       {
+        key: "tw_made_with_ai",
+        type: "integer",
+        required: false,
+        description: "Label the post as made with AI on Twitter/X. X shows the label on the post.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
         key: "ln_message",
         type: "string",
         required: false,
@@ -744,6 +756,32 @@ export const librariesTools: ToolSpec[] = [
         required: false,
         description: "Custom cover image URL for the video on Facebook. Public image URL; copied to RecurPost storage unless host_images_on_recurpost is off. Ignored when the post has no video_url.",
         example: "https://example.com/fb-cover.jpg"
+      },
+      {
+        key: "fb_is_ai_generated",
+        type: "integer",
+        required: false,
+        description: "Label the Facebook post as made with AI. On a reel (fb_post_type=reel) Facebook shows its AI label on the reel; on an image post every image on the Facebook tab is labelled as an AI-generated photo, declared by you. Use fb_ai_images to label only some images or to give the provenance type.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "fb_ai_images",
+        type: "array",
+        required: false,
+        description: "Images to label as AI-generated photos on Facebook, named by the original URLs given in image_url (or fb_image_url when Facebook has its own images). A JSON array of URL strings, or of objects with image_url and provenance_type: EXPLICIT (declared by you, the default), EXPLICIT_AI_EDIT (edited with AI), C2PA (content credentials in the file), IPTC (IPTC AI metadata in the file) or INVISIBLE_WATERMARK. Labels the Facebook tab on its own, without fb_is_ai_generated. A URL that is not one of the post's Facebook images, or any other provenance type, answers 400.",
+        example: [
+          {
+            image_url: "https://example.com/hero.jpg",
+            provenance_type: "EXPLICIT_AI_EDIT"
+          }
+        ],
+        items: "object",
+        acceptsList: false
       },
       {
         key: "ln_document",
@@ -866,11 +904,47 @@ export const librariesTools: ToolSpec[] = [
         acceptsList: true
       },
       {
+        key: "in_is_ai_generated",
+        type: "integer",
+        required: false,
+        description: "Label the Instagram post as AI-generated. Instagram shows its AI label on the post.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
         key: "pi_title",
         type: "string",
         required: false,
         description: "Pin title. The destination link of the pin is url or the first link in the text.",
         example: "Summer Sale - Best Deals of the Season"
+      },
+      {
+        key: "pi_ai_modified",
+        type: "integer",
+        required: false,
+        description: "Pinterest AI disclosure: the Pin's content was generated or modified with AI.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "pi_synthetic_performer",
+        type: "integer",
+        required: false,
+        description: "Pinterest AI disclosure: a person shown or heard in the Pin is AI-generated.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
       },
       {
         key: "gbp_cta",
@@ -1011,6 +1085,18 @@ export const librariesTools: ToolSpec[] = [
         example: "no"
       },
       {
+        key: "yt_contains_synthetic_media",
+        type: "integer",
+        required: false,
+        description: "Tell viewers the video contains realistic content that was altered or generated with AI. YouTube shows a label on the video.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
         key: "tk_privacy_status",
         type: "string",
         required: false,
@@ -1075,6 +1161,18 @@ export const librariesTools: ToolSpec[] = [
         type: "integer",
         required: false,
         description: "Set to 1 to mark the video as branded content for a third party.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "tk_is_aigc",
+        type: "integer",
+        required: false,
+        description: "Add TikTok's AI-generated content label to the video.",
         values: [
           "0",
           "1"
@@ -1468,6 +1566,18 @@ export const librariesTools: ToolSpec[] = [
         example: "Summer sale is here! #twitter"
       },
       {
+        key: "tw_made_with_ai",
+        type: "integer",
+        required: false,
+        description: "Label the post as made with AI on Twitter/X. X shows the label on the post.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
         key: "ln_message",
         type: "string",
         required: false,
@@ -1591,6 +1701,32 @@ export const librariesTools: ToolSpec[] = [
         required: false,
         description: "Custom cover image URL for the video on Facebook. Public image URL; copied to RecurPost storage unless host_images_on_recurpost is off. Ignored when the post has no video_url.",
         example: "https://example.com/fb-cover.jpg"
+      },
+      {
+        key: "fb_is_ai_generated",
+        type: "integer",
+        required: false,
+        description: "Label the Facebook post as made with AI. On a reel (fb_post_type=reel) Facebook shows its AI label on the reel; on an image post every image on the Facebook tab is labelled as an AI-generated photo, declared by you. Use fb_ai_images to label only some images or to give the provenance type.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "fb_ai_images",
+        type: "array",
+        required: false,
+        description: "Images to label as AI-generated photos on Facebook, named by the original URLs given in image_url (or fb_image_url when Facebook has its own images). A JSON array of URL strings, or of objects with image_url and provenance_type: EXPLICIT (declared by you, the default), EXPLICIT_AI_EDIT (edited with AI), C2PA (content credentials in the file), IPTC (IPTC AI metadata in the file) or INVISIBLE_WATERMARK. Labels the Facebook tab on its own, without fb_is_ai_generated. A URL that is not one of the post's Facebook images, or any other provenance type, answers 400.",
+        example: [
+          {
+            image_url: "https://example.com/hero.jpg",
+            provenance_type: "EXPLICIT_AI_EDIT"
+          }
+        ],
+        items: "object",
+        acceptsList: false
       },
       {
         key: "ln_document",
@@ -1818,11 +1954,47 @@ export const librariesTools: ToolSpec[] = [
         acceptsList: false
       },
       {
+        key: "in_is_ai_generated",
+        type: "integer",
+        required: false,
+        description: "Label the Instagram post as AI-generated. Instagram shows its AI label on the post.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
         key: "pi_title",
         type: "string",
         required: false,
         description: "Pin title. The destination link of the pin is url or the first link in the text.",
         example: "Summer Sale - Best Deals of the Season"
+      },
+      {
+        key: "pi_ai_modified",
+        type: "integer",
+        required: false,
+        description: "Pinterest AI disclosure: the Pin's content was generated or modified with AI.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "pi_synthetic_performer",
+        type: "integer",
+        required: false,
+        description: "Pinterest AI disclosure: a person shown or heard in the Pin is AI-generated.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
       },
       {
         key: "gbp_cta",
@@ -1963,6 +2135,18 @@ export const librariesTools: ToolSpec[] = [
         example: "no"
       },
       {
+        key: "yt_contains_synthetic_media",
+        type: "integer",
+        required: false,
+        description: "Tell viewers the video contains realistic content that was altered or generated with AI. YouTube shows a label on the video.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
         key: "tk_privacy_status",
         type: "string",
         required: false,
@@ -2027,6 +2211,18 @@ export const librariesTools: ToolSpec[] = [
         type: "integer",
         required: false,
         description: "Set to 1 to mark the video as branded content for a third party.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "tk_is_aigc",
+        type: "integer",
+        required: false,
+        description: "Add TikTok's AI-generated content label to the video.",
         values: [
           "0",
           "1"

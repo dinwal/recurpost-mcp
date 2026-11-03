@@ -112,7 +112,7 @@ export const postsTools: ToolSpec[] = [
     module: "posts",
     endpoint: "post_content",
     summary: "Publish a post now, or schedule it, on one or more social accounts.",
-    description: "Creates a one-off post on the social accounts in id and publishes it immediately or at schedule_date_time. One call makes one post with one entry per account; the response carries the post id you poll with /api/post_status. The post is built once and saved as one tab per network (Facebook, Twitter/X, LinkedIn, Instagram, Google Business, Pinterest, YouTube, TikTok, Threads, Bluesky) from the same fields, so you can send every network option in one call and each account picks up its own. message, image_url, video_url and url are the shared content; fb_, tw_, ln_, in_, gmb_ / gbp_, pi_, yt_, tk_, th_ and bs_ prefixed fields override text or add options for one network, and <prefix>_image_url / <prefix>_video_url give one network media of its own. The post type follows the media: text only, link (a url or a link in the text, with a fetched preview), image (up to 20), video (mp4 or mov), or mixed when both images and a video are given. Every media URL is downloaded by RecurPost's servers, so it must be publicly reachable; a URL already on RecurPost storage (for example from /api/media_list) skips that download. The call runs the checks in this order: ids and ownership, media URL reachability, the option checks (400), the schedule time (400 / 415), the owner's daily post limit (403), then the media is fetched and stored (403 / 415) and the post saved; the app's content validator answers 422 with per-network details. Post now vs scheduled: Without schedule_date_time the post is queued for immediate publishing (schedule mode post now). With it, the time is stored as wall-clock time in the workspace owner's timezone, which is what /api/post_status and the app's calendar show. Media is fetched synchronously: Images, videos, thumbnails and LinkedIn documents are downloaded and stored during the call; a large video makes the request take as long as the download. Hosts behind authentication, private addresses or expiring links fail with 415. Google Drive share links are resolved to their download URL. Per-network overrides: A <prefix>_message equal to message is not treated as a customisation. On a text post a different per-network message gets its own link preview from the first link in that text. alt_text, covers (fb_thumb, ln_thumb, in_thumb), post types and first comments only mark the tab as customised when they apply (a cover on a post without video is dropped silently). Pinterest destination: When any chosen account is Pinterest, url (or the first link in the text) is saved as the pin's destination link, normalised with http:// when the scheme is missing. An invalid value answers 415 Invalid url parameter supplied. Instagram extras: Location, image tags, reel tags, collaborators, music, the trial flag and product tags are saved only on the Instagram tab. in_image_tags and in_product_tags positions refer to in_image_url positions when Instagram has its own images, else to image_url positions and are stored against the hosted copy of that image. Usernames are stored without the leading @ and de-duplicated. Music (in_audio_*), in_trial_reel and in_reel_product_tags are kept on reels only and dropped silently on a feed or story post once the option checks have passed; music needs an account connected through Facebook login, see /api/instagram_audio_search. Facebook page mentions: fb_mentions lists the pages; the text has to carry @<page id> where each mention goes, as /api/mention_search returns the id. The publisher rewrites each into Facebook's mention form when it posts to a Page. Google Business CTA: gbp_cta=None clears the button and both links. An Offer CTA with gbp_cta_url and no gbp_redeem_offer_link uses the CTA link as the redeem link. A link post with no CTA gets Learn more pointing at the link automatically. Twitter/X thread: twitter_thread items become follow-up tweets under the main tweet. Each item's media is hosted the same way as the main post's; a thread item with a video needs the same paid plan as video_url. The thread is ignored by every other network. Plan rules follow the workspace owner: Video uploads, the daily post limit and media quotas are checked against the workspace owner's plan, not the caller's, when a team member posts into someone else's workspace. Per-network media: A network can post media of its own: <prefix>_image_url and <prefix>_video_url (fb_, tw_, ln_, in_, gmb_, pi_, yt_, tk_, th_, bs_) replace image_url / video_url on that network only and mark its tab as customised. Each network keeps its own cap (Facebook 15, Twitter/X 4, LinkedIn 20, Instagram 10 in all, Google Business 1, Pinterest 1, TikTok 10, Threads 20 in all, Bluesky 4); only Instagram and Threads combine images with a video, ordered by in_media_order / th_media_order; YouTube takes yt_video_url only. A URL named by several networks is downloaded once. Covers (fb_thumb and the others) apply to whichever video that network ends up with; in_image_tags and in_product_tags positions count in in_image_url when Instagram has its own images. Removing all media from one network is not possible: an empty override answers 400.",
+    description: "Creates a one-off post on the social accounts in id and publishes it immediately or at schedule_date_time. One call makes one post with one entry per account; the response carries the post id you poll with /api/post_status. The post is built once and saved as one tab per network (Facebook, Twitter/X, LinkedIn, Instagram, Google Business, Pinterest, YouTube, TikTok, Threads, Bluesky) from the same fields, so you can send every network option in one call and each account picks up its own. message, image_url, video_url and url are the shared content; fb_, tw_, ln_, in_, gmb_ / gbp_, pi_, yt_, tk_, th_ and bs_ prefixed fields override text or add options for one network, and <prefix>_image_url / <prefix>_video_url give one network media of its own. The post type follows the media: text only, link (a url or a link in the text, with a fetched preview), image (up to 20), video (mp4 or mov), or mixed when both images and a video are given. Every media URL is downloaded by RecurPost's servers, so it must be publicly reachable; a URL already on RecurPost storage (for example from /api/media_list) skips that download. The call runs the checks in this order: ids and ownership, media URL reachability, the option checks (400), the schedule time (400 / 415), the owner's daily post limit (403), then the media is fetched and stored (403 / 415) and the post saved; the app's content validator answers 422 with per-network details. Post now vs scheduled: Without schedule_date_time the post is queued for immediate publishing (schedule mode post now). With it, the time is stored as wall-clock time in the workspace owner's timezone, which is what /api/post_status and the app's calendar show. Media is fetched synchronously: Images, videos, thumbnails and LinkedIn documents are downloaded and stored during the call; a large video makes the request take as long as the download. Hosts behind authentication, private addresses or expiring links fail with 415. Google Drive share links are resolved to their download URL. Per-network overrides: A <prefix>_message equal to message is not treated as a customisation. On a text post a different per-network message gets its own link preview from the first link in that text. alt_text, covers (fb_thumb, ln_thumb, in_thumb), post types and first comments only mark the tab as customised when they apply (a cover on a post without video is dropped silently). Pinterest destination: When any chosen account is Pinterest, url (or the first link in the text) is saved as the pin's destination link, normalised with http:// when the scheme is missing. An invalid value answers 415 Invalid url parameter supplied. Instagram extras: Location, image tags, reel tags, collaborators, music, the trial flag and product tags are saved only on the Instagram tab. in_image_tags and in_product_tags positions refer to in_image_url positions when Instagram has its own images, else to image_url positions and are stored against the hosted copy of that image. Usernames are stored without the leading @ and de-duplicated. Music (in_audio_*), in_trial_reel and in_reel_product_tags are kept on reels only and dropped silently on a feed or story post once the option checks have passed; music needs an account connected through Facebook login, see /api/instagram_audio_search. Facebook page mentions: fb_mentions lists the pages; the text has to carry @<page id> where each mention goes, as /api/mention_search returns the id. The publisher rewrites each into Facebook's mention form when it posts to a Page. Google Business CTA: gbp_cta=None clears the button and both links. An Offer CTA with gbp_cta_url and no gbp_redeem_offer_link uses the CTA link as the redeem link. A link post with no CTA gets Learn more pointing at the link automatically. Twitter/X thread: twitter_thread items become follow-up tweets under the main tweet. Each item's media is hosted the same way as the main post's; a thread item with a video needs the same paid plan as video_url. The thread is ignored by every other network. Plan rules follow the workspace owner: Video uploads, the daily post limit and media quotas are checked against the workspace owner's plan, not the caller's, when a team member posts into someone else's workspace. Per-network media: A network can post media of its own: <prefix>_image_url and <prefix>_video_url (fb_, tw_, ln_, in_, gmb_, pi_, yt_, tk_, th_, bs_) replace image_url / video_url on that network only and mark its tab as customised. Each network keeps its own cap (Facebook 15, Twitter/X 4, LinkedIn 20, Instagram 10 in all, Google Business 1, Pinterest 1, TikTok 10, Threads 20 in all, Bluesky 4); only Instagram and Threads combine images with a video, ordered by in_media_order / th_media_order; YouTube takes yt_video_url only. A URL named by several networks is downloaded once. Covers (fb_thumb and the others) apply to whichever video that network ends up with; in_image_tags and in_product_tags positions count in in_image_url when Instagram has its own images. Removing all media from one network is not possible: an empty override answers 400. AI disclosure labels: Each network has the same switch as the composer's network tab: fb_is_ai_generated and fb_ai_images (Facebook), tw_made_with_ai (Twitter/X), in_is_ai_generated (Instagram), pi_ai_modified and pi_synthetic_performer (Pinterest), yt_contains_synthetic_media (YouTube) and tk_is_aigc (TikTok). Only 1 switches a label on, and a label marks that network's tab as customised. LinkedIn, Google Business, Threads and Bluesky have no label.",
     readOnly: false,
     destructive: false,
     params: [
@@ -473,6 +473,18 @@ export const postsTools: ToolSpec[] = [
         example: "Summer sale is here! #twitter"
       },
       {
+        key: "tw_made_with_ai",
+        type: "integer",
+        required: false,
+        description: "Label the post as made with AI on Twitter/X. X shows the label on the post.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
         key: "ln_message",
         type: "string",
         required: false,
@@ -596,6 +608,32 @@ export const postsTools: ToolSpec[] = [
         required: false,
         description: "Facebook text background for a post without image_url or video_url: an id from /api/facebook_backgrounds (letters, digits, underscore or dash, up to 64 characters). Applied on Facebook pages only.",
         example: "106"
+      },
+      {
+        key: "fb_is_ai_generated",
+        type: "integer",
+        required: false,
+        description: "Label the Facebook post as made with AI. On a reel (fb_post_type=reel) Facebook shows its AI label on the reel; on an image post every image on the Facebook tab is labelled as an AI-generated photo, declared by you. Use fb_ai_images to label only some images or to give the provenance type.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "fb_ai_images",
+        type: "array",
+        required: false,
+        description: "Images to label as AI-generated photos on Facebook, named by the original URLs given in image_url (or fb_image_url when Facebook has its own images). A JSON array of URL strings, or of objects with image_url and provenance_type: EXPLICIT (declared by you, the default), EXPLICIT_AI_EDIT (edited with AI), C2PA (content credentials in the file), IPTC (IPTC AI metadata in the file) or INVISIBLE_WATERMARK. Labels the Facebook tab on its own, without fb_is_ai_generated. A URL that is not one of the post's Facebook images, or any other provenance type, answers 400.",
+        example: [
+          {
+            image_url: "https://example.com/hero.jpg",
+            provenance_type: "EXPLICIT_AI_EDIT"
+          }
+        ],
+        items: "object",
+        acceptsList: false
       },
       {
         key: "ln_document",
@@ -827,11 +865,47 @@ export const postsTools: ToolSpec[] = [
         acceptsList: false
       },
       {
+        key: "in_is_ai_generated",
+        type: "integer",
+        required: false,
+        description: "Label the Instagram post as AI-generated. Instagram shows its AI label on the post.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
         key: "pi_title",
         type: "string",
         required: false,
         description: "Pin title. The destination link of the pin is url or the first link in the text.",
         example: "Summer Sale - Best Deals of the Season"
+      },
+      {
+        key: "pi_ai_modified",
+        type: "integer",
+        required: false,
+        description: "Pinterest AI disclosure: the Pin's content was generated or modified with AI.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "pi_synthetic_performer",
+        type: "integer",
+        required: false,
+        description: "Pinterest AI disclosure: a person shown or heard in the Pin is AI-generated.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
       },
       {
         key: "gbp_cta",
@@ -971,6 +1045,18 @@ export const postsTools: ToolSpec[] = [
         example: "no"
       },
       {
+        key: "yt_contains_synthetic_media",
+        type: "integer",
+        required: false,
+        description: "Tell viewers the video contains realistic content that was altered or generated with AI. YouTube shows a label on the video.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
         key: "tk_privacy_status",
         type: "string",
         required: false,
@@ -1035,6 +1121,18 @@ export const postsTools: ToolSpec[] = [
         type: "integer",
         required: false,
         description: "Set to 1 to mark the video as branded content for a third party.",
+        values: [
+          "0",
+          "1"
+        ],
+        default: "0",
+        example: 0
+      },
+      {
+        key: "tk_is_aigc",
+        type: "integer",
+        required: false,
+        description: "Add TikTok's AI-generated content label to the video.",
         values: [
           "0",
           "1"
