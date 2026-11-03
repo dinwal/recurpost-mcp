@@ -104,27 +104,11 @@ export const dmAutomationsTools: ToolSpec[] = [
     title: "DM Automation Stats",
     module: "dm_automations",
     endpoint: "dm_automation_stats",
-    summary: "Daily counters of your automations over a date window, by day, automation or account.",
-    description: "Sums the automation counters over a date window. By default the last 30 days (today and the 29 days before it, UTC dates) grouped by day; the window is at most 90 days because the counters are kept 90 days. group_by automation or account gives one row per automation or per account instead. account_id and automation_id narrow the rows. Fourteen counters are returned per row and in totals: dm_sent, comment_reply_sent, non_follower_reply_sent, consent_dm_sent, consent_follower_dm_sent, consent_non_follower_dm_sent, consent_expired, follower_detected, non_follower_detected, consent_error, opening_dm_sent, cta_response_received, unfollower_dm_sent and cta_loop_completed. The consent, follower, opening, cta and unfollower counters only move for follow_to_unlock automations. Window arithmetic: The limit is on the span: to_date minus from_date must be less than 90 days, so a window of 90 calendar days inclusive (for example 2026-07-04 to 2026-10-01) is the largest accepted. Deleted automations keep their history: Counters of a deleted automation still appear in day and account totals and as an automation row with a blank name until the 90-day retention drops them.",
+    summary: "The automation counters of the last 30 days, by day, automation or account.",
+    description: "Sums the automation counters over the last 30 days: today and the 30 days before it, UTC dates, the same window the app's automation list shows. There is no date range to choose, as in the app; the window used comes back as from_date and to_date. Grouped by day unless group_by automation or account gives one row per automation or per account instead. account_id and automation_id narrow the rows. Fourteen counters are returned per row and in totals: dm_sent, comment_reply_sent, non_follower_reply_sent, consent_dm_sent, consent_follower_dm_sent, consent_non_follower_dm_sent, consent_expired, follower_detected, non_follower_detected, consent_error, opening_dm_sent, cta_response_received, unfollower_dm_sent and cta_loop_completed. The consent, follower, opening, cta and unfollower counters only move for follow_to_unlock automations. Fixed window, like the app: The app shows DMs sent per automation over the last 30 days and offers no date picker, so this call offers none either. Dates sent along are ignored. The counters themselves are kept for 90 days. Deleted automations keep their history: Counters of a deleted automation still appear in day and account totals and as an automation row with a blank name while they fall inside the 30-day window.",
     readOnly: true,
     destructive: false,
     params: [
-      {
-        key: "from_date",
-        type: "date",
-        required: false,
-        description: "First day of the window, YYYY-MM-DD. Defaults to 29 days before to_date.",
-        default: "to_date minus 29 days",
-        example: "2026-10-01"
-      },
-      {
-        key: "to_date",
-        type: "date",
-        required: false,
-        description: "Last day of the window, YYYY-MM-DD. Defaults to today (UTC). Must not be before from_date; the window spans at most 90 days.",
-        default: "today (UTC)",
-        example: "2026-10-21"
-      },
       {
         key: "group_by",
         type: "string",
