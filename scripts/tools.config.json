@@ -48,16 +48,7 @@
     "generate_content_with_ai",
     "generate_image_with_ai"
   ],
-  "toolNames": {
-    "workflow_card_move:advance": "workflow_card_advance",
-    "workflow_card_move:convert": "workflow_card_convert",
-    "workflow_card_move:reassign": "workflow_card_reassign",
-    "workflow_card_move:request_changes": "workflow_card_request_changes",
-    "workflow_client_decision:approve": "workflow_client_approve",
-    "workflow_client_decision:reject": "workflow_client_reject",
-    "workflow_client_decision:comment": "workflow_client_comment",
-    "workflow_settings:settings": "workflow_settings_update"
-  },
+  "toolNames": {},
   "readOnlyActions": [
     "list",
     "get",

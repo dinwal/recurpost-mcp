@@ -65,7 +65,7 @@ export const workflowBoardTools: ToolSpec[] = [
     module: "workflow_board",
     endpoint: "workflow_card_save",
     summary: "Create an idea or a post card, or update an existing card.",
-    description: "Without id creates a card: kind idea goes to the Ideas column, kind post starts in the stage you name with stage_id. With id updates that card; fields left out keep their value, and only the fields you send are written. Each field is checked against the owner before the app is called: platforms against the known keys, accounts and labels against the owner's, media URLs must be public, schedule slots well formed. The app then applies the dashboard rules (your role's create and edit permissions, the Ideas column being enabled, accounts belonging to the card's workspace, no schedule slot in the past). Updates are partial: Only fields present in the request are written. Clearing a field means sending it empty (description, target_date, account_ids, label_ids, media, schedule as \"\" or []). On update kind and stage_id are ignored. Schedule slots are drafts: The slots you send stay on the card until it reaches the Scheduled column (/api/workflow_card_move with advance and to_scheduled, or client approval); only then do they become queue posts. The at time is read in the account's timezone, and the card reads it back in the owner's. Media is re-hosted on save: RecurPost downloads each media URL when the card is saved and stores its own copy; the card then reads back RecurPost URLs, not the ones you sent.",
+    description: "Without id creates a card: kind idea goes to the Ideas column, kind post starts in the stage you name with stage_id. With id updates that card; fields left out keep their value, and only the fields you send are written. Each field is checked against the owner before the app is called: platforms against the known keys, accounts and labels against the owner's, media URLs must be public, schedule slots well formed. The app then applies the dashboard rules (your role's create and edit permissions, the Ideas column being enabled, accounts belonging to the card's workspace, no schedule slot in the past). Updates are partial: Only fields present in the request are written. Clearing a field means sending it empty (description, target_date, account_ids, label_ids, media, schedule as \"\" or []). On update kind and stage_id are ignored. Schedule slots are drafts: The slots you send stay on the card until it reaches the Scheduled column (/api/workflow_card_advance with to_scheduled, or client approval); only then do they become queue posts. The at time is read in the account's timezone, and the card reads it back in the owner's. Media is re-hosted on save: RecurPost downloads each media URL when the card is saved and stores its own copy; the card then reads back RecurPost URLs, not the ones you sent.",
     readOnly: false,
     destructive: false,
     params: [
@@ -209,12 +209,11 @@ export const workflowBoardTools: ToolSpec[] = [
   },
   {
     name: "workflow_card_move",
-    title: "Workflow Card Move (Move)",
+    title: "Workflow Card Move",
     module: "workflow_board",
     endpoint: "workflow_card_move",
-    action: "move",
-    summary: "Move, advance, convert, reassign a card or send it back for changes. This tool runs the move action.",
-    description: "One endpoint for every board action, selected with action: move: put the card in the stage named by to, or back in Ideas with to ideas. advance: move the card to the next column; with to_scheduled true it jumps straight to Scheduled and its draft slots become queue posts. convert: turn an idea into a post in the workflow's first work stage (the first stage of any type when there is no work stage); share_with_client sets whether the client sees it. reassign: set the assignee to user_id, 0 to clear. request_changes: send the card back with a comment for the author, to return_stage_id or the workflow's default return stage. With every action except reassign, assignee_user_id names who picks the card up where it lands. The app enforces the dashboard rules: your role's permissions, stage gates (accounts and caption present, client approval before scheduling, no slot in the past) and the card still being where you think it is. Scheduling is a side effect: advance with to_scheduled true (or an advance whose next column is Scheduled) turns the card's draft slots into real queue posts and sets post_id. The app refuses when a slot is already in the past. Notifications: Moves, reassignments and change requests trigger the same emails and push notifications the dashboard sends to the people involved, according to the owner's notification settings. Client hand-over: Sending a card to the client and requesting an urgent approval are not actions of this endpoint; the app does them when a card advances into the client stage, or from the dashboard.",
+    summary: "Move a card to a stage, or back to Ideas.",
+    description: "Puts the card in the stage named by to, or back in Ideas with to ideas. assignee_user_id names who picks the card up where it lands. The app enforces the dashboard rules: your role's permissions, stage gates (accounts and caption present, client approval before scheduling, no slot in the past) and the card still being where you think it is. Notifications: Moves, reassignments and change requests trigger the same emails and push notifications the dashboard sends to the people involved, according to the owner's notification settings. Client hand-over: Sending a card to the client and requesting an urgent approval are not actions of this endpoint; the app does them when a card advances into the client stage, or from the dashboard.",
     readOnly: false,
     destructive: false,
     params: [
@@ -229,28 +228,14 @@ export const workflowBoardTools: ToolSpec[] = [
         key: "to",
         type: "string",
         required: true,
-        description: "Required for move: a stage_id from the board, or the word ideas. Only open stages accept cards; a scheduled post cannot move back.",
+        description: "A stage_id from the board, or the word ideas. Only open stages accept cards; a scheduled post cannot move back.",
         example: "8"
-      },
-      {
-        key: "user_id",
-        type: "string",
-        required: false,
-        description: "Required for reassign: encrypted user id from members[], or 0 to clear the assignee.",
-        example: "Sl7mN2vB4Q=="
-      },
-      {
-        key: "comment",
-        type: "string",
-        required: false,
-        description: "Required for request_changes: what the author should change. Added to the card's activity.",
-        example: "Please swap the hero image for the approved one."
       },
       {
         key: "assignee_user_id",
         type: "string",
         required: false,
-        description: "For every action except reassign: encrypted user id to assign the card to where it lands.",
+        description: "Encrypted user id to assign the card to where it lands.",
         example: "Sl7mN2vB4Q=="
       },
       {
@@ -264,12 +249,11 @@ export const workflowBoardTools: ToolSpec[] = [
   },
   {
     name: "workflow_card_advance",
-    title: "Workflow Card Move (Advance)",
+    title: "Workflow Card Advance",
     module: "workflow_board",
-    endpoint: "workflow_card_move",
-    action: "advance",
-    summary: "Move, advance, convert, reassign a card or send it back for changes. This tool runs the advance action.",
-    description: "One endpoint for every board action, selected with action: move: put the card in the stage named by to, or back in Ideas with to ideas. advance: move the card to the next column; with to_scheduled true it jumps straight to Scheduled and its draft slots become queue posts. convert: turn an idea into a post in the workflow's first work stage (the first stage of any type when there is no work stage); share_with_client sets whether the client sees it. reassign: set the assignee to user_id, 0 to clear. request_changes: send the card back with a comment for the author, to return_stage_id or the workflow's default return stage. With every action except reassign, assignee_user_id names who picks the card up where it lands. The app enforces the dashboard rules: your role's permissions, stage gates (accounts and caption present, client approval before scheduling, no slot in the past) and the card still being where you think it is. Scheduling is a side effect: advance with to_scheduled true (or an advance whose next column is Scheduled) turns the card's draft slots into real queue posts and sets post_id. The app refuses when a slot is already in the past. Notifications: Moves, reassignments and change requests trigger the same emails and push notifications the dashboard sends to the people involved, according to the owner's notification settings. Client hand-over: Sending a card to the client and requesting an urgent approval are not actions of this endpoint; the app does them when a card advances into the client stage, or from the dashboard.",
+    endpoint: "workflow_card_advance",
+    summary: "Move a card to the next column, or straight to Scheduled.",
+    description: "Moves the card to the next column; with to_scheduled true it jumps straight to Scheduled and its draft slots become queue posts. assignee_user_id names who picks the card up where it lands. The app enforces the dashboard rules: your role's permissions, stage gates (accounts and caption present, client approval before scheduling, no slot in the past) and the card still being where you think it is. Scheduling is a side effect: advance with to_scheduled true (or an advance whose next column is Scheduled) turns the card's draft slots into real queue posts and sets post_id. The app refuses when a slot is already in the past. Notifications: Moves, reassignments and change requests trigger the same emails and push notifications the dashboard sends to the people involved, according to the owner's notification settings. Client hand-over: Sending a card to the client and requesting an urgent approval are not actions of this endpoint; the app does them when a card advances into the client stage, or from the dashboard.",
     readOnly: false,
     destructive: false,
     params: [
@@ -281,39 +265,18 @@ export const workflowBoardTools: ToolSpec[] = [
         example: 512
       },
       {
-        key: "to",
-        type: "string",
-        required: false,
-        description: "Required for move: a stage_id from the board, or the word ideas. Only open stages accept cards; a scheduled post cannot move back.",
-        example: "8"
-      },
-      {
         key: "to_scheduled",
         type: "boolean",
         required: false,
-        description: "For advance: true to jump straight to the Scheduled column instead of the next stage. Requires the card to pass the schedule gates.",
+        description: "True to jump straight to the Scheduled column instead of the next stage. Requires the card to pass the schedule gates.",
         default: "false",
         example: false
-      },
-      {
-        key: "user_id",
-        type: "string",
-        required: false,
-        description: "Required for reassign: encrypted user id from members[], or 0 to clear the assignee.",
-        example: "Sl7mN2vB4Q=="
-      },
-      {
-        key: "comment",
-        type: "string",
-        required: false,
-        description: "Required for request_changes: what the author should change. Added to the card's activity.",
-        example: "Please swap the hero image for the approved one."
       },
       {
         key: "assignee_user_id",
         type: "string",
         required: false,
-        description: "For every action except reassign: encrypted user id to assign the card to where it lands.",
+        description: "Encrypted user id to assign the card to where it lands.",
         example: "Sl7mN2vB4Q=="
       },
       {
@@ -327,12 +290,11 @@ export const workflowBoardTools: ToolSpec[] = [
   },
   {
     name: "workflow_card_convert",
-    title: "Workflow Card Move (Convert)",
+    title: "Workflow Card Convert",
     module: "workflow_board",
-    endpoint: "workflow_card_move",
-    action: "convert",
-    summary: "Move, advance, convert, reassign a card or send it back for changes. This tool runs the convert action.",
-    description: "One endpoint for every board action, selected with action: move: put the card in the stage named by to, or back in Ideas with to ideas. advance: move the card to the next column; with to_scheduled true it jumps straight to Scheduled and its draft slots become queue posts. convert: turn an idea into a post in the workflow's first work stage (the first stage of any type when there is no work stage); share_with_client sets whether the client sees it. reassign: set the assignee to user_id, 0 to clear. request_changes: send the card back with a comment for the author, to return_stage_id or the workflow's default return stage. With every action except reassign, assignee_user_id names who picks the card up where it lands. The app enforces the dashboard rules: your role's permissions, stage gates (accounts and caption present, client approval before scheduling, no slot in the past) and the card still being where you think it is. Scheduling is a side effect: advance with to_scheduled true (or an advance whose next column is Scheduled) turns the card's draft slots into real queue posts and sets post_id. The app refuses when a slot is already in the past. Notifications: Moves, reassignments and change requests trigger the same emails and push notifications the dashboard sends to the people involved, according to the owner's notification settings. Client hand-over: Sending a card to the client and requesting an urgent approval are not actions of this endpoint; the app does them when a card advances into the client stage, or from the dashboard.",
+    endpoint: "workflow_card_convert",
+    summary: "Turn an idea into a post in the first work stage.",
+    description: "Turns an idea into a post in the workflow's first work stage (the first stage of any type when there is no work stage); share_with_client sets whether the client sees it. assignee_user_id names who picks the card up where it lands. The app enforces the dashboard rules: your role's permissions, stage gates (accounts and caption present, client approval before scheduling, no slot in the past) and the card still being where you think it is. Notifications: Moves, reassignments and change requests trigger the same emails and push notifications the dashboard sends to the people involved, according to the owner's notification settings.",
     readOnly: false,
     destructive: false,
     params: [
@@ -344,38 +306,17 @@ export const workflowBoardTools: ToolSpec[] = [
         example: 512
       },
       {
-        key: "to",
-        type: "string",
-        required: false,
-        description: "Required for move: a stage_id from the board, or the word ideas. Only open stages accept cards; a scheduled post cannot move back.",
-        example: "8"
-      },
-      {
         key: "share_with_client",
         type: "boolean",
         required: false,
-        description: "For convert: whether the new post is shared with the client. Defaults to the workflow setting.",
+        description: "Whether the new post is shared with the client. Defaults to the workflow setting.",
         example: false
-      },
-      {
-        key: "user_id",
-        type: "string",
-        required: false,
-        description: "Required for reassign: encrypted user id from members[], or 0 to clear the assignee.",
-        example: "Sl7mN2vB4Q=="
-      },
-      {
-        key: "comment",
-        type: "string",
-        required: false,
-        description: "Required for request_changes: what the author should change. Added to the card's activity.",
-        example: "Please swap the hero image for the approved one."
       },
       {
         key: "assignee_user_id",
         type: "string",
         required: false,
-        description: "For every action except reassign: encrypted user id to assign the card to where it lands.",
+        description: "Encrypted user id to assign the card to where it lands.",
         example: "Sl7mN2vB4Q=="
       },
       {
@@ -389,12 +330,11 @@ export const workflowBoardTools: ToolSpec[] = [
   },
   {
     name: "workflow_card_reassign",
-    title: "Workflow Card Move (Reassign)",
+    title: "Workflow Card Reassign",
     module: "workflow_board",
-    endpoint: "workflow_card_move",
-    action: "reassign",
-    summary: "Move, advance, convert, reassign a card or send it back for changes. This tool runs the reassign action.",
-    description: "One endpoint for every board action, selected with action: move: put the card in the stage named by to, or back in Ideas with to ideas. advance: move the card to the next column; with to_scheduled true it jumps straight to Scheduled and its draft slots become queue posts. convert: turn an idea into a post in the workflow's first work stage (the first stage of any type when there is no work stage); share_with_client sets whether the client sees it. reassign: set the assignee to user_id, 0 to clear. request_changes: send the card back with a comment for the author, to return_stage_id or the workflow's default return stage. With every action except reassign, assignee_user_id names who picks the card up where it lands. The app enforces the dashboard rules: your role's permissions, stage gates (accounts and caption present, client approval before scheduling, no slot in the past) and the card still being where you think it is. Scheduling is a side effect: advance with to_scheduled true (or an advance whose next column is Scheduled) turns the card's draft slots into real queue posts and sets post_id. The app refuses when a slot is already in the past. Notifications: Moves, reassignments and change requests trigger the same emails and push notifications the dashboard sends to the people involved, according to the owner's notification settings. Client hand-over: Sending a card to the client and requesting an urgent approval are not actions of this endpoint; the app does them when a card advances into the client stage, or from the dashboard.",
+    endpoint: "workflow_card_reassign",
+    summary: "Set or clear the assignee of a card.",
+    description: "Sets the assignee of the card to user_id, 0 to clear. The app enforces your role's permissions. Notifications: Moves, reassignments and change requests trigger the same emails and push notifications the dashboard sends to the people involved, according to the owner's notification settings.",
     readOnly: false,
     destructive: false,
     params: [
@@ -409,28 +349,7 @@ export const workflowBoardTools: ToolSpec[] = [
         key: "user_id",
         type: "string",
         required: true,
-        description: "Required for reassign: encrypted user id from members[], or 0 to clear the assignee.",
-        example: "Sl7mN2vB4Q=="
-      },
-      {
-        key: "to",
-        type: "string",
-        required: false,
-        description: "Required for move: a stage_id from the board, or the word ideas. Only open stages accept cards; a scheduled post cannot move back.",
-        example: "8"
-      },
-      {
-        key: "comment",
-        type: "string",
-        required: false,
-        description: "Required for request_changes: what the author should change. Added to the card's activity.",
-        example: "Please swap the hero image for the approved one."
-      },
-      {
-        key: "assignee_user_id",
-        type: "string",
-        required: false,
-        description: "For every action except reassign: encrypted user id to assign the card to where it lands.",
+        description: "Encrypted user id from members[], or 0 to clear the assignee.",
         example: "Sl7mN2vB4Q=="
       },
       {
@@ -444,12 +363,11 @@ export const workflowBoardTools: ToolSpec[] = [
   },
   {
     name: "workflow_card_request_changes",
-    title: "Workflow Card Move (Request Changes)",
+    title: "Workflow Card Request Changes",
     module: "workflow_board",
-    endpoint: "workflow_card_move",
-    action: "request_changes",
-    summary: "Move, advance, convert, reassign a card or send it back for changes. This tool runs the request_changes action.",
-    description: "One endpoint for every board action, selected with action: move: put the card in the stage named by to, or back in Ideas with to ideas. advance: move the card to the next column; with to_scheduled true it jumps straight to Scheduled and its draft slots become queue posts. convert: turn an idea into a post in the workflow's first work stage (the first stage of any type when there is no work stage); share_with_client sets whether the client sees it. reassign: set the assignee to user_id, 0 to clear. request_changes: send the card back with a comment for the author, to return_stage_id or the workflow's default return stage. With every action except reassign, assignee_user_id names who picks the card up where it lands. The app enforces the dashboard rules: your role's permissions, stage gates (accounts and caption present, client approval before scheduling, no slot in the past) and the card still being where you think it is. Scheduling is a side effect: advance with to_scheduled true (or an advance whose next column is Scheduled) turns the card's draft slots into real queue posts and sets post_id. The app refuses when a slot is already in the past. Notifications: Moves, reassignments and change requests trigger the same emails and push notifications the dashboard sends to the people involved, according to the owner's notification settings. Client hand-over: Sending a card to the client and requesting an urgent approval are not actions of this endpoint; the app does them when a card advances into the client stage, or from the dashboard.",
+    endpoint: "workflow_card_request_changes",
+    summary: "Send a card back to the author with a comment.",
+    description: "Sends the card back with a comment for the author, to return_stage_id or the workflow's default return stage. assignee_user_id names who picks the card up where it lands. The app enforces the dashboard rules: your role's permissions, stage gates (accounts and caption present, client approval before scheduling, no slot in the past) and the card still being where you think it is. Notifications: Moves, reassignments and change requests trigger the same emails and push notifications the dashboard sends to the people involved, according to the owner's notification settings.",
     readOnly: false,
     destructive: false,
     params: [
@@ -464,35 +382,21 @@ export const workflowBoardTools: ToolSpec[] = [
         key: "comment",
         type: "string",
         required: true,
-        description: "Required for request_changes: what the author should change. Added to the card's activity.",
+        description: "What the author should change. Added to the card's activity.",
         example: "Please swap the hero image for the approved one."
-      },
-      {
-        key: "to",
-        type: "string",
-        required: false,
-        description: "Required for move: a stage_id from the board, or the word ideas. Only open stages accept cards; a scheduled post cannot move back.",
-        example: "8"
-      },
-      {
-        key: "user_id",
-        type: "string",
-        required: false,
-        description: "Required for reassign: encrypted user id from members[], or 0 to clear the assignee.",
-        example: "Sl7mN2vB4Q=="
       },
       {
         key: "return_stage_id",
         type: "integer",
         required: false,
-        description: "For request_changes: stage to send the card back to, from return_stages of /api/workflow_card. Defaults to return_default_stage_id.",
+        description: "Stage to send the card back to, from return_stages of /api/workflow_card. Defaults to return_default_stage_id.",
         example: 7
       },
       {
         key: "assignee_user_id",
         type: "string",
         required: false,
-        description: "For every action except reassign: encrypted user id to assign the card to where it lands.",
+        description: "Encrypted user id to assign the card to where it lands.",
         example: "Sl7mN2vB4Q=="
       },
       {
@@ -613,12 +517,11 @@ export const workflowBoardTools: ToolSpec[] = [
   },
   {
     name: "workflow_client_approve",
-    title: "Workflow Client Decision (Approve)",
+    title: "Workflow Client Approve",
     module: "workflow_board",
-    endpoint: "workflow_client_decision",
-    action: "approve",
-    summary: "Record a client's approve, reject or comment on a card, for integrations that collect the client's answer elsewhere. This tool runs the approve action.",
-    description: "Writes the client's answer on a card the way the client calendar does, with client_name as the actor. approve applies to a card in the client review stage: the card's draft schedule becomes real posts and the card moves on, exactly as when the client approves on the calendar. reject applies to the client stage or to a card already sent back for changes, and needs feedback of at least 10 characters, which the team sees word for word. comment adds the feedback to the thread and moves nothing. The app runs its own gates: a card with no schedule times, a schedule already in the past, or a card the client cannot see answers 400 with the app's wording; a decision already recorded answers 409. The app records the decision as made through the client calendar.",
+    endpoint: "workflow_client_approve",
+    summary: "Record a client's approval of a card, for integrations that collect the client's answer elsewhere.",
+    description: "Writes the client's approval on a card in the client review stage the way the client calendar does, with client_name as the actor: the card's draft schedule becomes real posts and the card moves on, exactly as when the client approves on the calendar. The app runs its own gates: a card with no schedule times, a schedule already in the past, or a card the client cannot see answers 400 with the app's wording; a decision already recorded answers 409. The app records the decision as made through the client calendar.",
     readOnly: false,
     destructive: false,
     params: [
@@ -628,13 +531,6 @@ export const workflowBoardTools: ToolSpec[] = [
         required: true,
         description: "Plain card id from /api/workflow_board.",
         example: 184
-      },
-      {
-        key: "feedback",
-        type: "string",
-        required: false,
-        description: "The client's words. Required for reject and comment, at least 10 characters.",
-        example: "Please use the blue version of the logo."
       },
       {
         key: "client_name",
@@ -654,12 +550,11 @@ export const workflowBoardTools: ToolSpec[] = [
   },
   {
     name: "workflow_client_reject",
-    title: "Workflow Client Decision (Reject)",
+    title: "Workflow Client Reject",
     module: "workflow_board",
-    endpoint: "workflow_client_decision",
-    action: "reject",
-    summary: "Record a client's approve, reject or comment on a card, for integrations that collect the client's answer elsewhere. This tool runs the reject action.",
-    description: "Writes the client's answer on a card the way the client calendar does, with client_name as the actor. approve applies to a card in the client review stage: the card's draft schedule becomes real posts and the card moves on, exactly as when the client approves on the calendar. reject applies to the client stage or to a card already sent back for changes, and needs feedback of at least 10 characters, which the team sees word for word. comment adds the feedback to the thread and moves nothing. The app runs its own gates: a card with no schedule times, a schedule already in the past, or a card the client cannot see answers 400 with the app's wording; a decision already recorded answers 409. The app records the decision as made through the client calendar.",
+    endpoint: "workflow_client_reject",
+    summary: "Record a client's rejection of a card with their feedback.",
+    description: "Writes the client's rejection on a card in the client stage, or on a card already sent back for changes, with client_name as the actor. feedback of at least 10 characters is required; the team sees it word for word. The app runs its own gates: a card with no schedule times, a schedule already in the past, or a card the client cannot see answers 400 with the app's wording; a decision already recorded answers 409. The app records the decision as made through the client calendar.",
     readOnly: false,
     destructive: false,
     params: [
@@ -674,7 +569,7 @@ export const workflowBoardTools: ToolSpec[] = [
         key: "feedback",
         type: "string",
         required: true,
-        description: "The client's words. Required for reject and comment, at least 10 characters.",
+        description: "The client's words, at least 10 characters.",
         example: "Please use the blue version of the logo."
       },
       {
@@ -695,12 +590,11 @@ export const workflowBoardTools: ToolSpec[] = [
   },
   {
     name: "workflow_client_comment",
-    title: "Workflow Client Decision (Comment)",
+    title: "Workflow Client Comment",
     module: "workflow_board",
-    endpoint: "workflow_client_decision",
-    action: "comment",
-    summary: "Record a client's approve, reject or comment on a card, for integrations that collect the client's answer elsewhere. This tool runs the comment action.",
-    description: "Writes the client's answer on a card the way the client calendar does, with client_name as the actor. approve applies to a card in the client review stage: the card's draft schedule becomes real posts and the card moves on, exactly as when the client approves on the calendar. reject applies to the client stage or to a card already sent back for changes, and needs feedback of at least 10 characters, which the team sees word for word. comment adds the feedback to the thread and moves nothing. The app runs its own gates: a card with no schedule times, a schedule already in the past, or a card the client cannot see answers 400 with the app's wording; a decision already recorded answers 409. The app records the decision as made through the client calendar.",
+    endpoint: "workflow_client_comment",
+    summary: "Add a client's comment to a card without moving it.",
+    description: "Adds the client's feedback to the card's thread with client_name as the actor and moves nothing. At least 10 characters. The app runs its own gates: a card with no schedule times, a schedule already in the past, or a card the client cannot see answers 400 with the app's wording; a decision already recorded answers 409. The app records the decision as made through the client calendar.",
     readOnly: false,
     destructive: false,
     params: [
@@ -715,7 +609,7 @@ export const workflowBoardTools: ToolSpec[] = [
         key: "feedback",
         type: "string",
         required: true,
-        description: "The client's words. Required for reject and comment, at least 10 characters.",
+        description: "The client's words, at least 10 characters.",
         example: "Please use the blue version of the logo."
       },
       {

@@ -4,22 +4,14 @@ import type { ToolSpec } from "../types.js";
 export const workflowSettingsTools: ToolSpec[] = [
   {
     name: "workflow_settings_get",
-    title: "Workflow Settings (Get)",
+    title: "Workflow Settings Get",
     module: "workflow_settings",
-    endpoint: "workflow_settings",
-    action: "get",
-    summary: "Read the workflow with its stages, create it, change its switches or toggle the Ideas stage. This tool runs the get action.",
-    description: "With action=get (the default) returns the workflow and its stages, or workflow null with no stages when the account has none yet. create builds the workflow from a template: blank gives an empty board to add stages to with /api/workflow_stage, standard gives RecurPost's stock stages. settings changes any of the four switches; the ones left out keep their value. ideas switches the Ideas column on or off with enabled. Every write answers with the workflow as it stands afterwards. Owner only. Switches are merged for you: The app's own settings call switches off whatever it is not told about; this endpoint fills the switches you leave out with their current values, so a single-switch change is safe. One workflow per account: There is no delete. A created workflow stays; reshape it with /api/workflow_stage.",
+    endpoint: "workflow_settings_get",
+    summary: "Read the workflow with its stages and switches.",
+    description: "Returns the workflow and its stages, or workflow null with no stages when the account has none yet. Owner only.",
     readOnly: true,
     destructive: false,
     params: [
-      {
-        key: "enabled",
-        type: "boolean",
-        required: false,
-        description: "Required when action is ideas: true shows the Ideas column, false hides it.",
-        example: true
-      },
       {
         key: "workspace_id",
         type: "string",
@@ -31,12 +23,11 @@ export const workflowSettingsTools: ToolSpec[] = [
   },
   {
     name: "workflow_settings_create",
-    title: "Workflow Settings (Create)",
+    title: "Workflow Settings Create",
     module: "workflow_settings",
-    endpoint: "workflow_settings",
-    action: "create",
-    summary: "Read the workflow with its stages, create it, change its switches or toggle the Ideas stage. This tool runs the create action.",
-    description: "With action=get (the default) returns the workflow and its stages, or workflow null with no stages when the account has none yet. create builds the workflow from a template: blank gives an empty board to add stages to with /api/workflow_stage, standard gives RecurPost's stock stages. settings changes any of the four switches; the ones left out keep their value. ideas switches the Ideas column on or off with enabled. Every write answers with the workflow as it stands afterwards. Owner only. Switches are merged for you: The app's own settings call switches off whatever it is not told about; this endpoint fills the switches you leave out with their current values, so a single-switch change is safe. One workflow per account: There is no delete. A created workflow stays; reshape it with /api/workflow_stage.",
+    endpoint: "workflow_settings_create",
+    summary: "Create the workflow from a template.",
+    description: "Builds the workflow from a template: blank gives an empty board to add stages to with /api/workflow_stage_save, standard gives RecurPost's stock stages. Answers with the workflow as it stands afterwards. Owner only. One workflow per account: There is no delete. A created workflow stays; reshape it with /api/workflow_stage_save.",
     readOnly: false,
     destructive: false,
     params: [
@@ -44,20 +35,13 @@ export const workflowSettingsTools: ToolSpec[] = [
         key: "template",
         type: "string",
         required: false,
-        description: "With create: blank or standard.",
+        description: "blank or standard.",
         values: [
           "blank",
           "standard"
         ],
         default: "blank",
         example: "standard"
-      },
-      {
-        key: "enabled",
-        type: "boolean",
-        required: false,
-        description: "Required when action is ideas: true shows the Ideas column, false hides it.",
-        example: true
       },
       {
         key: "workspace_id",
@@ -70,12 +54,11 @@ export const workflowSettingsTools: ToolSpec[] = [
   },
   {
     name: "workflow_settings_update",
-    title: "Workflow Settings (Settings)",
+    title: "Workflow Settings Update",
     module: "workflow_settings",
-    endpoint: "workflow_settings",
-    action: "settings",
-    summary: "Read the workflow with its stages, create it, change its switches or toggle the Ideas stage. This tool runs the settings action.",
-    description: "With action=get (the default) returns the workflow and its stages, or workflow null with no stages when the account has none yet. create builds the workflow from a template: blank gives an empty board to add stages to with /api/workflow_stage, standard gives RecurPost's stock stages. settings changes any of the four switches; the ones left out keep their value. ideas switches the Ideas column on or off with enabled. Every write answers with the workflow as it stands afterwards. Owner only. Switches are merged for you: The app's own settings call switches off whatever it is not told about; this endpoint fills the switches you leave out with their current values, so a single-switch change is safe. One workflow per account: There is no delete. A created workflow stays; reshape it with /api/workflow_stage.",
+    endpoint: "workflow_settings_update",
+    summary: "Change the workflow switches.",
+    description: "Changes any of the four switches; the ones left out keep their value. Answers with the workflow as it stands afterwards. Owner only. Switches are merged for you: The app's own settings call switches off whatever it is not told about; this endpoint fills the switches you leave out with their current values, so a single-switch change is safe.",
     readOnly: false,
     destructive: false,
     params: [
@@ -83,35 +66,28 @@ export const workflowSettingsTools: ToolSpec[] = [
         key: "require_approval_on_all_posts",
         type: "boolean",
         required: false,
-        description: "With settings: every post needs client approval before it is scheduled. At least one of the four switches must be sent.",
+        description: "Every post needs client approval before it is scheduled. At least one of the four switches must be sent.",
         example: true
       },
       {
         key: "show_ideas_to_client",
         type: "boolean",
         required: false,
-        description: "With settings: the client sees the Ideas column on the client calendar.",
+        description: "The client sees the Ideas column on the client calendar.",
         example: false
       },
       {
         key: "request_approval_on_ideas",
         type: "boolean",
         required: false,
-        description: "With settings: ideas are sent to the client for approval too.",
+        description: "Ideas are sent to the client for approval too.",
         example: false
       },
       {
         key: "allow_clients_to_suggest_ideas",
         type: "boolean",
         required: false,
-        description: "With settings: clients may add ideas from the client calendar.",
-        example: true
-      },
-      {
-        key: "enabled",
-        type: "boolean",
-        required: false,
-        description: "Required when action is ideas: true shows the Ideas column, false hides it.",
+        description: "Clients may add ideas from the client calendar.",
         example: true
       },
       {
@@ -125,12 +101,11 @@ export const workflowSettingsTools: ToolSpec[] = [
   },
   {
     name: "workflow_settings_ideas",
-    title: "Workflow Settings (Ideas)",
+    title: "Workflow Settings Ideas",
     module: "workflow_settings",
-    endpoint: "workflow_settings",
-    action: "ideas",
-    summary: "Read the workflow with its stages, create it, change its switches or toggle the Ideas stage. This tool runs the ideas action.",
-    description: "With action=get (the default) returns the workflow and its stages, or workflow null with no stages when the account has none yet. create builds the workflow from a template: blank gives an empty board to add stages to with /api/workflow_stage, standard gives RecurPost's stock stages. settings changes any of the four switches; the ones left out keep their value. ideas switches the Ideas column on or off with enabled. Every write answers with the workflow as it stands afterwards. Owner only. Switches are merged for you: The app's own settings call switches off whatever it is not told about; this endpoint fills the switches you leave out with their current values, so a single-switch change is safe. One workflow per account: There is no delete. A created workflow stays; reshape it with /api/workflow_stage.",
+    endpoint: "workflow_settings_ideas",
+    summary: "Switch the Ideas column on or off.",
+    description: "Switches the Ideas column on or off with enabled. Answers with the workflow as it stands afterwards. Owner only.",
     readOnly: false,
     destructive: false,
     params: [
@@ -138,7 +113,7 @@ export const workflowSettingsTools: ToolSpec[] = [
         key: "enabled",
         type: "boolean",
         required: true,
-        description: "Required when action is ideas: true shows the Ideas column, false hides it.",
+        description: "true shows the Ideas column, false hides it.",
         example: true
       },
       {
@@ -152,12 +127,11 @@ export const workflowSettingsTools: ToolSpec[] = [
   },
   {
     name: "workflow_stage_save",
-    title: "Workflow Stage (Save)",
+    title: "Workflow Stage Save",
     module: "workflow_settings",
-    endpoint: "workflow_stage",
-    action: "save",
-    summary: "Add a stage, change one or delete one. This tool runs the save action.",
-    description: "With action=save (the default) adds a stage when stage_id is absent and changes that stage when it is given; on a change the fields left out keep their value. With action=delete removes the stage named by stage_id, which needs confirm=true and is refused while cards sit in the stage. A client stage is the client review stage: only one is allowed, it must be the last stage before Scheduled, it takes no roles, and it is the only stage where the reschedule timeout policy and reject_to_stage_id apply. Every call answers with the full stage list afterwards. Owner only. Changing the type clears the roles: Turning a stage into a client stage drops its roles. Turning a client stage into a work or review stage keeps the reschedule policy only if you also send another timeout_policy; otherwise the call is refused. Position: Positions are re-numbered by the app after a save, so read them back from stages[] rather than assuming the one you sent.",
+    endpoint: "workflow_stage_save",
+    summary: "Add a stage to the workflow or change one.",
+    description: "Adds a stage when stage_id is absent and changes that stage when it is given; on a change the fields left out keep their value. A client stage is the client review stage: only one is allowed, it must be the last stage before Scheduled, it takes no roles, and it is the only stage where the reschedule timeout policy and reject_to_stage_id apply. Every call answers with the full stage list afterwards. Owner only. Changing the type clears the roles: Turning a stage into a client stage drops its roles. Turning a client stage into a work or review stage keeps the reschedule policy only if you also send another timeout_policy; otherwise the call is refused. Position: Positions are re-numbered by the app after a save, so read them back from stages[] rather than assuming the one you sent.",
     readOnly: false,
     destructive: false,
     params: [
@@ -165,7 +139,7 @@ export const workflowSettingsTools: ToolSpec[] = [
         key: "stage_id",
         type: "integer",
         required: false,
-        description: "Plain stage id from stages[].id of /api/workflow_settings. Required with delete; with save names the stage to change, omit it to add one.",
+        description: "Plain stage id from stages[].id of /api/workflow_settings_get: the stage to change. Omit it to add one.",
         example: 71
       },
       {
@@ -280,13 +254,12 @@ export const workflowSettingsTools: ToolSpec[] = [
   },
   {
     name: "workflow_stage_delete",
-    title: "Workflow Stage (Delete)",
+    title: "Workflow Stage Delete",
     module: "workflow_settings",
-    endpoint: "workflow_stage",
-    action: "delete",
+    endpoint: "workflow_stage_delete",
     confirm: true,
-    summary: "Add a stage, change one or delete one. This tool runs the delete action.",
-    description: "With action=save (the default) adds a stage when stage_id is absent and changes that stage when it is given; on a change the fields left out keep their value. With action=delete removes the stage named by stage_id, which needs confirm=true and is refused while cards sit in the stage. A client stage is the client review stage: only one is allowed, it must be the last stage before Scheduled, it takes no roles, and it is the only stage where the reschedule timeout policy and reject_to_stage_id apply. Every call answers with the full stage list afterwards. Owner only. Changing the type clears the roles: Turning a stage into a client stage drops its roles. Turning a client stage into a work or review stage keeps the reschedule policy only if you also send another timeout_policy; otherwise the call is refused. Position: Positions are re-numbered by the app after a save, so read them back from stages[] rather than assuming the one you sent.",
+    summary: "Delete a stage of the workflow.",
+    description: "Removes the stage named by stage_id; needs confirm=true and is refused while cards sit in the stage. Answers with the full stage list afterwards. Owner only.",
     readOnly: false,
     destructive: true,
     params: [
@@ -294,109 +267,8 @@ export const workflowSettingsTools: ToolSpec[] = [
         key: "stage_id",
         type: "integer",
         required: true,
-        description: "Plain stage id from stages[].id of /api/workflow_settings. Required with delete; with save names the stage to change, omit it to add one.",
+        description: "Plain stage id from stages[].id of /api/workflow_settings_get.",
         example: 71
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Required when adding: stage name, 1 to 60 characters.",
-        example: "Review"
-      },
-      {
-        key: "type",
-        type: "string",
-        required: false,
-        description: "Required when adding: work, review or client.",
-        values: [
-          "work",
-          "review",
-          "client"
-        ],
-        example: "review"
-      },
-      {
-        key: "color",
-        type: "string",
-        required: false,
-        description: "blue, orange, teal, green, purple, red, yellow or pink.",
-        values: [
-          "blue",
-          "orange",
-          "teal",
-          "green",
-          "purple",
-          "red",
-          "yellow",
-          "pink"
-        ],
-        default: "blue",
-        example: "orange"
-      },
-      {
-        key: "position",
-        type: "integer",
-        required: false,
-        description: "Place in the board order, 1 first. Defaults to 1 when adding and to the current place on a change.",
-        example: 2
-      },
-      {
-        key: "timeout_hours",
-        type: "integer",
-        required: false,
-        description: "Hours before the timeout policy runs: 0 for none, or one of 4, 8, 24, 48, 72, 168.",
-        values: [
-          "0",
-          "4",
-          "8",
-          "24",
-          "48",
-          "72",
-          "168"
-        ],
-        default: "0",
-        example: 48
-      },
-      {
-        key: "timeout_policy",
-        type: "string",
-        required: false,
-        description: "What happens when the timeout passes: hold, auto_approve, escalate, or reschedule on the client stage only. Read only when timeout_hours is not 0.",
-        values: [
-          "hold",
-          "auto_approve",
-          "escalate",
-          "reschedule"
-        ],
-        default: "hold",
-        example: "escalate"
-      },
-      {
-        key: "reschedule_by_days",
-        type: "integer",
-        required: false,
-        description: "With the reschedule policy: how many days the post is pushed by, 1 to 30.",
-        default: "1",
-        example: 1
-      },
-      {
-        key: "reject_to_stage_id",
-        type: "integer",
-        required: false,
-        description: "On the client stage: the stage a post the client rejects goes back to.",
-        example: 71
-      },
-      {
-        key: "roles",
-        type: "array",
-        required: false,
-        description: "The roles that work the stage, as role ids or names (array or comma-separated), from /api/roles. Replaces the current roles; ignored on a client stage, which has none.",
-        example: [
-          "Editor"
-        ],
-        items: "string",
-        acceptsList: true
       },
       {
         key: "workspace_id",
