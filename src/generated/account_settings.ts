@@ -8,7 +8,7 @@ export const accountSettingsTools: ToolSpec[] = [
     module: "account_settings",
     endpoint: "account_details",
     summary: "Who the API key belongs to: name, email, timezone, plan, default workspace and queue state.",
-    description: "Returns the account record of the key owner (never of a workspace owner), so it does not take workspace_id. queue tells whether the owner's whole posting queue is paused, the switch /api/queue_pause flips.",
+    description: "Returns the account record of the key owner (never of a workspace owner), so it does not take workspace_id. queue tells whether the owner's whole posting queue is paused, the switches /api/queue_pause and /api/queue_resume flip.",
     readOnly: true,
     destructive: false,
     params: []
@@ -181,12 +181,11 @@ export const accountSettingsTools: ToolSpec[] = [
   },
   {
     name: "queue_pause",
-    title: "Queue Pause (Pause)",
+    title: "Queue Pause",
     module: "account_settings",
     endpoint: "queue_pause",
-    action: "pause",
-    summary: "Pause or resume the whole posting queue of the workspace owner. This tool runs the pause action.",
-    description: "Pauses every scheduled post of the account until you resume it, or until resume_at when you send one. Only the workspace owner's own key may use it; a team member gets 403. The switch is account wide, not per workspace: pausing from any of the owner's workspaces pauses all of them. Check the state: /api/account_details returns the current queue state and the resume time.",
+    summary: "Pause the whole posting queue of the workspace owner.",
+    description: "Pauses every scheduled post of the account until you resume it with /api/queue_resume, or until resume_at when you send one. Only the workspace owner's own key may use it; a team member gets 403. The switch is account wide, not per workspace: pausing from any of the owner's workspaces pauses all of them. Check the state: /api/account_details returns the current queue state and the resume time.",
     readOnly: false,
     destructive: false,
     params: [
@@ -194,7 +193,7 @@ export const accountSettingsTools: ToolSpec[] = [
         key: "resume_at",
         type: "datetime",
         required: false,
-        description: "With action=pause only: when the queue resumes by itself, YYYY-MM-DD HH:MM:SS in the account owner's timezone. Must be in the future. Ignored on resume.",
+        description: "When the queue resumes by itself, YYYY-MM-DD HH:MM:SS in the account owner's timezone. Must be in the future. Left out, the queue stays paused until you resume it.",
         example: "2026-12-01 10:00:00"
       },
       {
@@ -208,22 +207,14 @@ export const accountSettingsTools: ToolSpec[] = [
   },
   {
     name: "queue_resume",
-    title: "Queue Pause (Resume)",
+    title: "Queue Resume",
     module: "account_settings",
-    endpoint: "queue_pause",
-    action: "resume",
-    summary: "Pause or resume the whole posting queue of the workspace owner. This tool runs the resume action.",
-    description: "Pauses every scheduled post of the account until you resume it, or until resume_at when you send one. Only the workspace owner's own key may use it; a team member gets 403. The switch is account wide, not per workspace: pausing from any of the owner's workspaces pauses all of them. Check the state: /api/account_details returns the current queue state and the resume time.",
+    endpoint: "queue_resume",
+    summary: "Resume the posting queue of the workspace owner.",
+    description: "Resumes every scheduled post of the account after a pause. Only the workspace owner's own key may use it; a team member gets 403. The switch is account wide, not per workspace. Check the state: /api/account_details returns the current queue state and the resume time.",
     readOnly: false,
     destructive: false,
     params: [
-      {
-        key: "resume_at",
-        type: "datetime",
-        required: false,
-        description: "With action=pause only: when the queue resumes by itself, YYYY-MM-DD HH:MM:SS in the account owner's timezone. Must be in the future. Ignored on resume.",
-        example: "2026-12-01 10:00:00"
-      },
       {
         key: "workspace_id",
         type: "string",
@@ -269,43 +260,14 @@ export const accountSettingsTools: ToolSpec[] = [
   },
   {
     name: "custom_fields_list",
-    title: "Custom Fields (List)",
+    title: "Custom Fields List",
     module: "account_settings",
-    endpoint: "custom_fields",
-    action: "list",
-    summary: "List, create, rename and delete custom fields, and set each account's value for them. This tool runs the list action.",
-    description: "Custom fields are per-account values substituted into post text: a field named City is written as [[City]] in a post and each account publishes its own value. One endpoint handles them through action: list (the default), create (with name and optional values), rename (field_id, name), set_value (field_id, account_id, value; adds or replaces), delete_value (field_id, account_id) and delete (field_id, confirm=true). Every action answers with the full list as it stands afterwards. Any member may list; every other action needs the workspace owner's own key. field_id is a plain integer from the list; account_id is an encrypted string from /api/social_account_list. Deleting a field does not edit posts: Posts that still carry [[name]] publish the placeholder as written once the field is gone.",
+    endpoint: "custom_fields_list",
+    summary: "List the custom fields of the account with every account's value.",
+    description: "Custom fields are per-account values substituted into post text: a field named City is written as [[City]] in a post and each account publishes its own value. This call lists them with the value each social account publishes. Any member may list.",
     readOnly: true,
     destructive: false,
     params: [
-      {
-        key: "field_id",
-        type: "integer",
-        required: false,
-        description: "Plain integer id of the field from the list. Required for rename, set_value, delete_value and delete.",
-        example: 3
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Field name, 1 to 50 characters; the placeholder becomes [[name]]. Required for create and rename.",
-        example: "City"
-      },
-      {
-        key: "account_id",
-        type: "string",
-        required: false,
-        description: "Encrypted social account id. Required for set_value and delete_value.",
-        example: "aB3dE5fG=="
-      },
-      {
-        key: "value",
-        type: "string",
-        required: false,
-        description: "The account's value, 1 to 500 characters. Required for set_value.",
-        example: "Mumbai"
-      },
       {
         key: "workspace_id",
         type: "string",
@@ -317,12 +279,11 @@ export const accountSettingsTools: ToolSpec[] = [
   },
   {
     name: "custom_fields_create",
-    title: "Custom Fields (Create)",
+    title: "Custom Fields Create",
     module: "account_settings",
-    endpoint: "custom_fields",
-    action: "create",
-    summary: "List, create, rename and delete custom fields, and set each account's value for them. This tool runs the create action.",
-    description: "Custom fields are per-account values substituted into post text: a field named City is written as [[City]] in a post and each account publishes its own value. One endpoint handles them through action: list (the default), create (with name and optional values), rename (field_id, name), set_value (field_id, account_id, value; adds or replaces), delete_value (field_id, account_id) and delete (field_id, confirm=true). Every action answers with the full list as it stands afterwards. Any member may list; every other action needs the workspace owner's own key. field_id is a plain integer from the list; account_id is an encrypted string from /api/social_account_list. Deleting a field does not edit posts: Posts that still carry [[name]] publish the placeholder as written once the field is gone.",
+    endpoint: "custom_fields_create",
+    summary: "Create a custom field, optionally with first values.",
+    description: "Custom fields are per-account values substituted into post text: a field named City is written as [[City]] in a post and each account publishes its own value. Creates a field named name, optionally with first values per account. Answers with the full list as it stands afterwards. Workspace owner's own key only. field_id is a plain integer from /api/custom_fields_list; account_id is an encrypted string from /api/social_account_list.",
     readOnly: false,
     destructive: false,
     params: [
@@ -330,21 +291,14 @@ export const accountSettingsTools: ToolSpec[] = [
         key: "name",
         type: "string",
         required: true,
-        description: "Field name, 1 to 50 characters; the placeholder becomes [[name]]. Required for create and rename.",
+        description: "Field name, 1 to 50 characters; the placeholder becomes [[name]].",
         example: "City"
-      },
-      {
-        key: "field_id",
-        type: "integer",
-        required: false,
-        description: "Plain integer id of the field from the list. Required for rename, set_value, delete_value and delete.",
-        example: 3
       },
       {
         key: "values",
         type: "array",
         required: false,
-        description: "For create: the first values, as an array (or JSON string) of objects with account_id (encrypted) and value (1 to 500 characters).",
+        description: "The first values, as an array (or JSON string) of objects with account_id (encrypted) and value (1 to 500 characters).",
         example: [
           {
             account_id: "aB3dE5fG==",
@@ -353,20 +307,6 @@ export const accountSettingsTools: ToolSpec[] = [
         ],
         items: "object",
         acceptsList: false
-      },
-      {
-        key: "account_id",
-        type: "string",
-        required: false,
-        description: "Encrypted social account id. Required for set_value and delete_value.",
-        example: "aB3dE5fG=="
-      },
-      {
-        key: "value",
-        type: "string",
-        required: false,
-        description: "The account's value, 1 to 500 characters. Required for set_value.",
-        example: "Mumbai"
       },
       {
         key: "workspace_id",
@@ -379,12 +319,11 @@ export const accountSettingsTools: ToolSpec[] = [
   },
   {
     name: "custom_fields_rename",
-    title: "Custom Fields (Rename)",
+    title: "Custom Fields Rename",
     module: "account_settings",
-    endpoint: "custom_fields",
-    action: "rename",
-    summary: "List, create, rename and delete custom fields, and set each account's value for them. This tool runs the rename action.",
-    description: "Custom fields are per-account values substituted into post text: a field named City is written as [[City]] in a post and each account publishes its own value. One endpoint handles them through action: list (the default), create (with name and optional values), rename (field_id, name), set_value (field_id, account_id, value; adds or replaces), delete_value (field_id, account_id) and delete (field_id, confirm=true). Every action answers with the full list as it stands afterwards. Any member may list; every other action needs the workspace owner's own key. field_id is a plain integer from the list; account_id is an encrypted string from /api/social_account_list. Deleting a field does not edit posts: Posts that still carry [[name]] publish the placeholder as written once the field is gone.",
+    endpoint: "custom_fields_rename",
+    summary: "Rename a custom field.",
+    description: "Custom fields are per-account values substituted into post text: a field named City is written as [[City]] in a post and each account publishes its own value. Renames the field; posts must then carry the new [[name]]. Answers with the full list as it stands afterwards. Workspace owner's own key only. field_id is a plain integer from /api/custom_fields_list; account_id is an encrypted string from /api/social_account_list. Posts are not rewritten: Posts that carry the old [[name]] keep it and publish the placeholder as written.",
     readOnly: false,
     destructive: false,
     params: [
@@ -392,29 +331,15 @@ export const accountSettingsTools: ToolSpec[] = [
         key: "field_id",
         type: "integer",
         required: true,
-        description: "Plain integer id of the field from the list. Required for rename, set_value, delete_value and delete.",
+        description: "Plain integer id of the field from /api/custom_fields_list.",
         example: 3
       },
       {
         key: "name",
         type: "string",
         required: true,
-        description: "Field name, 1 to 50 characters; the placeholder becomes [[name]]. Required for create and rename.",
+        description: "The new field name, 1 to 50 characters; the placeholder becomes [[name]].",
         example: "City"
-      },
-      {
-        key: "account_id",
-        type: "string",
-        required: false,
-        description: "Encrypted social account id. Required for set_value and delete_value.",
-        example: "aB3dE5fG=="
-      },
-      {
-        key: "value",
-        type: "string",
-        required: false,
-        description: "The account's value, 1 to 500 characters. Required for set_value.",
-        example: "Mumbai"
       },
       {
         key: "workspace_id",
@@ -427,12 +352,11 @@ export const accountSettingsTools: ToolSpec[] = [
   },
   {
     name: "custom_fields_set_value",
-    title: "Custom Fields (Set Value)",
+    title: "Custom Fields Set Value",
     module: "account_settings",
-    endpoint: "custom_fields",
-    action: "set_value",
-    summary: "List, create, rename and delete custom fields, and set each account's value for them. This tool runs the set_value action.",
-    description: "Custom fields are per-account values substituted into post text: a field named City is written as [[City]] in a post and each account publishes its own value. One endpoint handles them through action: list (the default), create (with name and optional values), rename (field_id, name), set_value (field_id, account_id, value; adds or replaces), delete_value (field_id, account_id) and delete (field_id, confirm=true). Every action answers with the full list as it stands afterwards. Any member may list; every other action needs the workspace owner's own key. field_id is a plain integer from the list; account_id is an encrypted string from /api/social_account_list. Deleting a field does not edit posts: Posts that still carry [[name]] publish the placeholder as written once the field is gone.",
+    endpoint: "custom_fields_set_value",
+    summary: "Set one account's value for a custom field.",
+    description: "Custom fields are per-account values substituted into post text: a field named City is written as [[City]] in a post and each account publishes its own value. Adds or replaces the value one social account publishes for the field. Answers with the full list as it stands afterwards. Workspace owner's own key only. field_id is a plain integer from /api/custom_fields_list; account_id is an encrypted string from /api/social_account_list.",
     readOnly: false,
     destructive: false,
     params: [
@@ -440,29 +364,22 @@ export const accountSettingsTools: ToolSpec[] = [
         key: "field_id",
         type: "integer",
         required: true,
-        description: "Plain integer id of the field from the list. Required for rename, set_value, delete_value and delete.",
+        description: "Plain integer id of the field from /api/custom_fields_list.",
         example: 3
       },
       {
         key: "account_id",
         type: "string",
         required: true,
-        description: "Encrypted social account id. Required for set_value and delete_value.",
+        description: "Encrypted social account id.",
         example: "aB3dE5fG=="
       },
       {
         key: "value",
         type: "string",
         required: true,
-        description: "The account's value, 1 to 500 characters. Required for set_value.",
+        description: "The account's value, 1 to 500 characters.",
         example: "Mumbai"
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Field name, 1 to 50 characters; the placeholder becomes [[name]]. Required for create and rename.",
-        example: "City"
       },
       {
         key: "workspace_id",
@@ -475,12 +392,11 @@ export const accountSettingsTools: ToolSpec[] = [
   },
   {
     name: "custom_fields_delete_value",
-    title: "Custom Fields (Delete Value)",
+    title: "Custom Fields Delete Value",
     module: "account_settings",
-    endpoint: "custom_fields",
-    action: "delete_value",
-    summary: "List, create, rename and delete custom fields, and set each account's value for them. This tool runs the delete_value action.",
-    description: "Custom fields are per-account values substituted into post text: a field named City is written as [[City]] in a post and each account publishes its own value. One endpoint handles them through action: list (the default), create (with name and optional values), rename (field_id, name), set_value (field_id, account_id, value; adds or replaces), delete_value (field_id, account_id) and delete (field_id, confirm=true). Every action answers with the full list as it stands afterwards. Any member may list; every other action needs the workspace owner's own key. field_id is a plain integer from the list; account_id is an encrypted string from /api/social_account_list. Deleting a field does not edit posts: Posts that still carry [[name]] publish the placeholder as written once the field is gone.",
+    endpoint: "custom_fields_delete_value",
+    summary: "Remove one account's value for a custom field.",
+    description: "Custom fields are per-account values substituted into post text: a field named City is written as [[City]] in a post and each account publishes its own value. Removes the value one social account publishes for the field; that account then publishes the placeholder as written. Answers with the full list as it stands afterwards. Workspace owner's own key only. field_id is a plain integer from /api/custom_fields_list; account_id is an encrypted string from /api/social_account_list.",
     readOnly: false,
     destructive: true,
     params: [
@@ -488,29 +404,15 @@ export const accountSettingsTools: ToolSpec[] = [
         key: "field_id",
         type: "integer",
         required: true,
-        description: "Plain integer id of the field from the list. Required for rename, set_value, delete_value and delete.",
+        description: "Plain integer id of the field from /api/custom_fields_list.",
         example: 3
       },
       {
         key: "account_id",
         type: "string",
         required: true,
-        description: "Encrypted social account id. Required for set_value and delete_value.",
+        description: "Encrypted social account id.",
         example: "aB3dE5fG=="
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Field name, 1 to 50 characters; the placeholder becomes [[name]]. Required for create and rename.",
-        example: "City"
-      },
-      {
-        key: "value",
-        type: "string",
-        required: false,
-        description: "The account's value, 1 to 500 characters. Required for set_value.",
-        example: "Mumbai"
       },
       {
         key: "workspace_id",
@@ -523,13 +425,12 @@ export const accountSettingsTools: ToolSpec[] = [
   },
   {
     name: "custom_fields_delete",
-    title: "Custom Fields (Delete)",
+    title: "Custom Fields Delete",
     module: "account_settings",
-    endpoint: "custom_fields",
-    action: "delete",
+    endpoint: "custom_fields_delete",
     confirm: true,
-    summary: "List, create, rename and delete custom fields, and set each account's value for them. This tool runs the delete action.",
-    description: "Custom fields are per-account values substituted into post text: a field named City is written as [[City]] in a post and each account publishes its own value. One endpoint handles them through action: list (the default), create (with name and optional values), rename (field_id, name), set_value (field_id, account_id, value; adds or replaces), delete_value (field_id, account_id) and delete (field_id, confirm=true). Every action answers with the full list as it stands afterwards. Any member may list; every other action needs the workspace owner's own key. field_id is a plain integer from the list; account_id is an encrypted string from /api/social_account_list. Deleting a field does not edit posts: Posts that still carry [[name]] publish the placeholder as written once the field is gone.",
+    summary: "Delete a custom field and every account's value for it.",
+    description: "Custom fields are per-account values substituted into post text: a field named City is written as [[City]] in a post and each account publishes its own value. Deletes the field with every account's value, with confirm=true. Answers with the full list as it stands afterwards. Workspace owner's own key only. field_id is a plain integer from /api/custom_fields_list; account_id is an encrypted string from /api/social_account_list. Deleting a field does not edit posts: Posts that still carry [[name]] publish the placeholder as written once the field is gone.",
     readOnly: false,
     destructive: true,
     params: [
@@ -537,29 +438,8 @@ export const accountSettingsTools: ToolSpec[] = [
         key: "field_id",
         type: "integer",
         required: true,
-        description: "Plain integer id of the field from the list. Required for rename, set_value, delete_value and delete.",
+        description: "Plain integer id of the field from /api/custom_fields_list.",
         example: 3
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Field name, 1 to 50 characters; the placeholder becomes [[name]]. Required for create and rename.",
-        example: "City"
-      },
-      {
-        key: "account_id",
-        type: "string",
-        required: false,
-        description: "Encrypted social account id. Required for set_value and delete_value.",
-        example: "aB3dE5fG=="
-      },
-      {
-        key: "value",
-        type: "string",
-        required: false,
-        description: "The account's value, 1 to 500 characters. Required for set_value.",
-        example: "Mumbai"
       },
       {
         key: "workspace_id",
@@ -726,44 +606,41 @@ export const accountSettingsTools: ToolSpec[] = [
   },
   {
     name: "white_label_get",
-    title: "White Label (Get)",
+    title: "White Label Get",
     module: "account_settings",
-    endpoint: "white_label",
-    action: "get",
-    summary: "Read, set or remove the white-label logo printed on your reports, an account-level setting. This tool runs the get action.",
-    description: "The logo printed on your report PDFs in place of RecurPost's, the White labeling setting of the account settings page. action is get (the default), set with a logo_url (any publicly reachable image URL, stored in your RecurPost storage), or delete. This is an account-level setting: the call always acts on the account that owns the API key, so there is no workspace_id. The logo is the one printed on reports of the workspaces that account owns. A team member's key manages the member's own logo, never the workspace owner's; to change an agency's logo, call with the owner's key. Who can use it: Every API key, for its own account. There is no owner check because nobody else's setting is touched: a member of your workspace cannot change your logo through their key, and you cannot change theirs. A workspace_id sent along is ignored.",
+    endpoint: "white_label_get",
+    summary: "Read the white-label logo printed on your reports.",
+    description: "The logo printed on your report PDFs in place of RecurPost's, the White labeling setting of the account settings page. Reads the logo in place; set one with /api/white_label_set, remove it with /api/white_label_delete. This is an account-level setting: the call always acts on the account that owns the API key, so there is no workspace_id. The logo is the one printed on reports of the workspaces that account owns. A team member's key manages the member's own logo, never the workspace owner's; to change an agency's logo, call with the owner's key. Who can use it: Every API key, for its own account. There is no owner check because nobody else's setting is touched: a member of your workspace cannot change your logo through their key, and you cannot change theirs. A workspace_id sent along is ignored.",
     readOnly: true,
     destructive: false,
     params: []
   },
   {
     name: "white_label_set",
-    title: "White Label (Set)",
+    title: "White Label Set",
     module: "account_settings",
-    endpoint: "white_label",
-    action: "set",
-    summary: "Read, set or remove the white-label logo printed on your reports, an account-level setting. This tool runs the set action.",
-    description: "The logo printed on your report PDFs in place of RecurPost's, the White labeling setting of the account settings page. action is get (the default), set with a logo_url (any publicly reachable image URL, stored in your RecurPost storage), or delete. This is an account-level setting: the call always acts on the account that owns the API key, so there is no workspace_id. The logo is the one printed on reports of the workspaces that account owns. A team member's key manages the member's own logo, never the workspace owner's; to change an agency's logo, call with the owner's key. Who can use it: Every API key, for its own account. There is no owner check because nobody else's setting is touched: a member of your workspace cannot change your logo through their key, and you cannot change theirs. A workspace_id sent along is ignored.",
+    endpoint: "white_label_set",
+    summary: "Set the white-label logo printed on your reports from an image URL.",
+    description: "The logo printed on your report PDFs in place of RecurPost's, the White labeling setting of the account settings page. Stores the image at logo_url (any publicly reachable image URL) in your RecurPost storage and prints it on your reports. This is an account-level setting: the call always acts on the account that owns the API key, so there is no workspace_id. The logo is the one printed on reports of the workspaces that account owns. A team member's key manages the member's own logo, never the workspace owner's; to change an agency's logo, call with the owner's key. Who can use it: Every API key, for its own account. There is no owner check because nobody else's setting is touched: a member of your workspace cannot change your logo through their key, and you cannot change theirs. A workspace_id sent along is ignored.",
     readOnly: false,
     destructive: false,
     params: [
       {
         key: "logo_url",
         type: "url",
-        required: false,
-        description: "For set, required there: a publicly reachable image URL, downloaded and stored in your RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is).",
+        required: true,
+        description: "A publicly reachable image URL, downloaded and stored in your RecurPost storage (a URL already on RecurPost storage, for example from /api/media_list, is used as it is).",
         example: "https://cdn.recurpost.com/media/4821/images/logo.png"
       }
     ]
   },
   {
     name: "white_label_delete",
-    title: "White Label (Delete)",
+    title: "White Label Delete",
     module: "account_settings",
-    endpoint: "white_label",
-    action: "delete",
-    summary: "Read, set or remove the white-label logo printed on your reports, an account-level setting. This tool runs the delete action.",
-    description: "The logo printed on your report PDFs in place of RecurPost's, the White labeling setting of the account settings page. action is get (the default), set with a logo_url (any publicly reachable image URL, stored in your RecurPost storage), or delete. This is an account-level setting: the call always acts on the account that owns the API key, so there is no workspace_id. The logo is the one printed on reports of the workspaces that account owns. A team member's key manages the member's own logo, never the workspace owner's; to change an agency's logo, call with the owner's key. Who can use it: Every API key, for its own account. There is no owner check because nobody else's setting is touched: a member of your workspace cannot change your logo through their key, and you cannot change theirs. A workspace_id sent along is ignored.",
+    endpoint: "white_label_delete",
+    summary: "Remove the white-label logo so reports print the RecurPost logo again.",
+    description: "The logo printed on your report PDFs in place of RecurPost's, the White labeling setting of the account settings page. Removes the logo; reports print the RecurPost logo again. This is an account-level setting: the call always acts on the account that owns the API key, so there is no workspace_id. The logo is the one printed on reports of the workspaces that account owns. A team member's key manages the member's own logo, never the workspace owner's; to change an agency's logo, call with the owner's key. Who can use it: Every API key, for its own account. There is no owner check because nobody else's setting is touched: a member of your workspace cannot change your logo through their key, and you cannot change theirs. A workspace_id sent along is ignored.",
     readOnly: false,
     destructive: true,
     params: []

@@ -58,7 +58,6 @@
     "feed_item_decide:reject": "feed_item_reject",
     "feed_item_decide:approve_all": "feed_item_approve_all",
     "feed_item_decide:reject_all": "feed_item_reject_all",
-    "queue_pause:resume": "queue_resume",
     "library_pause:resume": "library_resume",
     "inbox_like:unlike": "inbox_unlike",
     "inbox_assign:unassign": "inbox_unassign",
@@ -85,7 +84,8 @@
     "quote"
   ],
   "readOnlyPatterns": [
-    "_(list|details|data|search|calendar|items|remaining|options|wallet|backgrounds|preview|accounts|members|posts|comments|item|conversation|stats|credits|limits|invoices|usage|board|card|team_members)$"
+    "_(list|details|data|search|calendar|items|remaining|options|wallet|backgrounds|preview|accounts|members|posts|comments|item|conversation|stats|credits|limits|invoices|usage|board|card|team_members)$",
+    "_(get|count|quote|clients|businesses|questions|formats)$"
   ],
   "readOnlyTools": [
     "user_login",
@@ -137,6 +137,7 @@
     "unassign"
   ],
   "destructivePatterns": [
-    "_(delete|remove|unpublish)$"
+    "_(delete|remove|unpublish)$",
+    "_(delete_value|reject_all|reset|expire|product_delete|remove_client|unassign)$"
   ]
 }

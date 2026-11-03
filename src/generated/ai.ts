@@ -200,78 +200,14 @@ export const aiTools: ToolSpec[] = [
   },
   {
     name: "ai_templates_list",
-    title: "AI Templates (List)",
+    title: "AI Templates List",
     module: "ai",
-    endpoint: "ai_templates",
-    action: "list",
-    summary: "The app's AI post templates: list them, read a template's questions and formats, and generate a post from your answers. This tool runs the list action.",
-    description: "The AI templates are guided prompts (a launch post, a testimonial, a how-to and so on): each asks a few questions and offers output formats. action picks the step: list (default): the templates. questions: the fields a template asks, for template_id. formats: the output formats it offers, grouped by category. generate: write the post from answers in the chosen format, with an optional instruction. The answer comes with a chat_id and history; send both back with a question (and the same template fields) to refine it. Every new generation spends one AI post credit of the workspace owner. template_id is a plain integer. The answer fields are read by label: The app matches your answers to the template's questions by their text, so send the label values from questions as the keys of answers. Refining keeps the template: On a refinement the app still receives format and answers, so send them again with the question, chat_id and history. A refinement with a chat_id continues the same chat; a call without one is a new generation and a new credit.",
+    endpoint: "ai_templates_list",
+    summary: "List the app's AI post templates.",
+    description: "The AI templates are guided prompts (a launch post, a testimonial, a how-to and so on): each asks a few questions and offers output formats. This call lists them; read a template's questions with /api/ai_templates_questions and its formats with /api/ai_templates_formats, then write the post with /api/ai_templates_generate.",
     readOnly: true,
     destructive: false,
     params: [
-      {
-        key: "template_id",
-        type: "integer",
-        required: false,
-        description: "Plain template id from list. Required when action is questions, formats or generate.",
-        example: 3
-      },
-      {
-        key: "format",
-        type: "string",
-        required: false,
-        description: "Required when action is generate: the text of one of the template's formats (from formats), up to 500 characters.",
-        example: "A short post with one call to action"
-      },
-      {
-        key: "answers",
-        type: "object",
-        required: false,
-        description: "Required when action is generate: your answers to the template's questions, as an object {question label: answer} or an array of {question, answer}; 1 to 30 entries, each question up to 500 and each answer up to 5000 characters. A JSON body value or a JSON string.",
-        example: {
-          "Product or service": "The Acme hand grinder",
-          "Who is it for": "Home baristas who travel"
-        }
-      },
-      {
-        key: "instruction",
-        type: "string",
-        required: false,
-        description: "generate: extra guidance for the writer (length, audience, words to avoid), up to 2000 characters; longer text is cut.",
-        example: "Keep it under 60 words and end with a question"
-      },
-      {
-        key: "question",
-        type: "string",
-        required: false,
-        description: "generate: on a refinement, what to change in the answer (up to 5000 characters), sent with chat_id and history. Leave it out on the first generation.",
-        example: "Make it shorter and add a question at the end"
-      },
-      {
-        key: "chat_id",
-        type: "string",
-        required: false,
-        description: "Encrypted chat id returned by an earlier answer of this or another AI endpoint (the same value /api/generate_content_with_ai calls ai_id). Send it with history to refine that answer; leave it out to start fresh. Must be a chat of the workspace owner's account.",
-        example: "wX8yZ0aB2c=="
-      },
-      {
-        key: "history",
-        type: "array",
-        required: false,
-        description: "The history array of the previous response, unchanged: up to 40 turns of {role, content} where role is user or assistant and content is 1 to 20000 characters. Required with chat_id. A JSON body array or a JSON string. Do not append your new question yourself.",
-        example: [
-          {
-            role: "user",
-            content: "How did we do?"
-          },
-          {
-            role: "assistant",
-            content: "Engagement grew 12 percent against the previous period."
-          }
-        ],
-        items: "object",
-        acceptsList: false
-      },
       {
         key: "workspace_id",
         type: "string",
@@ -283,12 +219,11 @@ export const aiTools: ToolSpec[] = [
   },
   {
     name: "ai_templates_questions",
-    title: "AI Templates (Questions)",
+    title: "AI Templates Questions",
     module: "ai",
-    endpoint: "ai_templates",
-    action: "questions",
-    summary: "The app's AI post templates: list them, read a template's questions and formats, and generate a post from your answers. This tool runs the questions action.",
-    description: "The AI templates are guided prompts (a launch post, a testimonial, a how-to and so on): each asks a few questions and offers output formats. action picks the step: list (default): the templates. questions: the fields a template asks, for template_id. formats: the output formats it offers, grouped by category. generate: write the post from answers in the chosen format, with an optional instruction. The answer comes with a chat_id and history; send both back with a question (and the same template fields) to refine it. Every new generation spends one AI post credit of the workspace owner. template_id is a plain integer. The answer fields are read by label: The app matches your answers to the template's questions by their text, so send the label values from questions as the keys of answers. Refining keeps the template: On a refinement the app still receives format and answers, so send them again with the question, chat_id and history. A refinement with a chat_id continues the same chat; a call without one is a new generation and a new credit.",
+    endpoint: "ai_templates_questions",
+    summary: "The questions an AI template asks.",
+    description: "The fields a template asks, in display order. Send each question's label as a key of answers in /api/ai_templates_generate.",
     readOnly: true,
     destructive: false,
     params: [
@@ -296,64 +231,8 @@ export const aiTools: ToolSpec[] = [
         key: "template_id",
         type: "integer",
         required: true,
-        description: "Plain template id from list. Required when action is questions, formats or generate.",
+        description: "Plain template id from /api/ai_templates_list.",
         example: 3
-      },
-      {
-        key: "format",
-        type: "string",
-        required: false,
-        description: "Required when action is generate: the text of one of the template's formats (from formats), up to 500 characters.",
-        example: "A short post with one call to action"
-      },
-      {
-        key: "answers",
-        type: "object",
-        required: false,
-        description: "Required when action is generate: your answers to the template's questions, as an object {question label: answer} or an array of {question, answer}; 1 to 30 entries, each question up to 500 and each answer up to 5000 characters. A JSON body value or a JSON string.",
-        example: {
-          "Product or service": "The Acme hand grinder",
-          "Who is it for": "Home baristas who travel"
-        }
-      },
-      {
-        key: "instruction",
-        type: "string",
-        required: false,
-        description: "generate: extra guidance for the writer (length, audience, words to avoid), up to 2000 characters; longer text is cut.",
-        example: "Keep it under 60 words and end with a question"
-      },
-      {
-        key: "question",
-        type: "string",
-        required: false,
-        description: "generate: on a refinement, what to change in the answer (up to 5000 characters), sent with chat_id and history. Leave it out on the first generation.",
-        example: "Make it shorter and add a question at the end"
-      },
-      {
-        key: "chat_id",
-        type: "string",
-        required: false,
-        description: "Encrypted chat id returned by an earlier answer of this or another AI endpoint (the same value /api/generate_content_with_ai calls ai_id). Send it with history to refine that answer; leave it out to start fresh. Must be a chat of the workspace owner's account.",
-        example: "wX8yZ0aB2c=="
-      },
-      {
-        key: "history",
-        type: "array",
-        required: false,
-        description: "The history array of the previous response, unchanged: up to 40 turns of {role, content} where role is user or assistant and content is 1 to 20000 characters. Required with chat_id. A JSON body array or a JSON string. Do not append your new question yourself.",
-        example: [
-          {
-            role: "user",
-            content: "How did we do?"
-          },
-          {
-            role: "assistant",
-            content: "Engagement grew 12 percent against the previous period."
-          }
-        ],
-        items: "object",
-        acceptsList: false
       },
       {
         key: "workspace_id",
@@ -366,12 +245,11 @@ export const aiTools: ToolSpec[] = [
   },
   {
     name: "ai_templates_formats",
-    title: "AI Templates (Formats)",
+    title: "AI Templates Formats",
     module: "ai",
-    endpoint: "ai_templates",
-    action: "formats",
-    summary: "The app's AI post templates: list them, read a template's questions and formats, and generate a post from your answers. This tool runs the formats action.",
-    description: "The AI templates are guided prompts (a launch post, a testimonial, a how-to and so on): each asks a few questions and offers output formats. action picks the step: list (default): the templates. questions: the fields a template asks, for template_id. formats: the output formats it offers, grouped by category. generate: write the post from answers in the chosen format, with an optional instruction. The answer comes with a chat_id and history; send both back with a question (and the same template fields) to refine it. Every new generation spends one AI post credit of the workspace owner. template_id is a plain integer. The answer fields are read by label: The app matches your answers to the template's questions by their text, so send the label values from questions as the keys of answers. Refining keeps the template: On a refinement the app still receives format and answers, so send them again with the question, chat_id and history. A refinement with a chat_id continues the same chat; a call without one is a new generation and a new credit.",
+    endpoint: "ai_templates_formats",
+    summary: "The output formats an AI template offers, by category.",
+    description: "The output formats a template offers, grouped by category. Send a format's text as format in /api/ai_templates_generate.",
     readOnly: true,
     destructive: false,
     params: [
@@ -379,64 +257,8 @@ export const aiTools: ToolSpec[] = [
         key: "template_id",
         type: "integer",
         required: true,
-        description: "Plain template id from list. Required when action is questions, formats or generate.",
+        description: "Plain template id from /api/ai_templates_list.",
         example: 3
-      },
-      {
-        key: "format",
-        type: "string",
-        required: false,
-        description: "Required when action is generate: the text of one of the template's formats (from formats), up to 500 characters.",
-        example: "A short post with one call to action"
-      },
-      {
-        key: "answers",
-        type: "object",
-        required: false,
-        description: "Required when action is generate: your answers to the template's questions, as an object {question label: answer} or an array of {question, answer}; 1 to 30 entries, each question up to 500 and each answer up to 5000 characters. A JSON body value or a JSON string.",
-        example: {
-          "Product or service": "The Acme hand grinder",
-          "Who is it for": "Home baristas who travel"
-        }
-      },
-      {
-        key: "instruction",
-        type: "string",
-        required: false,
-        description: "generate: extra guidance for the writer (length, audience, words to avoid), up to 2000 characters; longer text is cut.",
-        example: "Keep it under 60 words and end with a question"
-      },
-      {
-        key: "question",
-        type: "string",
-        required: false,
-        description: "generate: on a refinement, what to change in the answer (up to 5000 characters), sent with chat_id and history. Leave it out on the first generation.",
-        example: "Make it shorter and add a question at the end"
-      },
-      {
-        key: "chat_id",
-        type: "string",
-        required: false,
-        description: "Encrypted chat id returned by an earlier answer of this or another AI endpoint (the same value /api/generate_content_with_ai calls ai_id). Send it with history to refine that answer; leave it out to start fresh. Must be a chat of the workspace owner's account.",
-        example: "wX8yZ0aB2c=="
-      },
-      {
-        key: "history",
-        type: "array",
-        required: false,
-        description: "The history array of the previous response, unchanged: up to 40 turns of {role, content} where role is user or assistant and content is 1 to 20000 characters. Required with chat_id. A JSON body array or a JSON string. Do not append your new question yourself.",
-        example: [
-          {
-            role: "user",
-            content: "How did we do?"
-          },
-          {
-            role: "assistant",
-            content: "Engagement grew 12 percent against the previous period."
-          }
-        ],
-        items: "object",
-        acceptsList: false
       },
       {
         key: "workspace_id",
@@ -449,12 +271,11 @@ export const aiTools: ToolSpec[] = [
   },
   {
     name: "ai_templates_generate",
-    title: "AI Templates (Generate)",
+    title: "AI Templates Generate",
     module: "ai",
-    endpoint: "ai_templates",
-    action: "generate",
-    summary: "The app's AI post templates: list them, read a template's questions and formats, and generate a post from your answers. This tool runs the generate action.",
-    description: "The AI templates are guided prompts (a launch post, a testimonial, a how-to and so on): each asks a few questions and offers output formats. action picks the step: list (default): the templates. questions: the fields a template asks, for template_id. formats: the output formats it offers, grouped by category. generate: write the post from answers in the chosen format, with an optional instruction. The answer comes with a chat_id and history; send both back with a question (and the same template fields) to refine it. Every new generation spends one AI post credit of the workspace owner. template_id is a plain integer. The answer fields are read by label: The app matches your answers to the template's questions by their text, so send the label values from questions as the keys of answers. Refining keeps the template: On a refinement the app still receives format and answers, so send them again with the question, chat_id and history. A refinement with a chat_id continues the same chat; a call without one is a new generation and a new credit.",
+    endpoint: "ai_templates_generate",
+    summary: "Write a post from an AI template with your answers, and refine it.",
+    description: "Writes the post from answers to the template's questions in the chosen format, with an optional instruction. The answer comes with a chat_id and history; send both back with a question (and the same template fields) to refine it. Every new generation spends one AI post credit of the workspace owner. The answer fields are read by label: The app matches your answers to the template's questions by their text, so send the label values from questions as the keys of answers. Refining keeps the template: On a refinement the app still receives format and answers, so send them again with the question, chat_id and history. A refinement with a chat_id continues the same chat; a call without one is a new generation and a new credit.",
     readOnly: false,
     destructive: false,
     params: [
@@ -462,21 +283,21 @@ export const aiTools: ToolSpec[] = [
         key: "template_id",
         type: "integer",
         required: true,
-        description: "Plain template id from list. Required when action is questions, formats or generate.",
+        description: "Plain template id from /api/ai_templates_list.",
         example: 3
       },
       {
         key: "format",
         type: "string",
         required: true,
-        description: "Required when action is generate: the text of one of the template's formats (from formats), up to 500 characters.",
+        description: "The text of one of the template's formats (from /api/ai_templates_formats), up to 500 characters.",
         example: "A short post with one call to action"
       },
       {
         key: "answers",
         type: "object",
         required: true,
-        description: "Required when action is generate: your answers to the template's questions, as an object {question label: answer} or an array of {question, answer}; 1 to 30 entries, each question up to 500 and each answer up to 5000 characters. A JSON body value or a JSON string.",
+        description: "Your answers to the template's questions, as an object {question label: answer} or an array of {question, answer}; 1 to 30 entries, each question up to 500 and each answer up to 5000 characters. A JSON body value or a JSON string.",
         example: {
           "Product or service": "The Acme hand grinder",
           "Who is it for": "Home baristas who travel"
@@ -486,14 +307,14 @@ export const aiTools: ToolSpec[] = [
         key: "instruction",
         type: "string",
         required: false,
-        description: "generate: extra guidance for the writer (length, audience, words to avoid), up to 2000 characters; longer text is cut.",
+        description: "Extra guidance for the writer (length, audience, words to avoid), up to 2000 characters; longer text is cut.",
         example: "Keep it under 60 words and end with a question"
       },
       {
         key: "question",
         type: "string",
         required: false,
-        description: "generate: on a refinement, what to change in the answer (up to 5000 characters), sent with chat_id and history. Leave it out on the first generation.",
+        description: "On a refinement, what to change in the answer (up to 5000 characters), sent with chat_id and history. Leave it out on the first generation.",
         example: "Make it shorter and add a question at the end"
       },
       {
@@ -609,68 +430,14 @@ export const aiTools: ToolSpec[] = [
   },
   {
     name: "ai_special_days_list",
-    title: "AI Special Days (List)",
+    title: "AI Special Days List",
     module: "ai",
-    endpoint: "ai_special_days",
-    action: "list",
-    summary: "The calendar of occasions the app suggests posting about, and a post written for one of them on a network. This tool runs the list action.",
-    description: "action=list (default) returns the app's calendar of special days and occasions from the current month on. action=generate writes a post about one occasion for one network, with an optional instruction. The answer comes with a chat_id and history; send both back with a question to refine it. Every new generation spends one AI post credit of the workspace owner. list has no year or day number: The calendar gives each occasion with its month only, as the app's picker does; the exact date is not stored. The list starts at the current month in the server's calendar.",
+    endpoint: "ai_special_days_list",
+    summary: "The calendar of occasions the app suggests posting about.",
+    description: "The app's calendar of special days and occasions from the current month on. Write a post for one with /api/ai_special_days_generate. list has no year or day number: The calendar gives each occasion with its month only, as the app's picker does; the exact date is not stored. The list starts at the current month in the server's calendar.",
     readOnly: true,
     destructive: false,
     params: [
-      {
-        key: "day",
-        type: "string",
-        required: false,
-        description: "Required when action is generate: the occasion's name, normally a name from list (any text up to 200 characters is accepted).",
-        example: "World Food Day"
-      },
-      {
-        key: "network",
-        type: "string",
-        required: false,
-        description: "Required when action is generate: the network to write for, as a key (facebook, twitter, linkedin, instagram, pinterest, google_my_business, tiktok, youtube, threads, bluesky) or a network name; up to 50 characters. A key is turned into the app's network name, any other value is handed to the writer as given.",
-        example: "instagram"
-      },
-      {
-        key: "instruction",
-        type: "string",
-        required: false,
-        description: "generate: extra guidance (mention a product, a length, a hashtag), up to 2000 characters; longer text is cut.",
-        example: "Mention our seasonal menu and keep it under 50 words"
-      },
-      {
-        key: "question",
-        type: "string",
-        required: false,
-        description: "generate: on a refinement, what to change in the answer (up to 5000 characters), sent with chat_id and history. Leave it out on the first generation.",
-        example: "Make it shorter and add a question at the end"
-      },
-      {
-        key: "chat_id",
-        type: "string",
-        required: false,
-        description: "Encrypted chat id returned by an earlier answer of this or another AI endpoint (the same value /api/generate_content_with_ai calls ai_id). Send it with history to refine that answer; leave it out to start fresh. Must be a chat of the workspace owner's account.",
-        example: "wX8yZ0aB2c=="
-      },
-      {
-        key: "history",
-        type: "array",
-        required: false,
-        description: "The history array of the previous response, unchanged: up to 40 turns of {role, content} where role is user or assistant and content is 1 to 20000 characters. Required with chat_id. A JSON body array or a JSON string. Do not append your new question yourself.",
-        example: [
-          {
-            role: "user",
-            content: "How did we do?"
-          },
-          {
-            role: "assistant",
-            content: "Engagement grew 12 percent against the previous period."
-          }
-        ],
-        items: "object",
-        acceptsList: false
-      },
       {
         key: "workspace_id",
         type: "string",
@@ -682,12 +449,11 @@ export const aiTools: ToolSpec[] = [
   },
   {
     name: "ai_special_days_generate",
-    title: "AI Special Days (Generate)",
+    title: "AI Special Days Generate",
     module: "ai",
-    endpoint: "ai_special_days",
-    action: "generate",
-    summary: "The calendar of occasions the app suggests posting about, and a post written for one of them on a network. This tool runs the generate action.",
-    description: "action=list (default) returns the app's calendar of special days and occasions from the current month on. action=generate writes a post about one occasion for one network, with an optional instruction. The answer comes with a chat_id and history; send both back with a question to refine it. Every new generation spends one AI post credit of the workspace owner. list has no year or day number: The calendar gives each occasion with its month only, as the app's picker does; the exact date is not stored. The list starts at the current month in the server's calendar.",
+    endpoint: "ai_special_days_generate",
+    summary: "Write a post about an occasion for one network, and refine it.",
+    description: "Writes a post about one occasion for one network, with an optional instruction. The answer comes with a chat_id and history; send both back with a question to refine it. Every new generation spends one AI post credit of the workspace owner.",
     readOnly: false,
     destructive: false,
     params: [
@@ -695,28 +461,28 @@ export const aiTools: ToolSpec[] = [
         key: "day",
         type: "string",
         required: true,
-        description: "Required when action is generate: the occasion's name, normally a name from list (any text up to 200 characters is accepted).",
+        description: "The occasion's name, normally a name from /api/ai_special_days_list (any text up to 200 characters is accepted).",
         example: "World Food Day"
       },
       {
         key: "network",
         type: "string",
         required: true,
-        description: "Required when action is generate: the network to write for, as a key (facebook, twitter, linkedin, instagram, pinterest, google_my_business, tiktok, youtube, threads, bluesky) or a network name; up to 50 characters. A key is turned into the app's network name, any other value is handed to the writer as given.",
+        description: "The network to write for, as a key (facebook, twitter, linkedin, instagram, pinterest, google_my_business, tiktok, youtube, threads, bluesky) or a network name; up to 50 characters. A key is turned into the app's network name, any other value is handed to the writer as given.",
         example: "instagram"
       },
       {
         key: "instruction",
         type: "string",
         required: false,
-        description: "generate: extra guidance (mention a product, a length, a hashtag), up to 2000 characters; longer text is cut.",
+        description: "Extra guidance (mention a product, a length, a hashtag), up to 2000 characters; longer text is cut.",
         example: "Mention our seasonal menu and keep it under 50 words"
       },
       {
         key: "question",
         type: "string",
         required: false,
-        description: "generate: on a refinement, what to change in the answer (up to 5000 characters), sent with chat_id and history. Leave it out on the first generation.",
+        description: "On a refinement, what to change in the answer (up to 5000 characters), sent with chat_id and history. Leave it out on the first generation.",
         example: "Make it shorter and add a question at the end"
       },
       {
@@ -799,43 +565,14 @@ export const aiTools: ToolSpec[] = [
   },
   {
     name: "ai_settings_get",
-    title: "AI Settings (Get)",
+    title: "AI Settings Get",
     module: "ai",
-    endpoint: "ai_settings",
-    action: "get",
-    summary: "Read or change the brand voice the AI writes with: tone, persona and inbox reply instructions. This tool runs the get action.",
-    description: "The AI settings are the voice every generator reads: a tone, a persona (who is speaking, to whom) and inbox_instructions for AI-drafted inbox replies. They are kept on the workspace owner, so every workspace and member of that owner shares them. action=get (default) reads them; action=set changes them and is allowed to the workspace owner only. On set, every field left out keeps its value. Messages: get answers Success, set answers AI settings saved.; both return the settings as they now stand. Where the voice is used: The saved tone and persona feed /api/ai_variations, the in-app composer and the inbox AI replies. /api/ai_week_plan takes its own tone and persona per call.",
+    endpoint: "ai_settings_get",
+    summary: "Read the brand voice the AI writes with: tone, persona and inbox reply instructions.",
+    description: "The AI settings are the voice every generator reads: a tone, a persona (who is speaking, to whom) and inbox_instructions for AI-drafted inbox replies. They are kept on the workspace owner, so every workspace and member of that owner shares them. Any member reads them; the owner changes them with /api/ai_settings_set. Where the voice is used: The saved tone and persona feed /api/ai_variations, the in-app composer and the inbox AI replies. /api/ai_week_plan takes its own tone and persona per call.",
     readOnly: true,
     destructive: false,
     params: [
-      {
-        key: "tone",
-        type: "string",
-        required: false,
-        description: "set: neutral, cooperative, friendly, funny or sad (the app's codes 1 to 5 are accepted too). Send an empty value to clear the tone.",
-        values: [
-          "neutral",
-          "cooperative",
-          "friendly",
-          "funny",
-          "sad"
-        ],
-        example: "friendly"
-      },
-      {
-        key: "persona",
-        type: "string",
-        required: false,
-        description: "set: the brand persona the AI writes as, up to 2000 characters; an empty value clears it.",
-        example: "Acme Coffee, a small roaster. Warm, precise, never salesy. Talks to home baristas."
-      },
-      {
-        key: "inbox_instructions",
-        type: "string",
-        required: false,
-        description: "set: instructions for AI-drafted inbox replies, up to 2000 characters; an empty value clears them.",
-        example: "Reply in the customer's language, keep it under three sentences, never promise refunds."
-      },
       {
         key: "workspace_id",
         type: "string",
@@ -847,12 +584,11 @@ export const aiTools: ToolSpec[] = [
   },
   {
     name: "ai_settings_set",
-    title: "AI Settings (Set)",
+    title: "AI Settings Set",
     module: "ai",
-    endpoint: "ai_settings",
-    action: "set",
-    summary: "Read or change the brand voice the AI writes with: tone, persona and inbox reply instructions. This tool runs the set action.",
-    description: "The AI settings are the voice every generator reads: a tone, a persona (who is speaking, to whom) and inbox_instructions for AI-drafted inbox replies. They are kept on the workspace owner, so every workspace and member of that owner shares them. action=get (default) reads them; action=set changes them and is allowed to the workspace owner only. On set, every field left out keeps its value. Messages: get answers Success, set answers AI settings saved.; both return the settings as they now stand. Where the voice is used: The saved tone and persona feed /api/ai_variations, the in-app composer and the inbox AI replies. /api/ai_week_plan takes its own tone and persona per call.",
+    endpoint: "ai_settings_set",
+    summary: "Change the brand voice the AI writes with, field by field.",
+    description: "The AI settings are the voice every generator reads: a tone, a persona (who is speaking, to whom) and inbox_instructions for AI-drafted inbox replies. They are kept on the workspace owner, so every workspace and member of that owner shares them. Changes them; allowed to the workspace owner only. Every field left out keeps its value. Answers with the settings as they now stand. Where the voice is used: The saved tone and persona feed /api/ai_variations, the in-app composer and the inbox AI replies. /api/ai_week_plan takes its own tone and persona per call.",
     readOnly: false,
     destructive: false,
     params: [
@@ -860,7 +596,7 @@ export const aiTools: ToolSpec[] = [
         key: "tone",
         type: "string",
         required: false,
-        description: "set: neutral, cooperative, friendly, funny or sad (the app's codes 1 to 5 are accepted too). Send an empty value to clear the tone.",
+        description: "neutral, cooperative, friendly, funny or sad (the app's codes 1 to 5 are accepted too). Send an empty value to clear the tone.",
         values: [
           "neutral",
           "cooperative",
@@ -874,14 +610,14 @@ export const aiTools: ToolSpec[] = [
         key: "persona",
         type: "string",
         required: false,
-        description: "set: the brand persona the AI writes as, up to 2000 characters; an empty value clears it.",
+        description: "The brand persona the AI writes as, up to 2000 characters; an empty value clears it.",
         example: "Acme Coffee, a small roaster. Warm, precise, never salesy. Talks to home baristas."
       },
       {
         key: "inbox_instructions",
         type: "string",
         required: false,
-        description: "set: instructions for AI-drafted inbox replies, up to 2000 characters; an empty value clears them.",
+        description: "Instructions for AI-drafted inbox replies, up to 2000 characters; an empty value clears them.",
         example: "Reply in the customer's language, keep it under three sentences, never promise refunds."
       },
       {
