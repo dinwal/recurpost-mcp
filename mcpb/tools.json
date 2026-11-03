@@ -37,7 +37,7 @@
   },
   {
     "name": "library_create",
-    "description": "Create a content library in the workspace."
+    "description": "Create a content library in the workspace, seasonal or not."
   },
   {
     "name": "library_content_list",

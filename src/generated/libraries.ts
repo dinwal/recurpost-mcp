@@ -52,8 +52,8 @@ export const librariesTools: ToolSpec[] = [
     title: "Library Create",
     module: "libraries",
     endpoint: "library_create",
-    summary: "Create a content library in the workspace.",
-    description: "Creates a library with a name, an optional calendar colour and the one-time-use flag. The new library is active and has no schedule yet; attach one under Schedules. Set a seasonal window afterwards with /api/library_update.",
+    summary: "Create a content library in the workspace, seasonal or not.",
+    description: "Creates a library with a name, an optional calendar colour, the one-time-use flag and, when you send seasonal_from and seasonal_to, a seasonal window, so a seasonal library takes one call. The new library is active and has no schedule yet; attach one under Schedules. The season can be changed or cleared later with /api/library_update. Season days are checked against the current year: 02/29 is only accepted in a leap year. Days must be zero-padded: 2/1 is refused, 02/01 is accepted.",
     readOnly: false,
     destructive: false,
     params: [
@@ -62,7 +62,7 @@ export const librariesTools: ToolSpec[] = [
         type: "string",
         required: true,
         description: "Library name. Leading and trailing spaces are trimmed; a blank name is a 400.",
-        example: "Product tips"
+        example: "Holiday tips"
       },
       {
         key: "color",
@@ -79,6 +79,20 @@ export const librariesTools: ToolSpec[] = [
         description: "Make it a one-time-use library: each post leaves the library once it has published. Accepts true/false, 1/0 or the words yes/no, as /api/library_update does.",
         default: "0",
         example: false
+      },
+      {
+        key: "seasonal_from",
+        type: "string",
+        required: false,
+        description: "First day of the season as MM/DD (zero-padded, e.g. 12/01). Send it with seasonal_to to create a seasonal library; one without the other is a 400. Left out, the library is not seasonal.",
+        example: "12/01"
+      },
+      {
+        key: "seasonal_to",
+        type: "string",
+        required: false,
+        description: "Last day of the season as MM/DD. Required when seasonal_from is sent.",
+        example: "12/31"
       },
       {
         key: "workspace_id",
