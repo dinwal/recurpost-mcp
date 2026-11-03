@@ -109,12 +109,55 @@ export const customReportsTools: ToolSpec[] = [
     ]
   },
   {
+    name: "custom_report_metrics",
+    title: "Custom Report Metrics",
+    module: "custom_reports",
+    endpoint: "custom_report_metrics",
+    summary: "Every metric a custom report tile can carry, with its networks, graph types and comparisons.",
+    description: "The metric catalog of the Custom Reports canvas, the same one the page offers: 202 metrics, each with the key tiles carry as metricId, its name and category, what it means, how it is calculated and its limits, the networks it has data on, the graph types it can draw with the default one, and the comparisons it takes per graph type. The answer also carries the fixed lists a tile may use: the graph types, the sizes, the comparison values and the network names. Two entries are special. note is a free-text tile (body instead of a graph) and custom is a metric whose numbers you type in; neither belongs to a network. Networks are named as this API names account types: facebook_page, twitter, linkedin_profile, linkedin_page, instagram, google_business, pinterest, tiktok, youtube, threads, bluesky. Send network to keep only the metrics that network reports. No workspace is involved; the catalog is the same for every account. One catalog for the page and the API: The page and this call read the same server catalog, and the networks per metric come from the metric registry that fetches the numbers, so what is listed here is exactly what a tile can show. Legacy keys: Older reports may carry per-network metric keys from before the cross-network merge (fb-follows, ig-saves). /api/custom_reports_save still accepts them and stores the current key; this list shows current keys only.",
+    readOnly: true,
+    destructive: false,
+    params: [
+      {
+        key: "network",
+        type: "string",
+        required: false,
+        description: "Keep only the metrics this network reports: one of the network names above. Case does not matter.",
+        values: [
+          "facebook_page",
+          "twitter",
+          "linkedin_profile",
+          "linkedin_page",
+          "instagram",
+          "google_business",
+          "pinterest",
+          "tiktok",
+          "youtube",
+          "threads",
+          "bluesky"
+        ],
+        example: "instagram"
+      }
+    ]
+  },
+  {
+    name: "custom_report_templates",
+    title: "Custom Report Templates",
+    module: "custom_reports",
+    endpoint: "custom_report_templates",
+    summary: "Every gallery template with its tiles, ready to send to custom_reports_save.",
+    description: "The report templates of the Custom Reports gallery: 58 entries, each with its key (the template_key a report may carry), title, description, gallery categories, the networks it is meant for when limited, and its tiles in the shape /api/custom_reports_save takes, so a template can be posted straight back as a new report over your accounts. The blank canvas (custom) has no tiles. No workspace is involved. From template to report: Send a template's tiles with your accounts, a name and the template's key as template_key to /api/custom_reports_save; the canvas then opens it the way the gallery would.",
+    readOnly: true,
+    destructive: false,
+    params: []
+  },
+  {
     name: "custom_reports_save",
     title: "Custom Reports Save",
     module: "custom_reports",
     endpoint: "custom_reports_save",
     summary: "Create a custom report or change one.",
-    description: "The saved custom reports of the workspace are canvases of metric and note tiles over chosen accounts, with a default date mode, as built on the Custom Reports page. Reports belong to the workspace and its owner; every member of the workspace reads and edits them. report_id is a plain integer. This call creates a report (no report_id) or changes one (report_id). On a change, every field left out keeps its value; on a create, name is required and date_mode defaults to Last Week. Answers with the report as saved. Metric keys: The API does not list the metric keys the canvas knows; they are the metricId values you see on reports built in the app (read one with get). An unknown key is accepted by this call and shows as an empty tile in the app. A save replaces the tile list: tiles and accounts are whole lists: send the complete list you want, not only the additions. Leave the field out to keep the current list.",
+    description: "The saved custom reports of the workspace are canvases of metric and note tiles over chosen accounts, with a default date mode, as built on the Custom Reports page. Reports belong to the workspace and its owner; every member of the workspace reads and edits them. report_id is a plain integer. This call creates a report (no report_id) or changes one (report_id). On a change, every field left out keeps its value; on a create, name is required and date_mode defaults to Last Week. Answers with the report as saved. Metric keys: The API does not list the metric keys the canvas knows; they are the metricId values you see on reports built in the app (read one with get). An unknown key is accepted by this call and shows as an empty tile in the app. A save replaces the tile list: tiles and accounts are whole lists: send the complete list you want, not only the additions. Leave the field out to keep the current list. Tiles follow the catalog: Every tile is checked against /api/custom_report_metrics: the key, the graph type and the comparison must be ones the canvas offers for that metric, so a saved report always renders. /api/custom_report_templates gives ready-made tile sets.",
     readOnly: false,
     destructive: false,
     params: [
@@ -148,7 +191,7 @@ export const customReportsTools: ToolSpec[] = [
         key: "tiles",
         type: "array",
         required: false,
-        description: "save: the tiles of the canvas, in display order, as a JSON array or a JSON string. Each tile is an object. A metric tile: metricId (a metric key of the app's custom report canvas, 1 to 60 lowercase letters, digits and hyphens, for example followers or impressions), title (up to 120 characters), viz (number, line, area, bar, pie, list, table, funnel, gauge, heat or map; default number), size (quarter, third, half, threeq or full; default quarter) and compare (blank, previous for the comparison window or network). A note tile: metricId note, title, size and body (up to 5000 characters). At most 60 tiles and 200000 bytes of JSON.",
+        description: "save: the tiles of the canvas, in display order, as a JSON array or a JSON string. Each tile is an object. A metric tile: metricId (a metric key from /api/custom_report_metrics, for example followers or impressions; a legacy key is stored under its current one), title (up to 120 characters), viz (one of the metric's graph types; its default graph when left out), size (quarter, third, half, threeq or full; default quarter) and compare (blank, previous for the previous period or network for the split by account; each only where the metric's comparisons list that graph type). A note tile: metricId note, title, size and body (up to 5000 characters). At most 60 tiles and 200000 bytes of JSON.",
         example: [
           {
             metricId: "followers",

@@ -62,7 +62,7 @@ export const modules: ModuleSpec[] = [
   {
     key: "custom_reports",
     title: "Custom Reports",
-    description: "The custom report canvases of a workspace: saved sets of metric and note tiles over chosen accounts, as built on the Custom Reports page, and their PDF. Reports are plain-integer ids scoped to the workspace; tiles are validated here the way the in-app canvas validates them."
+    description: "The custom report canvases of a workspace: saved sets of metric and note tiles over chosen accounts, as built on the Custom Reports page, and their PDF. Reports are plain-integer ids scoped to the workspace. /api/custom_report_metrics lists every metric a tile can carry, with the networks it has data on, the graph types it draws and the comparisons it takes; /api/custom_report_templates lists the gallery templates with their tiles in the save shape. Tiles sent to /api/custom_reports_save are checked against that catalog the way the in-app canvas checks them."
   },
   {
     key: "dm_automations",

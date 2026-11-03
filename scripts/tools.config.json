@@ -62,7 +62,7 @@
   ],
   "readOnlyPatterns": [
     "_(list|details|data|search|calendar|items|remaining|options|wallet|backgrounds|preview|accounts|members|posts|comments|item|conversation|stats|credits|limits|invoices|usage|board|card|team_members)$",
-    "_(get|count|quote|clients|businesses|questions|formats)$"
+    "_(get|count|quote|clients|businesses|questions|formats|metrics|templates)$"
   ],
   "readOnlyTools": [
     "user_login",
