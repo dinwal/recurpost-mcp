@@ -346,10 +346,10 @@ describe("catalog tools", () => {
   it("call_operation sends the action of a split operation", async () => {
     await client.callTool({
       name: "call_operation",
-      arguments: { name: "workspace_social_accounts_add", params: { account_ids: ["a1", "a2"], workspace_id: "enc-1" } },
+      arguments: { name: "inbox_bookmark_add", params: { id: "m-1", workspace_id: "enc-1" } },
     });
 
-    expect(apiCalls()[0].body).toEqual({ action: "add", account_ids: ["a1", "a2"], workspace_id: "enc-1" });
+    expect(apiCalls()[0].body).toEqual({ action: "add", id: "m-1", workspace_id: "enc-1" });
   });
 
   it("call_operation rejects missing or unknown parameters without calling the API", async () => {

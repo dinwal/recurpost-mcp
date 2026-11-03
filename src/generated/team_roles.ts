@@ -8,7 +8,7 @@ export const teamRolesTools: ToolSpec[] = [
     module: "team_roles",
     endpoint: "roles",
     summary: "List the account's roles with the permission and notification keys, or read one role in full.",
-    description: "Without role_id lists every role of the account together with permission_keys (every key /api/role_manage accepts in permissions) and notification_keys (every key it accepts as notification_key). With role_id returns that one role with the permissions it holds, its notification settings and the workflow stages it reviews. Owner only: the key must belong to the account owner. Role and user ids in this module are plain integers. Feature masters: social, library, inbox, reports, dm, ads and client are master keys that switch a whole feature on for the role; the keys that follow each one in the list are its finer permissions and only count while the master is held. Reading as a member: A team member's own role in a workspace is on members[].role of /api/workspace_members; this endpoint is for the owner's account.",
+    description: "Without role_id lists every role of the account together with permission_keys (every key /api/role_set_permissions accepts in permissions) and notification_keys (every key it accepts as notification_key). With role_id returns that one role with the permissions it holds, its notification settings and the workflow stages it reviews. Owner only: the key must belong to the account owner. Role and user ids in this module are plain integers. Feature masters: social, library, inbox, reports, dm, ads and client are master keys that switch a whole feature on for the role; the keys that follow each one in the list are its finer permissions and only count while the master is held. Reading as a member: A team member's own role in a workspace is on members[].role of /api/workspace_members; this endpoint is for the owner's account.",
     readOnly: true,
     destructive: false,
     params: [
@@ -30,12 +30,11 @@ export const teamRolesTools: ToolSpec[] = [
   },
   {
     name: "role_create",
-    title: "Role Manage (Create)",
+    title: "Role Create",
     module: "team_roles",
-    endpoint: "role_manage",
-    action: "create",
-    summary: "Create, rename, duplicate or delete a role, or set its permissions and notifications. This tool runs the create action.",
-    description: "One endpoint for every change to a role, chosen with action: create: a new role named name, optionally starting from a template. rename: gives role_id the new name. duplicate: copies role_id with its permissions and notifications. set_permissions: replaces the role's permission keys with permissions; keys not in the list are taken away. set_notification: sets the email and mobile switches of one notification_key. delete: removes the role with confirm=true; refused while members hold it or a workflow stage uses it. Every action but delete answers with the role as /api/roles returns it with role_id. Owner only. set_permissions replaces, it does not add: Send the whole list the role should end up with. Read the current permissions with /api/roles, change it, send it back. A finer key without its feature master (for example lib-upload without library) is stored but has no effect. Stock roles: The four seeded roles (is_template true) can be renamed and changed like any other; deleting one is refused only while it is in use.",
+    endpoint: "role_create",
+    summary: "Create a role, optionally from a stock template.",
+    description: "Creates a new role named name, empty or starting from a stock template. Set its permissions with /api/role_set_permissions and its notifications with /api/role_set_notification. Answers with the role as /api/roles returns it. Owner only.",
     readOnly: false,
     destructive: false,
     params: [
@@ -43,21 +42,14 @@ export const teamRolesTools: ToolSpec[] = [
         key: "name",
         type: "string",
         required: true,
-        description: "Required when action is create or rename: the role name, 1 to 40 characters. Surrounding spaces are trimmed.",
+        description: "The role name, 1 to 40 characters. Surrounding spaces are trimmed.",
         example: "Reviewer"
-      },
-      {
-        key: "role_id",
-        type: "integer",
-        required: false,
-        description: "Required for every action except create: plain role id from /api/roles.",
-        example: 5
       },
       {
         key: "template",
         type: "string",
         required: false,
-        description: "With create: start from a stock template, contributor, writer, editor or publisher. Case does not matter. Omit for an empty role.",
+        description: "Start from a stock template, contributor, writer, editor or publisher. Case does not matter. Omit for an empty role.",
         values: [
           "contributor",
           "writer",
@@ -65,26 +57,6 @@ export const teamRolesTools: ToolSpec[] = [
           "publisher"
         ],
         example: "editor"
-      },
-      {
-        key: "permissions",
-        type: "array",
-        required: false,
-        description: "Required when action is set_permissions: the full list of permission keys the role should hold, as an array or a comma-separated string, from permission_keys of /api/roles. Duplicates are dropped; an empty list takes every permission away.",
-        example: [
-          "create-posts",
-          "edit-others",
-          "social"
-        ],
-        items: "string",
-        acceptsList: true
-      },
-      {
-        key: "notification_key",
-        type: "string",
-        required: false,
-        description: "Required when action is set_notification: one of notification_keys of /api/roles.",
-        example: "assigned"
       },
       {
         key: "workspace_id",
@@ -97,12 +69,11 @@ export const teamRolesTools: ToolSpec[] = [
   },
   {
     name: "role_rename",
-    title: "Role Manage (Rename)",
+    title: "Role Rename",
     module: "team_roles",
-    endpoint: "role_manage",
-    action: "rename",
-    summary: "Create, rename, duplicate or delete a role, or set its permissions and notifications. This tool runs the rename action.",
-    description: "One endpoint for every change to a role, chosen with action: create: a new role named name, optionally starting from a template. rename: gives role_id the new name. duplicate: copies role_id with its permissions and notifications. set_permissions: replaces the role's permission keys with permissions; keys not in the list are taken away. set_notification: sets the email and mobile switches of one notification_key. delete: removes the role with confirm=true; refused while members hold it or a workflow stage uses it. Every action but delete answers with the role as /api/roles returns it with role_id. Owner only. set_permissions replaces, it does not add: Send the whole list the role should end up with. Read the current permissions with /api/roles, change it, send it back. A finer key without its feature master (for example lib-upload without library) is stored but has no effect. Stock roles: The four seeded roles (is_template true) can be renamed and changed like any other; deleting one is refused only while it is in use.",
+    endpoint: "role_rename",
+    summary: "Rename a role.",
+    description: "Gives the role a new name. Answers with the role as /api/roles returns it. Owner only. Stock roles: The four seeded roles (is_template true) can be renamed and changed like any other; deleting one is refused only while it is in use.",
     readOnly: false,
     destructive: false,
     params: [
@@ -110,35 +81,15 @@ export const teamRolesTools: ToolSpec[] = [
         key: "role_id",
         type: "integer",
         required: true,
-        description: "Required for every action except create: plain role id from /api/roles.",
+        description: "Plain role id from /api/roles.",
         example: 5
       },
       {
         key: "name",
         type: "string",
         required: true,
-        description: "Required when action is create or rename: the role name, 1 to 40 characters. Surrounding spaces are trimmed.",
+        description: "The new role name, 1 to 40 characters. Surrounding spaces are trimmed.",
         example: "Reviewer"
-      },
-      {
-        key: "permissions",
-        type: "array",
-        required: false,
-        description: "Required when action is set_permissions: the full list of permission keys the role should hold, as an array or a comma-separated string, from permission_keys of /api/roles. Duplicates are dropped; an empty list takes every permission away.",
-        example: [
-          "create-posts",
-          "edit-others",
-          "social"
-        ],
-        items: "string",
-        acceptsList: true
-      },
-      {
-        key: "notification_key",
-        type: "string",
-        required: false,
-        description: "Required when action is set_notification: one of notification_keys of /api/roles.",
-        example: "assigned"
       },
       {
         key: "workspace_id",
@@ -151,12 +102,11 @@ export const teamRolesTools: ToolSpec[] = [
   },
   {
     name: "role_duplicate",
-    title: "Role Manage (Duplicate)",
+    title: "Role Duplicate",
     module: "team_roles",
-    endpoint: "role_manage",
-    action: "duplicate",
-    summary: "Create, rename, duplicate or delete a role, or set its permissions and notifications. This tool runs the duplicate action.",
-    description: "One endpoint for every change to a role, chosen with action: create: a new role named name, optionally starting from a template. rename: gives role_id the new name. duplicate: copies role_id with its permissions and notifications. set_permissions: replaces the role's permission keys with permissions; keys not in the list are taken away. set_notification: sets the email and mobile switches of one notification_key. delete: removes the role with confirm=true; refused while members hold it or a workflow stage uses it. Every action but delete answers with the role as /api/roles returns it with role_id. Owner only. set_permissions replaces, it does not add: Send the whole list the role should end up with. Read the current permissions with /api/roles, change it, send it back. A finer key without its feature master (for example lib-upload without library) is stored but has no effect. Stock roles: The four seeded roles (is_template true) can be renamed and changed like any other; deleting one is refused only while it is in use.",
+    endpoint: "role_duplicate",
+    summary: "Copy a role with its permissions and notifications.",
+    description: "Copies the role with its permissions and notifications into a new role. Answers with the new role as /api/roles returns it. Owner only.",
     readOnly: false,
     destructive: false,
     params: [
@@ -164,35 +114,8 @@ export const teamRolesTools: ToolSpec[] = [
         key: "role_id",
         type: "integer",
         required: true,
-        description: "Required for every action except create: plain role id from /api/roles.",
+        description: "Plain role id from /api/roles.",
         example: 5
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Required when action is create or rename: the role name, 1 to 40 characters. Surrounding spaces are trimmed.",
-        example: "Reviewer"
-      },
-      {
-        key: "permissions",
-        type: "array",
-        required: false,
-        description: "Required when action is set_permissions: the full list of permission keys the role should hold, as an array or a comma-separated string, from permission_keys of /api/roles. Duplicates are dropped; an empty list takes every permission away.",
-        example: [
-          "create-posts",
-          "edit-others",
-          "social"
-        ],
-        items: "string",
-        acceptsList: true
-      },
-      {
-        key: "notification_key",
-        type: "string",
-        required: false,
-        description: "Required when action is set_notification: one of notification_keys of /api/roles.",
-        example: "assigned"
       },
       {
         key: "workspace_id",
@@ -205,12 +128,11 @@ export const teamRolesTools: ToolSpec[] = [
   },
   {
     name: "role_set_permissions",
-    title: "Role Manage (Set Permissions)",
+    title: "Role Set Permissions",
     module: "team_roles",
-    endpoint: "role_manage",
-    action: "set_permissions",
-    summary: "Create, rename, duplicate or delete a role, or set its permissions and notifications. This tool runs the set_permissions action.",
-    description: "One endpoint for every change to a role, chosen with action: create: a new role named name, optionally starting from a template. rename: gives role_id the new name. duplicate: copies role_id with its permissions and notifications. set_permissions: replaces the role's permission keys with permissions; keys not in the list are taken away. set_notification: sets the email and mobile switches of one notification_key. delete: removes the role with confirm=true; refused while members hold it or a workflow stage uses it. Every action but delete answers with the role as /api/roles returns it with role_id. Owner only. set_permissions replaces, it does not add: Send the whole list the role should end up with. Read the current permissions with /api/roles, change it, send it back. A finer key without its feature master (for example lib-upload without library) is stored but has no effect. Stock roles: The four seeded roles (is_template true) can be renamed and changed like any other; deleting one is refused only while it is in use.",
+    endpoint: "role_set_permissions",
+    summary: "Replace the permission keys of a role.",
+    description: "Replaces the role's permission keys with permissions; keys not in the list are taken away. Answers with the role as /api/roles returns it. Owner only. This replaces, it does not add: Send the whole list the role should end up with. Read the current permissions with /api/roles, change it, send it back. A finer key without its feature master (for example lib-upload without library) is stored but has no effect.",
     readOnly: false,
     destructive: false,
     params: [
@@ -218,14 +140,14 @@ export const teamRolesTools: ToolSpec[] = [
         key: "role_id",
         type: "integer",
         required: true,
-        description: "Required for every action except create: plain role id from /api/roles.",
+        description: "Plain role id from /api/roles.",
         example: 5
       },
       {
         key: "permissions",
         type: "array",
         required: true,
-        description: "Required when action is set_permissions: the full list of permission keys the role should hold, as an array or a comma-separated string, from permission_keys of /api/roles. Duplicates are dropped; an empty list takes every permission away.",
+        description: "The full list of permission keys the role should hold, as an array or a comma-separated string, from permission_keys of /api/roles. Duplicates are dropped; an empty list takes every permission away.",
         example: [
           "create-posts",
           "edit-others",
@@ -233,20 +155,6 @@ export const teamRolesTools: ToolSpec[] = [
         ],
         items: "string",
         acceptsList: true
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Required when action is create or rename: the role name, 1 to 40 characters. Surrounding spaces are trimmed.",
-        example: "Reviewer"
-      },
-      {
-        key: "notification_key",
-        type: "string",
-        required: false,
-        description: "Required when action is set_notification: one of notification_keys of /api/roles.",
-        example: "assigned"
       },
       {
         key: "workspace_id",
@@ -259,12 +167,11 @@ export const teamRolesTools: ToolSpec[] = [
   },
   {
     name: "role_set_notification",
-    title: "Role Manage (Set Notification)",
+    title: "Role Set Notification",
     module: "team_roles",
-    endpoint: "role_manage",
-    action: "set_notification",
-    summary: "Create, rename, duplicate or delete a role, or set its permissions and notifications. This tool runs the set_notification action.",
-    description: "One endpoint for every change to a role, chosen with action: create: a new role named name, optionally starting from a template. rename: gives role_id the new name. duplicate: copies role_id with its permissions and notifications. set_permissions: replaces the role's permission keys with permissions; keys not in the list are taken away. set_notification: sets the email and mobile switches of one notification_key. delete: removes the role with confirm=true; refused while members hold it or a workflow stage uses it. Every action but delete answers with the role as /api/roles returns it with role_id. Owner only. set_permissions replaces, it does not add: Send the whole list the role should end up with. Read the current permissions with /api/roles, change it, send it back. A finer key without its feature master (for example lib-upload without library) is stored but has no effect. Stock roles: The four seeded roles (is_template true) can be renamed and changed like any other; deleting one is refused only while it is in use.",
+    endpoint: "role_set_notification",
+    summary: "Set the email and mobile switches of one notification for a role.",
+    description: "Sets the email and mobile switches of one notification_key for the role. Answers with the role as /api/roles returns it. Owner only.",
     readOnly: false,
     destructive: false,
     params: [
@@ -272,48 +179,28 @@ export const teamRolesTools: ToolSpec[] = [
         key: "role_id",
         type: "integer",
         required: true,
-        description: "Required for every action except create: plain role id from /api/roles.",
+        description: "Plain role id from /api/roles.",
         example: 5
       },
       {
         key: "notification_key",
         type: "string",
         required: true,
-        description: "Required when action is set_notification: one of notification_keys of /api/roles.",
+        description: "One of notification_keys of /api/roles.",
         example: "assigned"
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Required when action is create or rename: the role name, 1 to 40 characters. Surrounding spaces are trimmed.",
-        example: "Reviewer"
-      },
-      {
-        key: "permissions",
-        type: "array",
-        required: false,
-        description: "Required when action is set_permissions: the full list of permission keys the role should hold, as an array or a comma-separated string, from permission_keys of /api/roles. Duplicates are dropped; an empty list takes every permission away.",
-        example: [
-          "create-posts",
-          "edit-others",
-          "social"
-        ],
-        items: "string",
-        acceptsList: true
       },
       {
         key: "email",
         type: "boolean",
         required: false,
-        description: "With set_notification: whether members with this role get the email. Defaults to false when left out.",
+        description: "Whether members with this role get the email. Defaults to false when left out.",
         example: true
       },
       {
         key: "mobile",
         type: "boolean",
         required: false,
-        description: "With set_notification: whether they get the mobile push. Defaults to false when left out.",
+        description: "Whether they get the mobile push. Defaults to false when left out.",
         example: false
       },
       {
@@ -327,13 +214,12 @@ export const teamRolesTools: ToolSpec[] = [
   },
   {
     name: "role_delete",
-    title: "Role Manage (Delete)",
+    title: "Role Delete",
     module: "team_roles",
-    endpoint: "role_manage",
-    action: "delete",
+    endpoint: "role_delete",
     confirm: true,
-    summary: "Create, rename, duplicate or delete a role, or set its permissions and notifications. This tool runs the delete action.",
-    description: "One endpoint for every change to a role, chosen with action: create: a new role named name, optionally starting from a template. rename: gives role_id the new name. duplicate: copies role_id with its permissions and notifications. set_permissions: replaces the role's permission keys with permissions; keys not in the list are taken away. set_notification: sets the email and mobile switches of one notification_key. delete: removes the role with confirm=true; refused while members hold it or a workflow stage uses it. Every action but delete answers with the role as /api/roles returns it with role_id. Owner only. set_permissions replaces, it does not add: Send the whole list the role should end up with. Read the current permissions with /api/roles, change it, send it back. A finer key without its feature master (for example lib-upload without library) is stored but has no effect. Stock roles: The four seeded roles (is_template true) can be renamed and changed like any other; deleting one is refused only while it is in use.",
+    summary: "Delete a role that no member holds and no workflow stage uses.",
+    description: "Removes the role. Refused while members hold it or a workflow stage uses it; reassign the members with /api/workspace_member_update and change the stage first. Owner only. Stock roles: The four seeded roles (is_template true) can be renamed and changed like any other; deleting one is refused only while it is in use.",
     readOnly: false,
     destructive: true,
     params: [
@@ -341,35 +227,8 @@ export const teamRolesTools: ToolSpec[] = [
         key: "role_id",
         type: "integer",
         required: true,
-        description: "Required for every action except create: plain role id from /api/roles.",
+        description: "Plain role id from /api/roles.",
         example: 5
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Required when action is create or rename: the role name, 1 to 40 characters. Surrounding spaces are trimmed.",
-        example: "Reviewer"
-      },
-      {
-        key: "permissions",
-        type: "array",
-        required: false,
-        description: "Required when action is set_permissions: the full list of permission keys the role should hold, as an array or a comma-separated string, from permission_keys of /api/roles. Duplicates are dropped; an empty list takes every permission away.",
-        example: [
-          "create-posts",
-          "edit-others",
-          "social"
-        ],
-        items: "string",
-        acceptsList: true
-      },
-      {
-        key: "notification_key",
-        type: "string",
-        required: false,
-        description: "Required when action is set_notification: one of notification_keys of /api/roles.",
-        example: "assigned"
       },
       {
         key: "workspace_id",

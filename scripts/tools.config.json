@@ -1,6 +1,11 @@
 {
   "docsDir": "../recurpost-apis/data/endpoints",
-  "hiddenParams": ["emailid", "pass_key", "zapier_key", "shedule_date_time"],
+  "hiddenParams": [
+    "emailid",
+    "pass_key",
+    "zapier_key",
+    "shedule_date_time"
+  ],
   "firstClass": [
     "user_login",
     "workspace_list",
@@ -66,15 +71,19 @@
     "workflow_client_decision:approve": "workflow_client_approve",
     "workflow_client_decision:reject": "workflow_client_reject",
     "workflow_client_decision:comment": "workflow_client_comment",
-    "role_manage:create": "role_create",
-    "role_manage:rename": "role_rename",
-    "role_manage:duplicate": "role_duplicate",
-    "role_manage:set_permissions": "role_set_permissions",
-    "role_manage:set_notification": "role_set_notification",
-    "role_manage:delete": "role_delete",
     "workflow_settings:settings": "workflow_settings_update"
   },
-  "readOnlyActions": ["list", "get", "data", "count", "businesses", "questions", "formats", "clients", "quote"],
+  "readOnlyActions": [
+    "list",
+    "get",
+    "data",
+    "count",
+    "businesses",
+    "questions",
+    "formats",
+    "clients",
+    "quote"
+  ],
   "readOnlyPatterns": [
     "_(list|details|data|search|calendar|items|remaining|options|wallet|backgrounds|preview|accounts|members|posts|comments|item|conversation|stats|credits|limits|invoices|usage|board|card|team_members)$"
   ],
@@ -109,7 +118,25 @@
     "youtube_options",
     "connect_social_account_urls"
   ],
-  "notReadOnlyTools": ["queue_post_add_accounts", "history_to_library", "inbox_to_library", "ai_to_library", "x_wallet"],
-  "destructiveActions": ["delete", "remove", "delete_value", "reject_all", "reset", "expire", "product_delete", "remove_client", "unassign"],
-  "destructivePatterns": ["_(delete|remove|unpublish)$"]
+  "notReadOnlyTools": [
+    "queue_post_add_accounts",
+    "history_to_library",
+    "inbox_to_library",
+    "ai_to_library",
+    "x_wallet"
+  ],
+  "destructiveActions": [
+    "delete",
+    "remove",
+    "delete_value",
+    "reject_all",
+    "reset",
+    "expire",
+    "product_delete",
+    "remove_client",
+    "unassign"
+  ],
+  "destructivePatterns": [
+    "_(delete|remove|unpublish)$"
+  ]
 }

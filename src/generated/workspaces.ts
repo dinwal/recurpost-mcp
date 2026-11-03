@@ -109,12 +109,11 @@ export const workspacesTools: ToolSpec[] = [
   },
   {
     name: "workspace_invite",
-    title: "Workspace Invite (Invite)",
+    title: "Workspace Invite",
     module: "workspaces",
     endpoint: "workspace_invite",
-    action: "invite",
-    summary: "Invite a member by email, or send a pending invite again. This tool runs the invite action.",
-    description: "With action=invite (the default) adds a person to the workspace by email with an optional role. An address without a RecurPost account gets one plus a welcome email, as in the app; an existing user gets an invitation email and shows up in pending_invites until they accept. With action=resend mails the invite again to a pending member named by user_id. Owner only, and only on workspaces you created: the signup workspace cannot take members. Sends email, may create an account: Every successful call sends mail. An unknown address becomes a RecurPost user with a temporary password before the invite is recorded, so do not use this endpoint to test addresses. Removing members: Roles and the account manager flag are changed with /api/workspace_member_update; a member is removed with /api/workspace_member_remove.",
+    summary: "Invite a member to a workspace by email, with an optional role.",
+    description: "Adds a person to the workspace by email with an optional role. An address without a RecurPost account gets one plus a welcome email, as in the app; an existing user gets an invitation email and shows up in pending_invites until they accept. A pending invite is mailed again with /api/workspace_invite_resend. Owner only, and only on workspaces you created: the signup workspace cannot take members. Sends email, may create an account: Every successful call sends mail. An unknown address becomes a RecurPost user with a temporary password before the invite is recorded, so do not use this endpoint to test addresses. Removing members: Roles and the account manager flag are changed with /api/workspace_member_update; a member is removed with /api/workspace_member_remove.",
     readOnly: false,
     destructive: false,
     params: [
@@ -122,22 +121,15 @@ export const workspacesTools: ToolSpec[] = [
         key: "email",
         type: "email",
         required: true,
-        description: "Required when action=invite: address to invite.",
+        description: "Address to invite.",
         example: "new@example.com"
       },
       {
         key: "role",
         type: "string",
         required: false,
-        description: "With action=invite: a role id or role name from /api/workspace_details, case-insensitive. Omit, or send 0, for no role.",
+        description: "A role id or role name from /api/workspace_details, case-insensitive. Omit, or send 0, for no role.",
         example: "Designer"
-      },
-      {
-        key: "user_id",
-        type: "string",
-        required: false,
-        description: "Required when action=resend: encrypted user id from pending_invites[].id of /api/workspace_details or /api/workspace_members.",
-        example: "Pd5nT1zX7w=="
       },
       {
         key: "workspace_id",
@@ -150,12 +142,11 @@ export const workspacesTools: ToolSpec[] = [
   },
   {
     name: "workspace_invite_resend",
-    title: "Workspace Invite (Resend)",
+    title: "Workspace Invite Resend",
     module: "workspaces",
-    endpoint: "workspace_invite",
-    action: "resend",
-    summary: "Invite a member by email, or send a pending invite again. This tool runs the resend action.",
-    description: "With action=invite (the default) adds a person to the workspace by email with an optional role. An address without a RecurPost account gets one plus a welcome email, as in the app; an existing user gets an invitation email and shows up in pending_invites until they accept. With action=resend mails the invite again to a pending member named by user_id. Owner only, and only on workspaces you created: the signup workspace cannot take members. Sends email, may create an account: Every successful call sends mail. An unknown address becomes a RecurPost user with a temporary password before the invite is recorded, so do not use this endpoint to test addresses. Removing members: Roles and the account manager flag are changed with /api/workspace_member_update; a member is removed with /api/workspace_member_remove.",
+    endpoint: "workspace_invite_resend",
+    summary: "Mail a pending workspace invite again.",
+    description: "Sends the invitation email again to a member who has not accepted yet, named by user_id from pending_invites. Owner only, and only on workspaces you created: the signup workspace cannot take members. Sends email: Every successful call sends mail to the pending member.",
     readOnly: false,
     destructive: false,
     params: [
@@ -163,15 +154,8 @@ export const workspacesTools: ToolSpec[] = [
         key: "user_id",
         type: "string",
         required: true,
-        description: "Required when action=resend: encrypted user id from pending_invites[].id of /api/workspace_details or /api/workspace_members.",
+        description: "Encrypted user id from pending_invites[].id of /api/workspace_details or /api/workspace_members.",
         example: "Pd5nT1zX7w=="
-      },
-      {
-        key: "email",
-        type: "email",
-        required: false,
-        description: "Required when action=invite: address to invite.",
-        example: "new@example.com"
       },
       {
         key: "workspace_id",
@@ -330,12 +314,11 @@ export const workspacesTools: ToolSpec[] = [
   },
   {
     name: "workspace_social_accounts_add",
-    title: "Workspace Social Accounts (Add)",
+    title: "Workspace Social Accounts Add",
     module: "workspaces",
-    endpoint: "workspace_social_accounts",
-    action: "add",
-    summary: "Add social accounts to a workspace or remove them from it. This tool runs the add action.",
-    description: "With action=add links the given social accounts to the workspace; accounts already in it are skipped. Each newly linked account receives the workspace watermark. With action=remove unlinks them from this workspace and drops that watermark; accounts not in the workspace are skipped. The accounts themselves and their queues in other workspaces are untouched. Owner only: the key must belong to the workspace owner, and the accounts must be the owner's. Removal cancels nothing by itself: Unlinking an account from a workspace does not delete its schedules or queued posts; it only takes the account out of this workspace's view and watermark. Use /api/schedule_delete for the slots. The signup workspace: The default workspace created at signup is meant to hold every account of the owner; scope accounts with the workspaces you created.",
+    endpoint: "workspace_social_accounts_add",
+    summary: "Add social accounts to a workspace.",
+    description: "Links the given social accounts to the workspace; accounts already in it are skipped. Each newly linked account receives the workspace watermark. The accounts themselves and their queues in other workspaces are untouched. Owner only: the key must belong to the workspace owner, and the accounts must be the owner's. The signup workspace: The default workspace created at signup is meant to hold every account of the owner; scope accounts with the workspaces you created.",
     readOnly: false,
     destructive: false,
     params: [
@@ -362,12 +345,11 @@ export const workspacesTools: ToolSpec[] = [
   },
   {
     name: "workspace_social_accounts_remove",
-    title: "Workspace Social Accounts (Remove)",
+    title: "Workspace Social Accounts Remove",
     module: "workspaces",
-    endpoint: "workspace_social_accounts",
-    action: "remove",
-    summary: "Add social accounts to a workspace or remove them from it. This tool runs the remove action.",
-    description: "With action=add links the given social accounts to the workspace; accounts already in it are skipped. Each newly linked account receives the workspace watermark. With action=remove unlinks them from this workspace and drops that watermark; accounts not in the workspace are skipped. The accounts themselves and their queues in other workspaces are untouched. Owner only: the key must belong to the workspace owner, and the accounts must be the owner's. Removal cancels nothing by itself: Unlinking an account from a workspace does not delete its schedules or queued posts; it only takes the account out of this workspace's view and watermark. Use /api/schedule_delete for the slots. The signup workspace: The default workspace created at signup is meant to hold every account of the owner; scope accounts with the workspaces you created.",
+    endpoint: "workspace_social_accounts_remove",
+    summary: "Remove social accounts from a workspace.",
+    description: "Unlinks the given social accounts from this workspace and drops the workspace watermark from them; accounts not in the workspace are skipped. The accounts themselves and their queues in other workspaces are untouched. Owner only: the key must belong to the workspace owner, and the accounts must be the owner's. Removal cancels nothing by itself: Unlinking an account from a workspace does not delete its schedules or queued posts; it only takes the account out of this workspace's view and watermark. Use /api/schedule_delete for the slots. The signup workspace: The default workspace created at signup is meant to hold every account of the owner; scope accounts with the workspaces you created.",
     readOnly: false,
     destructive: true,
     params: [
@@ -394,12 +376,11 @@ export const workspacesTools: ToolSpec[] = [
   },
   {
     name: "workspace_libraries_add",
-    title: "Workspace Libraries (Add)",
+    title: "Workspace Libraries Add",
     module: "workspaces",
-    endpoint: "workspace_libraries",
-    action: "add",
-    summary: "Add libraries to a workspace or remove them from it. This tool runs the add action.",
-    description: "With action=add links the given libraries to the workspace; libraries already in it are skipped. With action=remove unlinks them from this workspace; libraries not in the workspace are skipped. The libraries, their posts and their schedules are untouched. Owner only: the key must belong to the workspace owner, and the libraries must be the owner's. Schedules keep running: A library unlinked from a workspace still publishes through its schedules; it just stops showing in this workspace. Delete its slots with /api/schedule_delete if that is not wanted.",
+    endpoint: "workspace_libraries_add",
+    summary: "Add libraries to a workspace.",
+    description: "Links the given libraries to the workspace; libraries already in it are skipped. The libraries, their posts and their schedules are untouched. Owner only: the key must belong to the workspace owner, and the libraries must be the owner's.",
     readOnly: false,
     destructive: false,
     params: [
@@ -425,12 +406,11 @@ export const workspacesTools: ToolSpec[] = [
   },
   {
     name: "workspace_libraries_remove",
-    title: "Workspace Libraries (Remove)",
+    title: "Workspace Libraries Remove",
     module: "workspaces",
-    endpoint: "workspace_libraries",
-    action: "remove",
-    summary: "Add libraries to a workspace or remove them from it. This tool runs the remove action.",
-    description: "With action=add links the given libraries to the workspace; libraries already in it are skipped. With action=remove unlinks them from this workspace; libraries not in the workspace are skipped. The libraries, their posts and their schedules are untouched. Owner only: the key must belong to the workspace owner, and the libraries must be the owner's. Schedules keep running: A library unlinked from a workspace still publishes through its schedules; it just stops showing in this workspace. Delete its slots with /api/schedule_delete if that is not wanted.",
+    endpoint: "workspace_libraries_remove",
+    summary: "Remove libraries from a workspace.",
+    description: "Unlinks the given libraries from this workspace; libraries not in the workspace are skipped. The libraries, their posts and their schedules are untouched. Owner only: the key must belong to the workspace owner, and the libraries must be the owner's. Schedules keep running: A library unlinked from a workspace still publishes through its schedules; it just stops showing in this workspace. Delete its slots with /api/schedule_delete if that is not wanted.",
     readOnly: false,
     destructive: true,
     params: [
@@ -456,29 +436,14 @@ export const workspacesTools: ToolSpec[] = [
   },
   {
     name: "workspace_report_emails_list",
-    title: "Workspace Report Emails (List)",
+    title: "Workspace Report Emails List",
     module: "workspaces",
-    endpoint: "workspace_report_emails",
-    action: "list",
-    summary: "List, add, update or delete the client report recipients of a workspace. This tool runs the list action.",
-    description: "The people who receive the scheduled client report of the workspace by email. With action=list (the default) reads them. add adds an address with a weekly or monthly schedule, update changes the schedule or switches a recipient off and on, delete removes one. Every action answers with the full list afterwards. Owner only: the key must belong to the workspace owner. Changing frequency: On update the day is checked against the frequency that results: switching a weekly recipient on day 5 to monthly keeps day 5; switching a monthly recipient on day 20 to weekly needs a day of 1 to 7 in the same call. Same list as workspace_details: recipients is the client_report_emails list of /api/workspace_details, with the plain id needed here.",
+    endpoint: "workspace_report_emails_list",
+    summary: "List the client report recipients of a workspace.",
+    description: "The people who receive the scheduled client report of the workspace by email, with each one's schedule and state. Owner only: the key must belong to the workspace owner. Same list as workspace_details: recipients is the client_report_emails list of /api/workspace_details, with the plain id needed by the update and delete calls.",
     readOnly: true,
     destructive: false,
     params: [
-      {
-        key: "email",
-        type: "email",
-        required: false,
-        description: "Required when action is add: the address to add.",
-        example: "report@example.com"
-      },
-      {
-        key: "report_id",
-        type: "integer",
-        required: false,
-        description: "Required when action is update or delete: plain recipient id from recipients[].id.",
-        example: 31
-      },
       {
         key: "workspace_id",
         type: "string",
@@ -490,12 +455,11 @@ export const workspacesTools: ToolSpec[] = [
   },
   {
     name: "workspace_report_emails_add",
-    title: "Workspace Report Emails (Add)",
+    title: "Workspace Report Emails Add",
     module: "workspaces",
-    endpoint: "workspace_report_emails",
-    action: "add",
-    summary: "List, add, update or delete the client report recipients of a workspace. This tool runs the add action.",
-    description: "The people who receive the scheduled client report of the workspace by email. With action=list (the default) reads them. add adds an address with a weekly or monthly schedule, update changes the schedule or switches a recipient off and on, delete removes one. Every action answers with the full list afterwards. Owner only: the key must belong to the workspace owner. Changing frequency: On update the day is checked against the frequency that results: switching a weekly recipient on day 5 to monthly keeps day 5; switching a monthly recipient on day 20 to weekly needs a day of 1 to 7 in the same call. Same list as workspace_details: recipients is the client_report_emails list of /api/workspace_details, with the plain id needed here.",
+    endpoint: "workspace_report_emails_add",
+    summary: "Add a client report recipient with a weekly or monthly schedule.",
+    description: "Adds an address to the client report recipients of the workspace with a weekly or monthly schedule. Answers with the full list afterwards. Owner only: the key must belong to the workspace owner. Same list as workspace_details: recipients is the client_report_emails list of /api/workspace_details, with the plain id needed by the update and delete calls.",
     readOnly: false,
     destructive: false,
     params: [
@@ -503,21 +467,14 @@ export const workspacesTools: ToolSpec[] = [
         key: "email",
         type: "email",
         required: true,
-        description: "Required when action is add: the address to add.",
+        description: "The address to add.",
         example: "report@example.com"
-      },
-      {
-        key: "report_id",
-        type: "integer",
-        required: false,
-        description: "Required when action is update or delete: plain recipient id from recipients[].id.",
-        example: 31
       },
       {
         key: "frequency",
         type: "string",
         required: false,
-        description: "With add or update: weekly or monthly. Defaults to weekly on add and to the current value on update.",
+        description: "weekly or monthly.",
         values: [
           "weekly",
           "monthly"
@@ -528,7 +485,7 @@ export const workspacesTools: ToolSpec[] = [
         key: "day",
         type: "integer",
         required: false,
-        description: "With add or update: the day the report goes out, 1 (Monday) to 7 (Sunday) for weekly, 1 to 28 for monthly. Defaults to 1 on add and to the current value on update.",
+        description: "The day the report goes out, 1 (Monday) to 7 (Sunday) for weekly, 1 to 28 for monthly.",
         example: 1
       },
       {
@@ -542,12 +499,11 @@ export const workspacesTools: ToolSpec[] = [
   },
   {
     name: "workspace_report_emails_update",
-    title: "Workspace Report Emails (Update)",
+    title: "Workspace Report Emails Update",
     module: "workspaces",
-    endpoint: "workspace_report_emails",
-    action: "update",
-    summary: "List, add, update or delete the client report recipients of a workspace. This tool runs the update action.",
-    description: "The people who receive the scheduled client report of the workspace by email. With action=list (the default) reads them. add adds an address with a weekly or monthly schedule, update changes the schedule or switches a recipient off and on, delete removes one. Every action answers with the full list afterwards. Owner only: the key must belong to the workspace owner. Changing frequency: On update the day is checked against the frequency that results: switching a weekly recipient on day 5 to monthly keeps day 5; switching a monthly recipient on day 20 to weekly needs a day of 1 to 7 in the same call. Same list as workspace_details: recipients is the client_report_emails list of /api/workspace_details, with the plain id needed here.",
+    endpoint: "workspace_report_emails_update",
+    summary: "Change the schedule of a client report recipient or switch it off and on.",
+    description: "Changes the frequency or day of one recipient, or switches the report off and on for them. Fields left out keep their value. Answers with the full list afterwards. Owner only: the key must belong to the workspace owner. Changing frequency: The day is checked against the frequency that results: switching a weekly recipient on day 5 to monthly keeps day 5; switching a monthly recipient on day 20 to weekly needs a day of 1 to 7 in the same call.",
     readOnly: false,
     destructive: false,
     params: [
@@ -555,21 +511,14 @@ export const workspacesTools: ToolSpec[] = [
         key: "report_id",
         type: "integer",
         required: true,
-        description: "Required when action is update or delete: plain recipient id from recipients[].id.",
+        description: "Plain recipient id from recipients[].id of /api/workspace_report_emails_list.",
         example: 31
-      },
-      {
-        key: "email",
-        type: "email",
-        required: false,
-        description: "Required when action is add: the address to add.",
-        example: "report@example.com"
       },
       {
         key: "frequency",
         type: "string",
         required: false,
-        description: "With add or update: weekly or monthly. Defaults to weekly on add and to the current value on update.",
+        description: "weekly or monthly. Left out, the current value is kept.",
         values: [
           "weekly",
           "monthly"
@@ -580,14 +529,14 @@ export const workspacesTools: ToolSpec[] = [
         key: "day",
         type: "integer",
         required: false,
-        description: "With add or update: the day the report goes out, 1 (Monday) to 7 (Sunday) for weekly, 1 to 28 for monthly. Defaults to 1 on add and to the current value on update.",
+        description: "The day the report goes out, 1 (Monday) to 7 (Sunday) for weekly, 1 to 28 for monthly. Left out, the current value is kept.",
         example: 1
       },
       {
         key: "active",
         type: "boolean",
         required: false,
-        description: "With update: false switches the report off for this recipient, true switches it back on. Left out, the current state is kept.",
+        description: "false switches the report off for this recipient, true switches it back on. Left out, the current state is kept.",
         example: true
       },
       {
@@ -601,12 +550,11 @@ export const workspacesTools: ToolSpec[] = [
   },
   {
     name: "workspace_report_emails_delete",
-    title: "Workspace Report Emails (Delete)",
+    title: "Workspace Report Emails Delete",
     module: "workspaces",
-    endpoint: "workspace_report_emails",
-    action: "delete",
-    summary: "List, add, update or delete the client report recipients of a workspace. This tool runs the delete action.",
-    description: "The people who receive the scheduled client report of the workspace by email. With action=list (the default) reads them. add adds an address with a weekly or monthly schedule, update changes the schedule or switches a recipient off and on, delete removes one. Every action answers with the full list afterwards. Owner only: the key must belong to the workspace owner. Changing frequency: On update the day is checked against the frequency that results: switching a weekly recipient on day 5 to monthly keeps day 5; switching a monthly recipient on day 20 to weekly needs a day of 1 to 7 in the same call. Same list as workspace_details: recipients is the client_report_emails list of /api/workspace_details, with the plain id needed here.",
+    endpoint: "workspace_report_emails_delete",
+    summary: "Remove a client report recipient.",
+    description: "Removes one recipient from the client report of the workspace. Answers with the full list afterwards. Owner only: the key must belong to the workspace owner.",
     readOnly: false,
     destructive: true,
     params: [
@@ -614,15 +562,8 @@ export const workspacesTools: ToolSpec[] = [
         key: "report_id",
         type: "integer",
         required: true,
-        description: "Required when action is update or delete: plain recipient id from recipients[].id.",
+        description: "Plain recipient id from recipients[].id of /api/workspace_report_emails_list.",
         example: 31
-      },
-      {
-        key: "email",
-        type: "email",
-        required: false,
-        description: "Required when action is add: the address to add.",
-        example: "report@example.com"
       },
       {
         key: "workspace_id",
