@@ -2602,7 +2602,7 @@ export const librariesTools: ToolSpec[] = [
     module: "libraries",
     endpoint: "library_content_order_move",
     summary: "Move a post to a position in a library's publishing order.",
-    description: "Puts content_id at position (1 publishes next) and shifts the posts in between. Answers with the complete new order, one row per post with its position and encrypted id. Each account's place in that order is read and changed with /api/library_pointers_list and /api/library_pointers_set. Moving a post to the position it already has changes nothing and still answers 200 with the order. Order versus pointers: The order is the library's. Every account connected to the library has its own pointer into it (/api/library_pointers), so moving a post to position 1 makes it the next post for accounts whose pointer is at the start; an account further down the order reaches it on its next cycle.",
+    description: "Puts content_id at position (1 publishes next) and shifts the posts in between. Answers with the complete new order, one row per post with its position and encrypted id. Each account's place in that order is read and changed with /api/library_pointers_list and /api/library_pointers_set. Moving a post to the position it already has changes nothing and still answers 200 with the order. Order versus pointers: The order is the library's. Every account connected to the library has its own pointer into it (/api/library_pointers_list), so moving a post to position 1 makes it the next post for accounts whose pointer is at the start; an account further down the order reaches it on its next cycle.",
     readOnly: false,
     destructive: false,
     params: [

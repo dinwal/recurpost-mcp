@@ -4,38 +4,19 @@ import type { ToolSpec } from "../types.js";
 export const libraryToolsTools: ToolSpec[] = [
   {
     name: "expired_content_list",
-    title: "Expired Content (List)",
+    title: "Expired Content List",
     module: "library_tools",
-    endpoint: "expired_content",
-    action: "list",
-    summary: "List posts that left their library, restore one as a copy, delete one for good, or expire a live post. This tool runs the list action.",
-    description: "Expired content is the holding area for posts that are no longer in a library: posts a one-time-use library published and dropped, posts whose expire date passed, and posts you expire by hand. action picks the operation: list (default): the expired posts of the workspace, paged, each with the library it came from. expire: takes a live post or draft (content_id) out of its library and into expired content. restore: copies an expired post (content_id) into one or more libraries (library_ids). The expired original stays; the copies are new posts whose ids come back in new_ids. delete: removes an expired post and its media for good; needs confirm=true. Restore makes copies: The expired post stays in expired content after a restore; each library in library_ids gets a new post with its own id, and every copy counts toward the plan's library post limit. Delete the expired original with action=delete once you no longer need it.",
+    endpoint: "expired_content_list",
+    summary: "List the posts that left their library.",
+    description: "Expired content is the holding area for posts that are no longer in a library: posts a one-time-use library published and dropped, posts whose expire date passed, and posts you expire by hand. This call lists the expired posts of the workspace, paged, each with the library it came from.",
     readOnly: true,
     destructive: false,
     params: [
       {
-        key: "content_id",
-        type: "string",
-        required: false,
-        description: "Encrypted post id. Required when action is restore, delete or expire. For restore and delete it must be an expired post (from the list); for expire a post that is not expired yet.",
-        example: "pQ8sL3vY2a=="
-      },
-      {
-        key: "library_ids",
-        type: "array",
-        required: false,
-        description: "Encrypted ids of the libraries to copy the post into: one id, a comma-separated string or an array, at most 50. Required when action is restore.",
-        example: [
-          "nX2k9Qp7Lw=="
-        ],
-        items: "string",
-        acceptsList: true
-      },
-      {
         key: "page",
         type: "integer",
         required: false,
-        description: "Page of the list, from 1. Read when action is list.",
+        description: "Page of the list, from 1.",
         default: "1",
         example: 1
       },
@@ -43,7 +24,7 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "per_page",
         type: "integer",
         required: false,
-        description: "Posts per page, 1 to 50. Read when action is list.",
+        description: "Posts per page, 1 to 50.",
         default: "20",
         example: 20
       },
@@ -58,12 +39,11 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "expired_content_restore",
-    title: "Expired Content (Restore)",
+    title: "Expired Content Restore",
     module: "library_tools",
-    endpoint: "expired_content",
-    action: "restore",
-    summary: "List posts that left their library, restore one as a copy, delete one for good, or expire a live post. This tool runs the restore action.",
-    description: "Expired content is the holding area for posts that are no longer in a library: posts a one-time-use library published and dropped, posts whose expire date passed, and posts you expire by hand. action picks the operation: list (default): the expired posts of the workspace, paged, each with the library it came from. expire: takes a live post or draft (content_id) out of its library and into expired content. restore: copies an expired post (content_id) into one or more libraries (library_ids). The expired original stays; the copies are new posts whose ids come back in new_ids. delete: removes an expired post and its media for good; needs confirm=true. Restore makes copies: The expired post stays in expired content after a restore; each library in library_ids gets a new post with its own id, and every copy counts toward the plan's library post limit. Delete the expired original with action=delete once you no longer need it.",
+    endpoint: "expired_content_restore",
+    summary: "Copy an expired post back into one or more libraries.",
+    description: "Expired content is the holding area for posts that are no longer in a library: posts a one-time-use library published and dropped, posts whose expire date passed, and posts you expire by hand. This call copies an expired post into the libraries in library_ids. The expired original stays; the copies are new posts whose ids come back in new_ids. Restore makes copies: The expired post stays in expired content after a restore; each library in library_ids gets a new post with its own id, and every copy counts toward the plan's library post limit. Delete the expired original with /api/expired_content_delete once you no longer need it.",
     readOnly: false,
     destructive: false,
     params: [
@@ -71,14 +51,14 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "content_id",
         type: "string",
         required: true,
-        description: "Encrypted post id. Required when action is restore, delete or expire. For restore and delete it must be an expired post (from the list); for expire a post that is not expired yet.",
+        description: "Encrypted id of an expired post, from /api/expired_content_list.",
         example: "pQ8sL3vY2a=="
       },
       {
         key: "library_ids",
         type: "array",
         required: true,
-        description: "Encrypted ids of the libraries to copy the post into: one id, a comma-separated string or an array, at most 50. Required when action is restore.",
+        description: "Encrypted ids of the libraries to copy the post into: one id, a comma-separated string or an array, at most 50.",
         example: [
           "nX2k9Qp7Lw=="
         ],
@@ -96,13 +76,12 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "expired_content_delete",
-    title: "Expired Content (Delete)",
+    title: "Expired Content Delete",
     module: "library_tools",
-    endpoint: "expired_content",
-    action: "delete",
+    endpoint: "expired_content_delete",
     confirm: true,
-    summary: "List posts that left their library, restore one as a copy, delete one for good, or expire a live post. This tool runs the delete action.",
-    description: "Expired content is the holding area for posts that are no longer in a library: posts a one-time-use library published and dropped, posts whose expire date passed, and posts you expire by hand. action picks the operation: list (default): the expired posts of the workspace, paged, each with the library it came from. expire: takes a live post or draft (content_id) out of its library and into expired content. restore: copies an expired post (content_id) into one or more libraries (library_ids). The expired original stays; the copies are new posts whose ids come back in new_ids. delete: removes an expired post and its media for good; needs confirm=true. Restore makes copies: The expired post stays in expired content after a restore; each library in library_ids gets a new post with its own id, and every copy counts toward the plan's library post limit. Delete the expired original with action=delete once you no longer need it.",
+    summary: "Delete an expired post and its media for good.",
+    description: "Expired content is the holding area for posts that are no longer in a library: posts a one-time-use library published and dropped, posts whose expire date passed, and posts you expire by hand. This call removes an expired post and its media for good; needs confirm=true.",
     readOnly: false,
     destructive: true,
     params: [
@@ -110,19 +89,8 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "content_id",
         type: "string",
         required: true,
-        description: "Encrypted post id. Required when action is restore, delete or expire. For restore and delete it must be an expired post (from the list); for expire a post that is not expired yet.",
+        description: "Encrypted id of an expired post, from /api/expired_content_list.",
         example: "pQ8sL3vY2a=="
-      },
-      {
-        key: "library_ids",
-        type: "array",
-        required: false,
-        description: "Encrypted ids of the libraries to copy the post into: one id, a comma-separated string or an array, at most 50. Required when action is restore.",
-        example: [
-          "nX2k9Qp7Lw=="
-        ],
-        items: "string",
-        acceptsList: true
       },
       {
         key: "workspace_id",
@@ -135,12 +103,11 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "expired_content_expire",
-    title: "Expired Content (Expire)",
+    title: "Expired Content Expire",
     module: "library_tools",
-    endpoint: "expired_content",
-    action: "expire",
-    summary: "List posts that left their library, restore one as a copy, delete one for good, or expire a live post. This tool runs the expire action.",
-    description: "Expired content is the holding area for posts that are no longer in a library: posts a one-time-use library published and dropped, posts whose expire date passed, and posts you expire by hand. action picks the operation: list (default): the expired posts of the workspace, paged, each with the library it came from. expire: takes a live post or draft (content_id) out of its library and into expired content. restore: copies an expired post (content_id) into one or more libraries (library_ids). The expired original stays; the copies are new posts whose ids come back in new_ids. delete: removes an expired post and its media for good; needs confirm=true. Restore makes copies: The expired post stays in expired content after a restore; each library in library_ids gets a new post with its own id, and every copy counts toward the plan's library post limit. Delete the expired original with action=delete once you no longer need it.",
+    endpoint: "expired_content_expire",
+    summary: "Take a live post or draft out of its library into expired content.",
+    description: "Expired content is the holding area for posts that are no longer in a library: posts a one-time-use library published and dropped, posts whose expire date passed, and posts you expire by hand. This call takes a live post or draft out of its library and into expired content.",
     readOnly: false,
     destructive: true,
     params: [
@@ -148,19 +115,8 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "content_id",
         type: "string",
         required: true,
-        description: "Encrypted post id. Required when action is restore, delete or expire. For restore and delete it must be an expired post (from the list); for expire a post that is not expired yet.",
+        description: "Encrypted id of a post that is not expired yet.",
         example: "pQ8sL3vY2a=="
-      },
-      {
-        key: "library_ids",
-        type: "array",
-        required: false,
-        description: "Encrypted ids of the libraries to copy the post into: one id, a comma-separated string or an array, at most 50. Required when action is restore.",
-        example: [
-          "nX2k9Qp7Lw=="
-        ],
-        items: "string",
-        acceptsList: true
       },
       {
         key: "workspace_id",
@@ -173,12 +129,11 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "library_drafts_list",
-    title: "Library Drafts (List)",
+    title: "Library Drafts List",
     module: "library_tools",
-    endpoint: "library_drafts",
-    action: "list",
-    summary: "List, read, edit, publish or delete the drafts of a library. This tool runs the list action.",
-    description: "A draft is a library post with a live date in the future: it sits in the library but is not scheduled until that day. action picks the operation on library library_id: list (default): the drafts of the library, 20 a page. get: one draft (content_id) with its live and expire dates. update: changes the fields you send over the draft's current values; a field left out keeps its value. The draft must keep a live date. publish: clears the live date so the post joins the library now; the other fields you send are applied at the same time. delete: removes the draft and its media; needs confirm=true. The content fields here are the simple ones of a library post (one message, one link, one image, one video); per-network tabs are not touched. For a full rewrite use /api/library_content_update. Patch semantics, unlike library_content_update: update and publish merge your fields over the draft's current values, so you can change one field alone. /api/library_content_update is a full replacement; use it to rewrite per-network tabs. gmb_cta_type 1 is treated as none: The app stores Learn more as code 1, but this endpoint keeps only codes above 1; sending 1 clears the button. Set a Learn more button through /api/library_content_update with gbp_cta instead.",
+    endpoint: "library_drafts_list",
+    summary: "List the drafts of a library.",
+    description: "A draft is a library post with a live date in the future: it sits in the library but is not scheduled until that day. This call lists the drafts of the library, 20 a page.",
     readOnly: true,
     destructive: false,
     params: [
@@ -190,26 +145,12 @@ export const libraryToolsTools: ToolSpec[] = [
         example: "nX2k9Qp7Lw=="
       },
       {
-        key: "content_id",
-        type: "string",
-        required: false,
-        description: "Encrypted id of the draft. Required for every action but list; it must be a draft of this library.",
-        example: "pQ8sL3vY2a=="
-      },
-      {
         key: "page",
         type: "integer",
         required: false,
-        description: "Page of the list, from 1; 20 drafts a page. Read when action is list.",
+        description: "Page of the list, from 1; 20 drafts a page.",
         default: "1",
         example: 1
-      },
-      {
-        key: "live_date",
-        type: "date",
-        required: false,
-        description: "YYYY-MM-DD the draft goes live. update must leave the draft with a live date; publish clears it whatever you send.",
-        example: "2026-12-01"
       },
       {
         key: "workspace_id",
@@ -222,12 +163,11 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "library_drafts_get",
-    title: "Library Drafts (Get)",
+    title: "Library Drafts Get",
     module: "library_tools",
-    endpoint: "library_drafts",
-    action: "get",
-    summary: "List, read, edit, publish or delete the drafts of a library. This tool runs the get action.",
-    description: "A draft is a library post with a live date in the future: it sits in the library but is not scheduled until that day. action picks the operation on library library_id: list (default): the drafts of the library, 20 a page. get: one draft (content_id) with its live and expire dates. update: changes the fields you send over the draft's current values; a field left out keeps its value. The draft must keep a live date. publish: clears the live date so the post joins the library now; the other fields you send are applied at the same time. delete: removes the draft and its media; needs confirm=true. The content fields here are the simple ones of a library post (one message, one link, one image, one video); per-network tabs are not touched. For a full rewrite use /api/library_content_update. Patch semantics, unlike library_content_update: update and publish merge your fields over the draft's current values, so you can change one field alone. /api/library_content_update is a full replacement; use it to rewrite per-network tabs. gmb_cta_type 1 is treated as none: The app stores Learn more as code 1, but this endpoint keeps only codes above 1; sending 1 clears the button. Set a Learn more button through /api/library_content_update with gbp_cta instead.",
+    endpoint: "library_drafts_get",
+    summary: "Read one draft of a library with its live and expire dates.",
+    description: "A draft is a library post with a live date in the future: it sits in the library but is not scheduled until that day. This call reads one draft with its live and expire dates.",
     readOnly: true,
     destructive: false,
     params: [
@@ -242,15 +182,8 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "content_id",
         type: "string",
         required: true,
-        description: "Encrypted id of the draft. Required for every action but list; it must be a draft of this library.",
+        description: "Encrypted id of the draft; it must be a draft of this library.",
         example: "pQ8sL3vY2a=="
-      },
-      {
-        key: "live_date",
-        type: "date",
-        required: false,
-        description: "YYYY-MM-DD the draft goes live. update must leave the draft with a live date; publish clears it whatever you send.",
-        example: "2026-12-01"
       },
       {
         key: "workspace_id",
@@ -263,12 +196,11 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "library_drafts_update",
-    title: "Library Drafts (Update)",
+    title: "Library Drafts Update",
     module: "library_tools",
-    endpoint: "library_drafts",
-    action: "update",
-    summary: "List, read, edit, publish or delete the drafts of a library. This tool runs the update action.",
-    description: "A draft is a library post with a live date in the future: it sits in the library but is not scheduled until that day. action picks the operation on library library_id: list (default): the drafts of the library, 20 a page. get: one draft (content_id) with its live and expire dates. update: changes the fields you send over the draft's current values; a field left out keeps its value. The draft must keep a live date. publish: clears the live date so the post joins the library now; the other fields you send are applied at the same time. delete: removes the draft and its media; needs confirm=true. The content fields here are the simple ones of a library post (one message, one link, one image, one video); per-network tabs are not touched. For a full rewrite use /api/library_content_update. Patch semantics, unlike library_content_update: update and publish merge your fields over the draft's current values, so you can change one field alone. /api/library_content_update is a full replacement; use it to rewrite per-network tabs. gmb_cta_type 1 is treated as none: The app stores Learn more as code 1, but this endpoint keeps only codes above 1; sending 1 clears the button. Set a Learn more button through /api/library_content_update with gbp_cta instead.",
+    endpoint: "library_drafts_update",
+    summary: "Change a draft of a library field by field.",
+    description: "A draft is a library post with a live date in the future: it sits in the library but is not scheduled until that day. This call changes the fields you send over the draft's current values; a field left out keeps its value. The draft must keep a live date; clear it with /api/library_drafts_publish. The content fields here are the simple ones of a library post (one message, one link, one image, one video); per-network tabs are not touched. For a full rewrite use /api/library_content_update. Patch semantics, unlike library_content_update: The fields you send merge over the draft's current values, so you can change one field alone. /api/library_content_update is a full replacement; use it to rewrite per-network tabs. gmb_cta_type 1 is treated as none: The app stores Learn more as code 1, but this endpoint keeps only codes above 1; sending 1 clears the button. Set a Learn more button through /api/library_content_update with gbp_cta instead.",
     readOnly: false,
     destructive: false,
     params: [
@@ -283,70 +215,70 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "content_id",
         type: "string",
         required: true,
-        description: "Encrypted id of the draft. Required for every action but list; it must be a draft of this library.",
+        description: "Encrypted id of the draft; it must be a draft of this library.",
         example: "pQ8sL3vY2a=="
       },
       {
         key: "message",
         type: "string",
         required: false,
-        description: "New post text. update and publish only.",
+        description: "New post text.",
         example: "Three ways to plan a month of posts"
       },
       {
         key: "title",
         type: "string",
         required: false,
-        description: "Link title. update and publish only.",
+        description: "Link title.",
         example: "Plan a month of posts"
       },
       {
         key: "description",
         type: "string",
         required: false,
-        description: "Link description. update and publish only.",
+        description: "Link description.",
         example: "A short guide to batching your content."
       },
       {
         key: "url",
         type: "url",
         required: false,
-        description: "Public http or https link. Send blank to remove it. update and publish only.",
+        description: "Public http or https link. Send blank to remove it.",
         example: "https://example.com/plan"
       },
       {
         key: "image_url",
         type: "url",
         required: false,
-        description: "Public http or https image URL, one image. Send blank to remove it. update and publish only.",
+        description: "Public http or https image URL, one image. Send blank to remove it.",
         example: "https://example.com/img/plan.jpg"
       },
       {
         key: "video_url",
         type: "url",
         required: false,
-        description: "Public http or https video URL. Send blank to remove it. update and publish only.",
+        description: "Public http or https video URL. Send blank to remove it.",
         example: "https://example.com/video/plan.mp4"
       },
       {
         key: "live_date",
         type: "date",
         required: false,
-        description: "YYYY-MM-DD the draft goes live. update must leave the draft with a live date; publish clears it whatever you send.",
+        description: "YYYY-MM-DD the draft goes live; the draft must keep one.",
         example: "2026-12-01"
       },
       {
         key: "expire_date",
         type: "date",
         required: false,
-        description: "YYYY-MM-DD the post stops recurring; blank clears it. update and publish only.",
+        description: "YYYY-MM-DD the post stops recurring; blank clears it.",
         example: "2027-01-31"
       },
       {
         key: "gmb_cta_type",
         type: "integer",
         required: false,
-        description: "Google Business call-to-action code as the app stores it: 2 Sign up, 3 Buy, 4 Order online, 5 Book, 6 Call now, 8 Offer. 0 or 1 clears the button. update and publish only.",
+        description: "Google Business call-to-action code as the app stores it: 2 Sign up, 3 Buy, 4 Order online, 5 Book, 6 Call now, 8 Offer. 0 or 1 clears the button.",
         example: 2
       },
       {
@@ -360,12 +292,11 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "library_drafts_publish",
-    title: "Library Drafts (Publish)",
+    title: "Library Drafts Publish",
     module: "library_tools",
-    endpoint: "library_drafts",
-    action: "publish",
-    summary: "List, read, edit, publish or delete the drafts of a library. This tool runs the publish action.",
-    description: "A draft is a library post with a live date in the future: it sits in the library but is not scheduled until that day. action picks the operation on library library_id: list (default): the drafts of the library, 20 a page. get: one draft (content_id) with its live and expire dates. update: changes the fields you send over the draft's current values; a field left out keeps its value. The draft must keep a live date. publish: clears the live date so the post joins the library now; the other fields you send are applied at the same time. delete: removes the draft and its media; needs confirm=true. The content fields here are the simple ones of a library post (one message, one link, one image, one video); per-network tabs are not touched. For a full rewrite use /api/library_content_update. Patch semantics, unlike library_content_update: update and publish merge your fields over the draft's current values, so you can change one field alone. /api/library_content_update is a full replacement; use it to rewrite per-network tabs. gmb_cta_type 1 is treated as none: The app stores Learn more as code 1, but this endpoint keeps only codes above 1; sending 1 clears the button. Set a Learn more button through /api/library_content_update with gbp_cta instead.",
+    endpoint: "library_drafts_publish",
+    summary: "Clear the live date of a draft so it joins the library now.",
+    description: "A draft is a library post with a live date in the future: it sits in the library but is not scheduled until that day. This call clears the live date so the post joins the library now; the other fields you send are applied at the same time, over the draft's current values. The content fields here are the simple ones of a library post (one message, one link, one image, one video); per-network tabs are not touched. For a full rewrite use /api/library_content_update. Patch semantics, unlike library_content_update: The fields you send merge over the draft's current values, so you can change one field alone. /api/library_content_update is a full replacement; use it to rewrite per-network tabs. gmb_cta_type 1 is treated as none: The app stores Learn more as code 1, but this endpoint keeps only codes above 1; sending 1 clears the button. Set a Learn more button through /api/library_content_update with gbp_cta instead.",
     readOnly: false,
     destructive: false,
     params: [
@@ -380,70 +311,63 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "content_id",
         type: "string",
         required: true,
-        description: "Encrypted id of the draft. Required for every action but list; it must be a draft of this library.",
+        description: "Encrypted id of the draft; it must be a draft of this library.",
         example: "pQ8sL3vY2a=="
       },
       {
         key: "message",
         type: "string",
         required: false,
-        description: "New post text. update and publish only.",
+        description: "New post text.",
         example: "Three ways to plan a month of posts"
       },
       {
         key: "title",
         type: "string",
         required: false,
-        description: "Link title. update and publish only.",
+        description: "Link title.",
         example: "Plan a month of posts"
       },
       {
         key: "description",
         type: "string",
         required: false,
-        description: "Link description. update and publish only.",
+        description: "Link description.",
         example: "A short guide to batching your content."
       },
       {
         key: "url",
         type: "url",
         required: false,
-        description: "Public http or https link. Send blank to remove it. update and publish only.",
+        description: "Public http or https link. Send blank to remove it.",
         example: "https://example.com/plan"
       },
       {
         key: "image_url",
         type: "url",
         required: false,
-        description: "Public http or https image URL, one image. Send blank to remove it. update and publish only.",
+        description: "Public http or https image URL, one image. Send blank to remove it.",
         example: "https://example.com/img/plan.jpg"
       },
       {
         key: "video_url",
         type: "url",
         required: false,
-        description: "Public http or https video URL. Send blank to remove it. update and publish only.",
+        description: "Public http or https video URL. Send blank to remove it.",
         example: "https://example.com/video/plan.mp4"
-      },
-      {
-        key: "live_date",
-        type: "date",
-        required: false,
-        description: "YYYY-MM-DD the draft goes live. update must leave the draft with a live date; publish clears it whatever you send.",
-        example: "2026-12-01"
       },
       {
         key: "expire_date",
         type: "date",
         required: false,
-        description: "YYYY-MM-DD the post stops recurring; blank clears it. update and publish only.",
+        description: "YYYY-MM-DD the post stops recurring; blank clears it.",
         example: "2027-01-31"
       },
       {
         key: "gmb_cta_type",
         type: "integer",
         required: false,
-        description: "Google Business call-to-action code as the app stores it: 2 Sign up, 3 Buy, 4 Order online, 5 Book, 6 Call now, 8 Offer. 0 or 1 clears the button. update and publish only.",
+        description: "Google Business call-to-action code as the app stores it: 2 Sign up, 3 Buy, 4 Order online, 5 Book, 6 Call now, 8 Offer. 0 or 1 clears the button.",
         example: 2
       },
       {
@@ -457,13 +381,12 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "library_drafts_delete",
-    title: "Library Drafts (Delete)",
+    title: "Library Drafts Delete",
     module: "library_tools",
-    endpoint: "library_drafts",
-    action: "delete",
+    endpoint: "library_drafts_delete",
     confirm: true,
-    summary: "List, read, edit, publish or delete the drafts of a library. This tool runs the delete action.",
-    description: "A draft is a library post with a live date in the future: it sits in the library but is not scheduled until that day. action picks the operation on library library_id: list (default): the drafts of the library, 20 a page. get: one draft (content_id) with its live and expire dates. update: changes the fields you send over the draft's current values; a field left out keeps its value. The draft must keep a live date. publish: clears the live date so the post joins the library now; the other fields you send are applied at the same time. delete: removes the draft and its media; needs confirm=true. The content fields here are the simple ones of a library post (one message, one link, one image, one video); per-network tabs are not touched. For a full rewrite use /api/library_content_update. Patch semantics, unlike library_content_update: update and publish merge your fields over the draft's current values, so you can change one field alone. /api/library_content_update is a full replacement; use it to rewrite per-network tabs. gmb_cta_type 1 is treated as none: The app stores Learn more as code 1, but this endpoint keeps only codes above 1; sending 1 clears the button. Set a Learn more button through /api/library_content_update with gbp_cta instead.",
+    summary: "Delete a draft of a library with its media.",
+    description: "A draft is a library post with a live date in the future: it sits in the library but is not scheduled until that day. This call removes the draft and its media; needs confirm=true.",
     readOnly: false,
     destructive: true,
     params: [
@@ -478,15 +401,8 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "content_id",
         type: "string",
         required: true,
-        description: "Encrypted id of the draft. Required for every action but list; it must be a draft of this library.",
+        description: "Encrypted id of the draft; it must be a draft of this library.",
         example: "pQ8sL3vY2a=="
-      },
-      {
-        key: "live_date",
-        type: "date",
-        required: false,
-        description: "YYYY-MM-DD the draft goes live. update must leave the draft with a live date; publish clears it whatever you send.",
-        example: "2026-12-01"
       },
       {
         key: "workspace_id",
@@ -499,12 +415,11 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "library_bulk_edit_count",
-    title: "Library Bulk Edit (Count)",
+    title: "Library Bulk Edit Count",
     module: "library_tools",
-    endpoint: "library_bulk_edit",
-    action: "count",
-    summary: "Count a text across posts, replace it everywhere, or append a line to every post. This tool runs the count action.",
-    description: "Find-and-replace over the posts of one library (library_id) or of the whole workspace (no library_id). action picks the operation: count (default): how often search_text appears, split into post messages, X variations and per-network customised messages. Run it first; replace uses the same counting. replace: rewrites every occurrence of search_text with replace_text (blank removes the text). Needs confirm=true. The answer carries the counts and how many places were rewritten. append: adds text as a new last line to every post of the library or workspace, matching or not. Needs confirm=true. include_variations extends the operation to the X message variations of the posts and include_customized to the per-network versions; both are off by default, so only the main message is counted or changed. Append touches every post: append is not filtered by search_text: the line is added to every post in scope, the whole workspace when no library_id is sent. Always send library_id unless you mean all libraries. Replaced count: Replaced in N place(s). adds up counts.posts, counts.variations and counts.customized, which is the number of messages touched. counts.matches can be higher when a message holds the text more than once.",
+    endpoint: "library_bulk_edit_count",
+    summary: "Count how often a text appears across the posts of a library or workspace.",
+    description: "Find-and-replace over the posts of one library (library_id) or of the whole workspace (no library_id). This call counts how often search_text appears, split into post messages, X variations and per-network customised messages. Run it before /api/library_bulk_edit_replace, which uses the same counting. include_variations extends the operation to the X message variations of the posts and include_customized to the per-network versions; both are off by default, so only the main message is counted or changed.",
     readOnly: true,
     destructive: false,
     params: [
@@ -512,15 +427,8 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "search_text",
         type: "string",
         required: true,
-        description: "Text to look for, 1 to 500 characters. Required when action is count or replace.",
+        description: "Text to look for, 1 to 500 characters.",
         example: "#summer"
-      },
-      {
-        key: "text",
-        type: "string",
-        required: false,
-        description: "Line added at the end of every post, 1 to 500 characters. Required when action is append.",
-        example: "#evergreen"
       },
       {
         key: "library_id",
@@ -556,13 +464,12 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "library_bulk_edit_replace",
-    title: "Library Bulk Edit (Replace)",
+    title: "Library Bulk Edit Replace",
     module: "library_tools",
-    endpoint: "library_bulk_edit",
-    action: "replace",
+    endpoint: "library_bulk_edit_replace",
     confirm: true,
-    summary: "Count a text across posts, replace it everywhere, or append a line to every post. This tool runs the replace action.",
-    description: "Find-and-replace over the posts of one library (library_id) or of the whole workspace (no library_id). action picks the operation: count (default): how often search_text appears, split into post messages, X variations and per-network customised messages. Run it first; replace uses the same counting. replace: rewrites every occurrence of search_text with replace_text (blank removes the text). Needs confirm=true. The answer carries the counts and how many places were rewritten. append: adds text as a new last line to every post of the library or workspace, matching or not. Needs confirm=true. include_variations extends the operation to the X message variations of the posts and include_customized to the per-network versions; both are off by default, so only the main message is counted or changed. Append touches every post: append is not filtered by search_text: the line is added to every post in scope, the whole workspace when no library_id is sent. Always send library_id unless you mean all libraries. Replaced count: Replaced in N place(s). adds up counts.posts, counts.variations and counts.customized, which is the number of messages touched. counts.matches can be higher when a message holds the text more than once.",
+    summary: "Replace a text everywhere in the posts of a library or workspace.",
+    description: "Find-and-replace over the posts of one library (library_id) or of the whole workspace (no library_id). This call rewrites every occurrence of search_text with replace_text (blank removes the text). Needs confirm=true. The answer carries the counts and how many places were rewritten. include_variations extends the operation to the X message variations of the posts and include_customized to the per-network versions; both are off by default, so only the main message is counted or changed. Replaced count: Replaced in N place(s). adds up counts.posts, counts.variations and counts.customized, which is the number of messages touched. counts.matches can be higher when a message holds the text more than once.",
     readOnly: false,
     destructive: true,
     params: [
@@ -570,22 +477,15 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "search_text",
         type: "string",
         required: true,
-        description: "Text to look for, 1 to 500 characters. Required when action is count or replace.",
+        description: "Text to look for, 1 to 500 characters.",
         example: "#summer"
       },
       {
         key: "replace_text",
         type: "string",
         required: false,
-        description: "Text that replaces each occurrence, at most 500 characters; blank or missing removes the text. Read when action is replace.",
+        description: "Text that replaces each occurrence, at most 500 characters; blank or missing removes the text.",
         example: "#autumn"
-      },
-      {
-        key: "text",
-        type: "string",
-        required: false,
-        description: "Line added at the end of every post, 1 to 500 characters. Required when action is append.",
-        example: "#evergreen"
       },
       {
         key: "library_id",
@@ -621,13 +521,12 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "library_bulk_edit_append",
-    title: "Library Bulk Edit (Append)",
+    title: "Library Bulk Edit Append",
     module: "library_tools",
-    endpoint: "library_bulk_edit",
-    action: "append",
+    endpoint: "library_bulk_edit_append",
     confirm: true,
-    summary: "Count a text across posts, replace it everywhere, or append a line to every post. This tool runs the append action.",
-    description: "Find-and-replace over the posts of one library (library_id) or of the whole workspace (no library_id). action picks the operation: count (default): how often search_text appears, split into post messages, X variations and per-network customised messages. Run it first; replace uses the same counting. replace: rewrites every occurrence of search_text with replace_text (blank removes the text). Needs confirm=true. The answer carries the counts and how many places were rewritten. append: adds text as a new last line to every post of the library or workspace, matching or not. Needs confirm=true. include_variations extends the operation to the X message variations of the posts and include_customized to the per-network versions; both are off by default, so only the main message is counted or changed. Append touches every post: append is not filtered by search_text: the line is added to every post in scope, the whole workspace when no library_id is sent. Always send library_id unless you mean all libraries. Replaced count: Replaced in N place(s). adds up counts.posts, counts.variations and counts.customized, which is the number of messages touched. counts.matches can be higher when a message holds the text more than once.",
+    summary: "Append a line to every post of a library or workspace.",
+    description: "Find-and-replace over the posts of one library (library_id) or of the whole workspace (no library_id). This call adds text as a new last line to every post of the library or workspace. Needs confirm=true. include_variations extends the operation to the X message variations of the posts and include_customized to the per-network versions; both are off by default, so only the main message is counted or changed. This touches every post: The line is added to every post in scope, the whole workspace when no library_id is sent. Always send library_id unless you mean all libraries.",
     readOnly: false,
     destructive: true,
     params: [
@@ -635,15 +534,8 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "text",
         type: "string",
         required: true,
-        description: "Line added at the end of every post, 1 to 500 characters. Required when action is append.",
+        description: "Line added at the end of every post, 1 to 500 characters.",
         example: "#evergreen"
-      },
-      {
-        key: "search_text",
-        type: "string",
-        required: false,
-        description: "Text to look for, 1 to 500 characters. Required when action is count or replace.",
-        example: "#summer"
       },
       {
         key: "library_id",
@@ -679,12 +571,11 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "library_pointers_list",
-    title: "Library Pointers (List)",
+    title: "Library Pointers List",
     module: "library_tools",
-    endpoint: "library_pointers",
-    action: "list",
-    summary: "See which post each account publishes next from a library, move one account's pointer, or point accounts at a post. This tool runs the list action.",
-    description: "Every social account connected to a library has a pointer into the library's publishing order (/api/library_content_order_move): the position of the post it publishes next. action picks the operation on library library_id: list (default): every account on the library with its next position and the post there. set: moves one account's pointer (account_id) to position. reset: points one or more accounts (account_ids) at post content_id, so they publish it next.",
+    endpoint: "library_pointers_list",
+    summary: "See which post each account publishes next from a library.",
+    description: "Every social account connected to a library has a pointer into the library's publishing order (/api/library_content_order_move): the position of the post it publishes next. This call lists every account on the library with its next position and the post there.",
     readOnly: true,
     destructive: false,
     params: [
@@ -694,39 +585,6 @@ export const libraryToolsTools: ToolSpec[] = [
         required: true,
         description: "Encrypted library id.",
         example: "nX2k9Qp7Lw=="
-      },
-      {
-        key: "account_id",
-        type: "string",
-        required: false,
-        description: "Encrypted social account id whose pointer to move. Required when action is set.",
-        example: "aK3mZ8vQr1=="
-      },
-      {
-        key: "position",
-        type: "integer",
-        required: false,
-        description: "Position in the library's order the account publishes next, 1 to the number of posts. Required when action is set.",
-        example: 3
-      },
-      {
-        key: "account_ids",
-        type: "array",
-        required: false,
-        description: "Encrypted social account ids: one id, a comma-separated string or an array, at most 50. Required when action is reset.",
-        example: [
-          "aK3mZ8vQr1==",
-          "gB9xT4nWp2=="
-        ],
-        items: "string",
-        acceptsList: true
-      },
-      {
-        key: "content_id",
-        type: "string",
-        required: false,
-        description: "Encrypted id of the post the accounts publish next; it must be in the library. Required when action is reset.",
-        example: "pQ8sL3vY2a=="
       },
       {
         key: "workspace_id",
@@ -739,12 +597,11 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "library_pointers_set",
-    title: "Library Pointers (Set)",
+    title: "Library Pointers Set",
     module: "library_tools",
-    endpoint: "library_pointers",
-    action: "set",
-    summary: "See which post each account publishes next from a library, move one account's pointer, or point accounts at a post. This tool runs the set action.",
-    description: "Every social account connected to a library has a pointer into the library's publishing order (/api/library_content_order_move): the position of the post it publishes next. action picks the operation on library library_id: list (default): every account on the library with its next position and the post there. set: moves one account's pointer (account_id) to position. reset: points one or more accounts (account_ids) at post content_id, so they publish it next.",
+    endpoint: "library_pointers_set",
+    summary: "Move one account's pointer to a position in the library's order.",
+    description: "Every social account connected to a library has a pointer into the library's publishing order (/api/library_content_order_move): the position of the post it publishes next. This call moves one account's pointer to position.",
     readOnly: false,
     destructive: false,
     params: [
@@ -759,34 +616,15 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "account_id",
         type: "string",
         required: true,
-        description: "Encrypted social account id whose pointer to move. Required when action is set.",
+        description: "Encrypted social account id whose pointer to move.",
         example: "aK3mZ8vQr1=="
       },
       {
         key: "position",
         type: "integer",
         required: true,
-        description: "Position in the library's order the account publishes next, 1 to the number of posts. Required when action is set.",
+        description: "Position in the library's order the account publishes next, 1 to the number of posts.",
         example: 3
-      },
-      {
-        key: "account_ids",
-        type: "array",
-        required: false,
-        description: "Encrypted social account ids: one id, a comma-separated string or an array, at most 50. Required when action is reset.",
-        example: [
-          "aK3mZ8vQr1==",
-          "gB9xT4nWp2=="
-        ],
-        items: "string",
-        acceptsList: true
-      },
-      {
-        key: "content_id",
-        type: "string",
-        required: false,
-        description: "Encrypted id of the post the accounts publish next; it must be in the library. Required when action is reset.",
-        example: "pQ8sL3vY2a=="
       },
       {
         key: "workspace_id",
@@ -799,12 +637,11 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "library_pointers_reset",
-    title: "Library Pointers (Reset)",
+    title: "Library Pointers Reset",
     module: "library_tools",
-    endpoint: "library_pointers",
-    action: "reset",
-    summary: "See which post each account publishes next from a library, move one account's pointer, or point accounts at a post. This tool runs the reset action.",
-    description: "Every social account connected to a library has a pointer into the library's publishing order (/api/library_content_order_move): the position of the post it publishes next. action picks the operation on library library_id: list (default): every account on the library with its next position and the post there. set: moves one account's pointer (account_id) to position. reset: points one or more accounts (account_ids) at post content_id, so they publish it next.",
+    endpoint: "library_pointers_reset",
+    summary: "Point accounts at a post so they publish it next.",
+    description: "Every social account connected to a library has a pointer into the library's publishing order (/api/library_content_order_move): the position of the post it publishes next. This call points one or more accounts at post content_id, so they publish it next.",
     readOnly: false,
     destructive: true,
     params: [
@@ -819,7 +656,7 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "account_ids",
         type: "array",
         required: true,
-        description: "Encrypted social account ids: one id, a comma-separated string or an array, at most 50. Required when action is reset.",
+        description: "Encrypted social account ids: one id, a comma-separated string or an array, at most 50.",
         example: [
           "aK3mZ8vQr1==",
           "gB9xT4nWp2=="
@@ -831,22 +668,8 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "content_id",
         type: "string",
         required: true,
-        description: "Encrypted id of the post the accounts publish next; it must be in the library. Required when action is reset.",
+        description: "Encrypted id of the post the accounts publish next; it must be in the library.",
         example: "pQ8sL3vY2a=="
-      },
-      {
-        key: "account_id",
-        type: "string",
-        required: false,
-        description: "Encrypted social account id whose pointer to move. Required when action is set.",
-        example: "aK3mZ8vQr1=="
-      },
-      {
-        key: "position",
-        type: "integer",
-        required: false,
-        description: "Position in the library's order the account publishes next, 1 to the number of posts. Required when action is set.",
-        example: 3
       },
       {
         key: "workspace_id",
@@ -859,12 +682,11 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "library_share_get",
-    title: "Library Share (Get)",
+    title: "Library Share Get",
     module: "library_tools",
-    endpoint: "library_share",
-    action: "get",
-    summary: "Read, create or reset a library's public share link, or email it to a client. This tool runs the get action.",
-    description: "A share link opens a read-only page of library library_id where clients can review posts and leave comments (see /api/library_comments). action picks the operation: get (default): whether the library has a link and its address. create: switches the link on; a library that already has one keeps it. reset: issues a new address; the old one stops opening. invite: emails the link to email. Every answer carries enabled and url. The link is public: Anyone with the address can open the library page and comment as a guest. reset is how you revoke an address that got around.",
+    endpoint: "library_share_get",
+    summary: "Read whether a library has a public share link and its address.",
+    description: "A share link opens a read-only page of the library where clients can review posts and leave comments (see /api/library_comments_list). This call answers whether the library has a link and its address. The link is public: Anyone with the address can open the library page and comment as a guest. reset is how you revoke an address that got around.",
     readOnly: true,
     destructive: false,
     params: [
@@ -874,13 +696,6 @@ export const libraryToolsTools: ToolSpec[] = [
         required: true,
         description: "Encrypted library id.",
         example: "nX2k9Qp7Lw=="
-      },
-      {
-        key: "email",
-        type: "email",
-        required: false,
-        description: "Address the link is mailed to. Required when action is invite.",
-        example: "client@example.com"
       },
       {
         key: "workspace_id",
@@ -893,12 +708,11 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "library_share_create",
-    title: "Library Share (Create)",
+    title: "Library Share Create",
     module: "library_tools",
-    endpoint: "library_share",
-    action: "create",
-    summary: "Read, create or reset a library's public share link, or email it to a client. This tool runs the create action.",
-    description: "A share link opens a read-only page of library library_id where clients can review posts and leave comments (see /api/library_comments). action picks the operation: get (default): whether the library has a link and its address. create: switches the link on; a library that already has one keeps it. reset: issues a new address; the old one stops opening. invite: emails the link to email. Every answer carries enabled and url. The link is public: Anyone with the address can open the library page and comment as a guest. reset is how you revoke an address that got around.",
+    endpoint: "library_share_create",
+    summary: "Switch on a library's public share link.",
+    description: "A share link opens a read-only page of the library where clients can review posts and leave comments (see /api/library_comments_list). This call switches the link on; a library that already has one keeps it. The link is public: Anyone with the address can open the library page and comment as a guest. reset is how you revoke an address that got around.",
     readOnly: false,
     destructive: false,
     params: [
@@ -908,13 +722,6 @@ export const libraryToolsTools: ToolSpec[] = [
         required: true,
         description: "Encrypted library id.",
         example: "nX2k9Qp7Lw=="
-      },
-      {
-        key: "email",
-        type: "email",
-        required: false,
-        description: "Address the link is mailed to. Required when action is invite.",
-        example: "client@example.com"
       },
       {
         key: "workspace_id",
@@ -927,12 +734,11 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "library_share_reset",
-    title: "Library Share (Reset)",
+    title: "Library Share Reset",
     module: "library_tools",
-    endpoint: "library_share",
-    action: "reset",
-    summary: "Read, create or reset a library's public share link, or email it to a client. This tool runs the reset action.",
-    description: "A share link opens a read-only page of library library_id where clients can review posts and leave comments (see /api/library_comments). action picks the operation: get (default): whether the library has a link and its address. create: switches the link on; a library that already has one keeps it. reset: issues a new address; the old one stops opening. invite: emails the link to email. Every answer carries enabled and url. The link is public: Anyone with the address can open the library page and comment as a guest. reset is how you revoke an address that got around.",
+    endpoint: "library_share_reset",
+    summary: "Issue a new address for a library's share link.",
+    description: "A share link opens a read-only page of the library where clients can review posts and leave comments (see /api/library_comments_list). This call issues a new address; the old one stops opening. The link is public: Anyone with the address can open the library page and comment as a guest. reset is how you revoke an address that got around.",
     readOnly: false,
     destructive: true,
     params: [
@@ -942,13 +748,6 @@ export const libraryToolsTools: ToolSpec[] = [
         required: true,
         description: "Encrypted library id.",
         example: "nX2k9Qp7Lw=="
-      },
-      {
-        key: "email",
-        type: "email",
-        required: false,
-        description: "Address the link is mailed to. Required when action is invite.",
-        example: "client@example.com"
       },
       {
         key: "workspace_id",
@@ -961,12 +760,11 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "library_share_invite",
-    title: "Library Share (Invite)",
+    title: "Library Share Invite",
     module: "library_tools",
-    endpoint: "library_share",
-    action: "invite",
-    summary: "Read, create or reset a library's public share link, or email it to a client. This tool runs the invite action.",
-    description: "A share link opens a read-only page of library library_id where clients can review posts and leave comments (see /api/library_comments). action picks the operation: get (default): whether the library has a link and its address. create: switches the link on; a library that already has one keeps it. reset: issues a new address; the old one stops opening. invite: emails the link to email. Every answer carries enabled and url. The link is public: Anyone with the address can open the library page and comment as a guest. reset is how you revoke an address that got around.",
+    endpoint: "library_share_invite",
+    summary: "Email a library's share link to a client.",
+    description: "A share link opens a read-only page of the library where clients can review posts and leave comments (see /api/library_comments_list). This call emails the link to email.",
     readOnly: false,
     destructive: false,
     params: [
@@ -981,7 +779,7 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "email",
         type: "email",
         required: true,
-        description: "Address the link is mailed to. Required when action is invite.",
+        description: "Address the link is mailed to.",
         example: "client@example.com"
       },
       {
@@ -995,12 +793,11 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "library_comments_list",
-    title: "Library Comments (List)",
+    title: "Library Comments List",
     module: "library_tools",
-    endpoint: "library_comments",
-    action: "list",
-    summary: "List the comments on a library post, add one as a team member, or mark one read or unread. This tool runs the list action.",
-    description: "Clients comment on posts through the library's share link (/api/library_share); team members answer in the app or here. Comments hang off the share link, so a library needs one before anything can be added. action picks the operation: list (default): the comments on post content_id, 6 a page, each marked guest or team and read or unread. add: posts text on content_id under your name. mark: sets comment comment_id read (default) or unread (unread=true). Who the comment is from: add signs the comment with your account's name and guest=false. Clients' comments arrive with guest=true and unread=true; mark them read with action=mark once handled.",
+    endpoint: "library_comments_list",
+    summary: "List the comments on a library post.",
+    description: "Clients comment on posts through the library's share link (/api/library_share_get); team members answer in the app or here. This call lists the comments on a post, 6 a page, each marked guest or team and read or unread.",
     readOnly: true,
     destructive: false,
     params: [
@@ -1008,36 +805,14 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "content_id",
         type: "string",
         required: true,
-        description: "Encrypted library post id. Required when action is list or add; ignored for mark, which finds the post from the comment.",
+        description: "Encrypted library post id.",
         example: "pQ8sL3vY2a=="
-      },
-      {
-        key: "text",
-        type: "string",
-        required: false,
-        description: "Comment text, 1 to 2000 characters. Required when action is add.",
-        example: "Updated the image as requested."
-      },
-      {
-        key: "comment_id",
-        type: "integer",
-        required: false,
-        description: "Plain integer id of the comment, from the list. Required when action is mark.",
-        example: 512
-      },
-      {
-        key: "unread",
-        type: "boolean",
-        required: false,
-        description: "mark: true marks the comment unread, false or missing marks it read.",
-        default: "false",
-        example: false
       },
       {
         key: "page",
         type: "integer",
         required: false,
-        description: "Page of the list, from 1; 6 comments a page. Read when action is list.",
+        description: "Page of the list, from 1; 6 comments a page.",
         default: "1",
         example: 1
       },
@@ -1052,12 +827,11 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "library_comments_add",
-    title: "Library Comments (Add)",
+    title: "Library Comments Add",
     module: "library_tools",
-    endpoint: "library_comments",
-    action: "add",
-    summary: "List the comments on a library post, add one as a team member, or mark one read or unread. This tool runs the add action.",
-    description: "Clients comment on posts through the library's share link (/api/library_share); team members answer in the app or here. Comments hang off the share link, so a library needs one before anything can be added. action picks the operation: list (default): the comments on post content_id, 6 a page, each marked guest or team and read or unread. add: posts text on content_id under your name. mark: sets comment comment_id read (default) or unread (unread=true). Who the comment is from: add signs the comment with your account's name and guest=false. Clients' comments arrive with guest=true and unread=true; mark them read with action=mark once handled.",
+    endpoint: "library_comments_add",
+    summary: "Add a comment on a library post as a team member.",
+    description: "Clients comment on posts through the library's share link (/api/library_share_get); team members answer in the app or here. This call posts text on the post under your name. Comments hang off the share link, so the library needs one first. Answers with the first page of comments. Who the comment is from: The comment is signed with your account's name and guest=false. Clients' comments arrive with guest=true and unread=true; mark them read with /api/library_comments_mark once handled.",
     readOnly: false,
     destructive: false,
     params: [
@@ -1065,30 +839,15 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "content_id",
         type: "string",
         required: true,
-        description: "Encrypted library post id. Required when action is list or add; ignored for mark, which finds the post from the comment.",
+        description: "Encrypted library post id.",
         example: "pQ8sL3vY2a=="
       },
       {
         key: "text",
         type: "string",
         required: true,
-        description: "Comment text, 1 to 2000 characters. Required when action is add.",
+        description: "Comment text, 1 to 2000 characters.",
         example: "Updated the image as requested."
-      },
-      {
-        key: "comment_id",
-        type: "integer",
-        required: false,
-        description: "Plain integer id of the comment, from the list. Required when action is mark.",
-        example: 512
-      },
-      {
-        key: "unread",
-        type: "boolean",
-        required: false,
-        description: "mark: true marks the comment unread, false or missing marks it read.",
-        default: "false",
-        example: false
       },
       {
         key: "workspace_id",
@@ -1101,12 +860,11 @@ export const libraryToolsTools: ToolSpec[] = [
   },
   {
     name: "library_comments_mark",
-    title: "Library Comments (Mark)",
+    title: "Library Comments Mark",
     module: "library_tools",
-    endpoint: "library_comments",
-    action: "mark",
-    summary: "List the comments on a library post, add one as a team member, or mark one read or unread. This tool runs the mark action.",
-    description: "Clients comment on posts through the library's share link (/api/library_share); team members answer in the app or here. Comments hang off the share link, so a library needs one before anything can be added. action picks the operation: list (default): the comments on post content_id, 6 a page, each marked guest or team and read or unread. add: posts text on content_id under your name. mark: sets comment comment_id read (default) or unread (unread=true). Who the comment is from: add signs the comment with your account's name and guest=false. Clients' comments arrive with guest=true and unread=true; mark them read with action=mark once handled.",
+    endpoint: "library_comments_mark",
+    summary: "Mark a library post comment read or unread.",
+    description: "Clients comment on posts through the library's share link (/api/library_share_get); team members answer in the app or here. This call sets one comment read (default) or unread (unread=true); the post is found from the comment.",
     readOnly: false,
     destructive: false,
     params: [
@@ -1114,28 +872,14 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "comment_id",
         type: "integer",
         required: true,
-        description: "Plain integer id of the comment, from the list. Required when action is mark.",
+        description: "Plain integer id of the comment, from /api/library_comments_list.",
         example: 512
-      },
-      {
-        key: "content_id",
-        type: "string",
-        required: false,
-        description: "Encrypted library post id. Required when action is list or add; ignored for mark, which finds the post from the comment.",
-        example: "pQ8sL3vY2a=="
-      },
-      {
-        key: "text",
-        type: "string",
-        required: false,
-        description: "Comment text, 1 to 2000 characters. Required when action is add.",
-        example: "Updated the image as requested."
       },
       {
         key: "unread",
         type: "boolean",
         required: false,
-        description: "mark: true marks the comment unread, false or missing marks it read.",
+        description: "true marks the comment unread, false or missing marks it read.",
         default: "false",
         example: false
       },

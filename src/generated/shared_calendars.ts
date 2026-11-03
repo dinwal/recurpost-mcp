@@ -4,78 +4,14 @@ import type { ToolSpec } from "../types.js";
 export const sharedCalendarsTools: ToolSpec[] = [
   {
     name: "shared_calendar_get",
-    title: "Shared Calendar (Get)",
+    title: "Shared Calendar Get",
     module: "shared_calendars",
-    endpoint: "shared_calendar",
-    action: "get",
-    summary: "Read, create, change, link, delete the workspace's client calendar, or manage the people on it. This tool runs the get action.",
-    description: "One endpoint for the workspace's client calendar, chosen with action: get (the default): the calendar, or calendar null when none exists. Any member may read. create: a new calendar from name, start_date and either end_date or never_expires, with optional comments_allowed and pin. update: the same fields over the current ones; fields left out keep their value, pin sent empty removes the PIN. link: switches the public link on or off with enabled. delete: removes the calendar with its people and comments, confirm=true required. clients: lists the people on the calendar. invite_client: mails the calendar link to email and adds them. remove_client: takes the person named by client_id off. Every action but get needs the workspace owner's own key. The link counts against the plan: A calendar can exist with its link off. Switching the link on (action link) uses one of the plan's shareable calendar slots and is refused with 403 when none is left; a calendar created here starts with the link on only if the plan allows it. Invitations send mail: invite_client mails the link at once. The owner and the members already on the calendar appear in people with their type; only people of type client are what the invite adds.",
+    endpoint: "shared_calendar_get",
+    summary: "Read the workspace's client calendar.",
+    description: "The client calendar of the workspace, or calendar null when none exists. Any member may read.",
     readOnly: true,
     destructive: false,
     params: [
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Required when action is create: the calendar's name, 1 to 100 characters. Optional on update.",
-        example: "Acme client calendar"
-      },
-      {
-        key: "start_date",
-        type: "date",
-        required: false,
-        description: "Required when action is create: first day the client sees, YYYY-MM-DD. Optional on update.",
-        example: "2026-11-01"
-      },
-      {
-        key: "end_date",
-        type: "date",
-        required: false,
-        description: "Last day the client sees, YYYY-MM-DD, on or after start_date. Required on create unless never_expires is true.",
-        example: "2026-12-31"
-      },
-      {
-        key: "never_expires",
-        type: "boolean",
-        required: false,
-        description: "true keeps the calendar open with no end date; end_date is then ignored.",
-        example: false
-      },
-      {
-        key: "comments_allowed",
-        type: "boolean",
-        required: false,
-        description: "Whether the client may comment on posts. Defaults to false on create.",
-        example: true
-      },
-      {
-        key: "pin",
-        type: "string",
-        required: false,
-        description: "A 4-digit PIN the client must enter to open the calendar. Send an empty string on update to remove it.",
-        example: "1234"
-      },
-      {
-        key: "enabled",
-        type: "boolean",
-        required: false,
-        description: "Required when action is link: true makes the public link work, false switches it off.",
-        example: true
-      },
-      {
-        key: "email",
-        type: "email",
-        required: false,
-        description: "Required when action is invite_client: the address to mail the calendar link to.",
-        example: "client@example.com"
-      },
-      {
-        key: "client_id",
-        type: "integer",
-        required: false,
-        description: "Required when action is remove_client: plain id from people[].id of action clients.",
-        example: 88
-      },
       {
         key: "workspace_id",
         type: "string",
@@ -87,12 +23,11 @@ export const sharedCalendarsTools: ToolSpec[] = [
   },
   {
     name: "shared_calendar_create",
-    title: "Shared Calendar (Create)",
+    title: "Shared Calendar Create",
     module: "shared_calendars",
-    endpoint: "shared_calendar",
-    action: "create",
-    summary: "Read, create, change, link, delete the workspace's client calendar, or manage the people on it. This tool runs the create action.",
-    description: "One endpoint for the workspace's client calendar, chosen with action: get (the default): the calendar, or calendar null when none exists. Any member may read. create: a new calendar from name, start_date and either end_date or never_expires, with optional comments_allowed and pin. update: the same fields over the current ones; fields left out keep their value, pin sent empty removes the PIN. link: switches the public link on or off with enabled. delete: removes the calendar with its people and comments, confirm=true required. clients: lists the people on the calendar. invite_client: mails the calendar link to email and adds them. remove_client: takes the person named by client_id off. Every action but get needs the workspace owner's own key. The link counts against the plan: A calendar can exist with its link off. Switching the link on (action link) uses one of the plan's shareable calendar slots and is refused with 403 when none is left; a calendar created here starts with the link on only if the plan allows it. Invitations send mail: invite_client mails the link at once. The owner and the members already on the calendar appear in people with their type; only people of type client are what the invite adds.",
+    endpoint: "shared_calendar_create",
+    summary: "Create the workspace's client calendar.",
+    description: "Creates the client calendar from name, start_date and either end_date or never_expires, with optional comments_allowed and pin. A workspace has one calendar; change it with /api/shared_calendar_update. Workspace owner's own key only. The link counts against the plan: A calendar can exist with its link off. Switching the link on with /api/shared_calendar_link uses one of the plan's shareable calendar slots and is refused with 403 when none is left; a calendar created here starts with the link on only if the plan allows it.",
     readOnly: false,
     destructive: false,
     params: [
@@ -100,21 +35,21 @@ export const sharedCalendarsTools: ToolSpec[] = [
         key: "name",
         type: "string",
         required: true,
-        description: "Required when action is create: the calendar's name, 1 to 100 characters. Optional on update.",
+        description: "The calendar's name, 1 to 100 characters.",
         example: "Acme client calendar"
       },
       {
         key: "start_date",
         type: "date",
         required: true,
-        description: "Required when action is create: first day the client sees, YYYY-MM-DD. Optional on update.",
+        description: "First day the client sees, YYYY-MM-DD.",
         example: "2026-11-01"
       },
       {
         key: "end_date",
         type: "date",
         required: false,
-        description: "Last day the client sees, YYYY-MM-DD, on or after start_date. Required on create unless never_expires is true.",
+        description: "Last day the client sees, YYYY-MM-DD, on or after start_date. Required unless never_expires is true.",
         example: "2026-12-31"
       },
       {
@@ -128,36 +63,15 @@ export const sharedCalendarsTools: ToolSpec[] = [
         key: "comments_allowed",
         type: "boolean",
         required: false,
-        description: "Whether the client may comment on posts. Defaults to false on create.",
+        description: "Whether the client may comment on posts. Defaults to false.",
         example: true
       },
       {
         key: "pin",
         type: "string",
         required: false,
-        description: "A 4-digit PIN the client must enter to open the calendar. Send an empty string on update to remove it.",
+        description: "A 4-digit PIN the client must enter to open the calendar.",
         example: "1234"
-      },
-      {
-        key: "enabled",
-        type: "boolean",
-        required: false,
-        description: "Required when action is link: true makes the public link work, false switches it off.",
-        example: true
-      },
-      {
-        key: "email",
-        type: "email",
-        required: false,
-        description: "Required when action is invite_client: the address to mail the calendar link to.",
-        example: "client@example.com"
-      },
-      {
-        key: "client_id",
-        type: "integer",
-        required: false,
-        description: "Required when action is remove_client: plain id from people[].id of action clients.",
-        example: 88
       },
       {
         key: "workspace_id",
@@ -170,12 +84,11 @@ export const sharedCalendarsTools: ToolSpec[] = [
   },
   {
     name: "shared_calendar_update",
-    title: "Shared Calendar (Update)",
+    title: "Shared Calendar Update",
     module: "shared_calendars",
-    endpoint: "shared_calendar",
-    action: "update",
-    summary: "Read, create, change, link, delete the workspace's client calendar, or manage the people on it. This tool runs the update action.",
-    description: "One endpoint for the workspace's client calendar, chosen with action: get (the default): the calendar, or calendar null when none exists. Any member may read. create: a new calendar from name, start_date and either end_date or never_expires, with optional comments_allowed and pin. update: the same fields over the current ones; fields left out keep their value, pin sent empty removes the PIN. link: switches the public link on or off with enabled. delete: removes the calendar with its people and comments, confirm=true required. clients: lists the people on the calendar. invite_client: mails the calendar link to email and adds them. remove_client: takes the person named by client_id off. Every action but get needs the workspace owner's own key. The link counts against the plan: A calendar can exist with its link off. Switching the link on (action link) uses one of the plan's shareable calendar slots and is refused with 403 when none is left; a calendar created here starts with the link on only if the plan allows it. Invitations send mail: invite_client mails the link at once. The owner and the members already on the calendar appear in people with their type; only people of type client are what the invite adds.",
+    endpoint: "shared_calendar_update",
+    summary: "Change the workspace's client calendar.",
+    description: "Changes the calendar's fields over the current ones; fields left out keep their value, pin sent empty removes the PIN. Workspace owner's own key only.",
     readOnly: false,
     destructive: false,
     params: [
@@ -183,21 +96,21 @@ export const sharedCalendarsTools: ToolSpec[] = [
         key: "name",
         type: "string",
         required: false,
-        description: "Required when action is create: the calendar's name, 1 to 100 characters. Optional on update.",
+        description: "The calendar's name, 1 to 100 characters.",
         example: "Acme client calendar"
       },
       {
         key: "start_date",
         type: "date",
         required: false,
-        description: "Required when action is create: first day the client sees, YYYY-MM-DD. Optional on update.",
+        description: "First day the client sees, YYYY-MM-DD.",
         example: "2026-11-01"
       },
       {
         key: "end_date",
         type: "date",
         required: false,
-        description: "Last day the client sees, YYYY-MM-DD, on or after start_date. Required on create unless never_expires is true.",
+        description: "Last day the client sees, YYYY-MM-DD, on or after start_date.",
         example: "2026-12-31"
       },
       {
@@ -211,36 +124,15 @@ export const sharedCalendarsTools: ToolSpec[] = [
         key: "comments_allowed",
         type: "boolean",
         required: false,
-        description: "Whether the client may comment on posts. Defaults to false on create.",
+        description: "Whether the client may comment on posts.",
         example: true
       },
       {
         key: "pin",
         type: "string",
         required: false,
-        description: "A 4-digit PIN the client must enter to open the calendar. Send an empty string on update to remove it.",
+        description: "A 4-digit PIN the client must enter to open the calendar. Send an empty string to remove it.",
         example: "1234"
-      },
-      {
-        key: "enabled",
-        type: "boolean",
-        required: false,
-        description: "Required when action is link: true makes the public link work, false switches it off.",
-        example: true
-      },
-      {
-        key: "email",
-        type: "email",
-        required: false,
-        description: "Required when action is invite_client: the address to mail the calendar link to.",
-        example: "client@example.com"
-      },
-      {
-        key: "client_id",
-        type: "integer",
-        required: false,
-        description: "Required when action is remove_client: plain id from people[].id of action clients.",
-        example: 88
       },
       {
         key: "workspace_id",
@@ -253,12 +145,11 @@ export const sharedCalendarsTools: ToolSpec[] = [
   },
   {
     name: "shared_calendar_link",
-    title: "Shared Calendar (Link)",
+    title: "Shared Calendar Link",
     module: "shared_calendars",
-    endpoint: "shared_calendar",
-    action: "link",
-    summary: "Read, create, change, link, delete the workspace's client calendar, or manage the people on it. This tool runs the link action.",
-    description: "One endpoint for the workspace's client calendar, chosen with action: get (the default): the calendar, or calendar null when none exists. Any member may read. create: a new calendar from name, start_date and either end_date or never_expires, with optional comments_allowed and pin. update: the same fields over the current ones; fields left out keep their value, pin sent empty removes the PIN. link: switches the public link on or off with enabled. delete: removes the calendar with its people and comments, confirm=true required. clients: lists the people on the calendar. invite_client: mails the calendar link to email and adds them. remove_client: takes the person named by client_id off. Every action but get needs the workspace owner's own key. The link counts against the plan: A calendar can exist with its link off. Switching the link on (action link) uses one of the plan's shareable calendar slots and is refused with 403 when none is left; a calendar created here starts with the link on only if the plan allows it. Invitations send mail: invite_client mails the link at once. The owner and the members already on the calendar appear in people with their type; only people of type client are what the invite adds.",
+    endpoint: "shared_calendar_link",
+    summary: "Switch the client calendar's public link on or off.",
+    description: "Switches the public link on or off with enabled. Workspace owner's own key only. The link counts against the plan: A calendar can exist with its link off. Switching the link on with /api/shared_calendar_link uses one of the plan's shareable calendar slots and is refused with 403 when none is left; a calendar created here starts with the link on only if the plan allows it.",
     readOnly: false,
     destructive: false,
     params: [
@@ -266,64 +157,8 @@ export const sharedCalendarsTools: ToolSpec[] = [
         key: "enabled",
         type: "boolean",
         required: true,
-        description: "Required when action is link: true makes the public link work, false switches it off.",
+        description: "true makes the public link work, false switches it off.",
         example: true
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Required when action is create: the calendar's name, 1 to 100 characters. Optional on update.",
-        example: "Acme client calendar"
-      },
-      {
-        key: "start_date",
-        type: "date",
-        required: false,
-        description: "Required when action is create: first day the client sees, YYYY-MM-DD. Optional on update.",
-        example: "2026-11-01"
-      },
-      {
-        key: "end_date",
-        type: "date",
-        required: false,
-        description: "Last day the client sees, YYYY-MM-DD, on or after start_date. Required on create unless never_expires is true.",
-        example: "2026-12-31"
-      },
-      {
-        key: "never_expires",
-        type: "boolean",
-        required: false,
-        description: "true keeps the calendar open with no end date; end_date is then ignored.",
-        example: false
-      },
-      {
-        key: "comments_allowed",
-        type: "boolean",
-        required: false,
-        description: "Whether the client may comment on posts. Defaults to false on create.",
-        example: true
-      },
-      {
-        key: "pin",
-        type: "string",
-        required: false,
-        description: "A 4-digit PIN the client must enter to open the calendar. Send an empty string on update to remove it.",
-        example: "1234"
-      },
-      {
-        key: "email",
-        type: "email",
-        required: false,
-        description: "Required when action is invite_client: the address to mail the calendar link to.",
-        example: "client@example.com"
-      },
-      {
-        key: "client_id",
-        type: "integer",
-        required: false,
-        description: "Required when action is remove_client: plain id from people[].id of action clients.",
-        example: 88
       },
       {
         key: "workspace_id",
@@ -336,79 +171,15 @@ export const sharedCalendarsTools: ToolSpec[] = [
   },
   {
     name: "shared_calendar_delete",
-    title: "Shared Calendar (Delete)",
+    title: "Shared Calendar Delete",
     module: "shared_calendars",
-    endpoint: "shared_calendar",
-    action: "delete",
+    endpoint: "shared_calendar_delete",
     confirm: true,
-    summary: "Read, create, change, link, delete the workspace's client calendar, or manage the people on it. This tool runs the delete action.",
-    description: "One endpoint for the workspace's client calendar, chosen with action: get (the default): the calendar, or calendar null when none exists. Any member may read. create: a new calendar from name, start_date and either end_date or never_expires, with optional comments_allowed and pin. update: the same fields over the current ones; fields left out keep their value, pin sent empty removes the PIN. link: switches the public link on or off with enabled. delete: removes the calendar with its people and comments, confirm=true required. clients: lists the people on the calendar. invite_client: mails the calendar link to email and adds them. remove_client: takes the person named by client_id off. Every action but get needs the workspace owner's own key. The link counts against the plan: A calendar can exist with its link off. Switching the link on (action link) uses one of the plan's shareable calendar slots and is refused with 403 when none is left; a calendar created here starts with the link on only if the plan allows it. Invitations send mail: invite_client mails the link at once. The owner and the members already on the calendar appear in people with their type; only people of type client are what the invite adds.",
+    summary: "Delete the workspace's client calendar with its people and comments.",
+    description: "Removes the calendar with its people and comments; confirm=true required. Workspace owner's own key only.",
     readOnly: false,
     destructive: true,
     params: [
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Required when action is create: the calendar's name, 1 to 100 characters. Optional on update.",
-        example: "Acme client calendar"
-      },
-      {
-        key: "start_date",
-        type: "date",
-        required: false,
-        description: "Required when action is create: first day the client sees, YYYY-MM-DD. Optional on update.",
-        example: "2026-11-01"
-      },
-      {
-        key: "end_date",
-        type: "date",
-        required: false,
-        description: "Last day the client sees, YYYY-MM-DD, on or after start_date. Required on create unless never_expires is true.",
-        example: "2026-12-31"
-      },
-      {
-        key: "never_expires",
-        type: "boolean",
-        required: false,
-        description: "true keeps the calendar open with no end date; end_date is then ignored.",
-        example: false
-      },
-      {
-        key: "comments_allowed",
-        type: "boolean",
-        required: false,
-        description: "Whether the client may comment on posts. Defaults to false on create.",
-        example: true
-      },
-      {
-        key: "pin",
-        type: "string",
-        required: false,
-        description: "A 4-digit PIN the client must enter to open the calendar. Send an empty string on update to remove it.",
-        example: "1234"
-      },
-      {
-        key: "enabled",
-        type: "boolean",
-        required: false,
-        description: "Required when action is link: true makes the public link work, false switches it off.",
-        example: true
-      },
-      {
-        key: "email",
-        type: "email",
-        required: false,
-        description: "Required when action is invite_client: the address to mail the calendar link to.",
-        example: "client@example.com"
-      },
-      {
-        key: "client_id",
-        type: "integer",
-        required: false,
-        description: "Required when action is remove_client: plain id from people[].id of action clients.",
-        example: 88
-      },
       {
         key: "workspace_id",
         type: "string",
@@ -420,78 +191,14 @@ export const sharedCalendarsTools: ToolSpec[] = [
   },
   {
     name: "shared_calendar_clients",
-    title: "Shared Calendar (Clients)",
+    title: "Shared Calendar Clients",
     module: "shared_calendars",
-    endpoint: "shared_calendar",
-    action: "clients",
-    summary: "Read, create, change, link, delete the workspace's client calendar, or manage the people on it. This tool runs the clients action.",
-    description: "One endpoint for the workspace's client calendar, chosen with action: get (the default): the calendar, or calendar null when none exists. Any member may read. create: a new calendar from name, start_date and either end_date or never_expires, with optional comments_allowed and pin. update: the same fields over the current ones; fields left out keep their value, pin sent empty removes the PIN. link: switches the public link on or off with enabled. delete: removes the calendar with its people and comments, confirm=true required. clients: lists the people on the calendar. invite_client: mails the calendar link to email and adds them. remove_client: takes the person named by client_id off. Every action but get needs the workspace owner's own key. The link counts against the plan: A calendar can exist with its link off. Switching the link on (action link) uses one of the plan's shareable calendar slots and is refused with 403 when none is left; a calendar created here starts with the link on only if the plan allows it. Invitations send mail: invite_client mails the link at once. The owner and the members already on the calendar appear in people with their type; only people of type client are what the invite adds.",
+    endpoint: "shared_calendar_clients",
+    summary: "List the people on the client calendar.",
+    description: "Lists the people on the calendar: the owner, the members already on it and the clients invited with /api/shared_calendar_invite_client. Workspace owner's own key only.",
     readOnly: true,
     destructive: false,
     params: [
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Required when action is create: the calendar's name, 1 to 100 characters. Optional on update.",
-        example: "Acme client calendar"
-      },
-      {
-        key: "start_date",
-        type: "date",
-        required: false,
-        description: "Required when action is create: first day the client sees, YYYY-MM-DD. Optional on update.",
-        example: "2026-11-01"
-      },
-      {
-        key: "end_date",
-        type: "date",
-        required: false,
-        description: "Last day the client sees, YYYY-MM-DD, on or after start_date. Required on create unless never_expires is true.",
-        example: "2026-12-31"
-      },
-      {
-        key: "never_expires",
-        type: "boolean",
-        required: false,
-        description: "true keeps the calendar open with no end date; end_date is then ignored.",
-        example: false
-      },
-      {
-        key: "comments_allowed",
-        type: "boolean",
-        required: false,
-        description: "Whether the client may comment on posts. Defaults to false on create.",
-        example: true
-      },
-      {
-        key: "pin",
-        type: "string",
-        required: false,
-        description: "A 4-digit PIN the client must enter to open the calendar. Send an empty string on update to remove it.",
-        example: "1234"
-      },
-      {
-        key: "enabled",
-        type: "boolean",
-        required: false,
-        description: "Required when action is link: true makes the public link work, false switches it off.",
-        example: true
-      },
-      {
-        key: "email",
-        type: "email",
-        required: false,
-        description: "Required when action is invite_client: the address to mail the calendar link to.",
-        example: "client@example.com"
-      },
-      {
-        key: "client_id",
-        type: "integer",
-        required: false,
-        description: "Required when action is remove_client: plain id from people[].id of action clients.",
-        example: 88
-      },
       {
         key: "workspace_id",
         type: "string",
@@ -503,12 +210,11 @@ export const sharedCalendarsTools: ToolSpec[] = [
   },
   {
     name: "shared_calendar_invite_client",
-    title: "Shared Calendar (Invite Client)",
+    title: "Shared Calendar Invite Client",
     module: "shared_calendars",
-    endpoint: "shared_calendar",
-    action: "invite_client",
-    summary: "Read, create, change, link, delete the workspace's client calendar, or manage the people on it. This tool runs the invite_client action.",
-    description: "One endpoint for the workspace's client calendar, chosen with action: get (the default): the calendar, or calendar null when none exists. Any member may read. create: a new calendar from name, start_date and either end_date or never_expires, with optional comments_allowed and pin. update: the same fields over the current ones; fields left out keep their value, pin sent empty removes the PIN. link: switches the public link on or off with enabled. delete: removes the calendar with its people and comments, confirm=true required. clients: lists the people on the calendar. invite_client: mails the calendar link to email and adds them. remove_client: takes the person named by client_id off. Every action but get needs the workspace owner's own key. The link counts against the plan: A calendar can exist with its link off. Switching the link on (action link) uses one of the plan's shareable calendar slots and is refused with 403 when none is left; a calendar created here starts with the link on only if the plan allows it. Invitations send mail: invite_client mails the link at once. The owner and the members already on the calendar appear in people with their type; only people of type client are what the invite adds.",
+    endpoint: "shared_calendar_invite_client",
+    summary: "Mail the client calendar link to a person and add them.",
+    description: "Mails the calendar link to email at once and adds them to the people on the calendar. Workspace owner's own key only. Invitations send mail: The link is mailed at once. The owner and the members already on the calendar appear in people with their type; only people of type client are what the invite adds.",
     readOnly: false,
     destructive: false,
     params: [
@@ -516,64 +222,8 @@ export const sharedCalendarsTools: ToolSpec[] = [
         key: "email",
         type: "email",
         required: true,
-        description: "Required when action is invite_client: the address to mail the calendar link to.",
+        description: "The address to mail the calendar link to.",
         example: "client@example.com"
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Required when action is create: the calendar's name, 1 to 100 characters. Optional on update.",
-        example: "Acme client calendar"
-      },
-      {
-        key: "start_date",
-        type: "date",
-        required: false,
-        description: "Required when action is create: first day the client sees, YYYY-MM-DD. Optional on update.",
-        example: "2026-11-01"
-      },
-      {
-        key: "end_date",
-        type: "date",
-        required: false,
-        description: "Last day the client sees, YYYY-MM-DD, on or after start_date. Required on create unless never_expires is true.",
-        example: "2026-12-31"
-      },
-      {
-        key: "never_expires",
-        type: "boolean",
-        required: false,
-        description: "true keeps the calendar open with no end date; end_date is then ignored.",
-        example: false
-      },
-      {
-        key: "comments_allowed",
-        type: "boolean",
-        required: false,
-        description: "Whether the client may comment on posts. Defaults to false on create.",
-        example: true
-      },
-      {
-        key: "pin",
-        type: "string",
-        required: false,
-        description: "A 4-digit PIN the client must enter to open the calendar. Send an empty string on update to remove it.",
-        example: "1234"
-      },
-      {
-        key: "enabled",
-        type: "boolean",
-        required: false,
-        description: "Required when action is link: true makes the public link work, false switches it off.",
-        example: true
-      },
-      {
-        key: "client_id",
-        type: "integer",
-        required: false,
-        description: "Required when action is remove_client: plain id from people[].id of action clients.",
-        example: 88
       },
       {
         key: "workspace_id",
@@ -586,12 +236,11 @@ export const sharedCalendarsTools: ToolSpec[] = [
   },
   {
     name: "shared_calendar_remove_client",
-    title: "Shared Calendar (Remove Client)",
+    title: "Shared Calendar Remove Client",
     module: "shared_calendars",
-    endpoint: "shared_calendar",
-    action: "remove_client",
-    summary: "Read, create, change, link, delete the workspace's client calendar, or manage the people on it. This tool runs the remove_client action.",
-    description: "One endpoint for the workspace's client calendar, chosen with action: get (the default): the calendar, or calendar null when none exists. Any member may read. create: a new calendar from name, start_date and either end_date or never_expires, with optional comments_allowed and pin. update: the same fields over the current ones; fields left out keep their value, pin sent empty removes the PIN. link: switches the public link on or off with enabled. delete: removes the calendar with its people and comments, confirm=true required. clients: lists the people on the calendar. invite_client: mails the calendar link to email and adds them. remove_client: takes the person named by client_id off. Every action but get needs the workspace owner's own key. The link counts against the plan: A calendar can exist with its link off. Switching the link on (action link) uses one of the plan's shareable calendar slots and is refused with 403 when none is left; a calendar created here starts with the link on only if the plan allows it. Invitations send mail: invite_client mails the link at once. The owner and the members already on the calendar appear in people with their type; only people of type client are what the invite adds.",
+    endpoint: "shared_calendar_remove_client",
+    summary: "Take a person off the client calendar.",
+    description: "Takes the person named by client_id off the calendar. Workspace owner's own key only.",
     readOnly: false,
     destructive: true,
     params: [
@@ -599,64 +248,8 @@ export const sharedCalendarsTools: ToolSpec[] = [
         key: "client_id",
         type: "integer",
         required: true,
-        description: "Required when action is remove_client: plain id from people[].id of action clients.",
+        description: "Plain id from people[].id of /api/shared_calendar_clients.",
         example: 88
-      },
-      {
-        key: "name",
-        type: "string",
-        required: false,
-        description: "Required when action is create: the calendar's name, 1 to 100 characters. Optional on update.",
-        example: "Acme client calendar"
-      },
-      {
-        key: "start_date",
-        type: "date",
-        required: false,
-        description: "Required when action is create: first day the client sees, YYYY-MM-DD. Optional on update.",
-        example: "2026-11-01"
-      },
-      {
-        key: "end_date",
-        type: "date",
-        required: false,
-        description: "Last day the client sees, YYYY-MM-DD, on or after start_date. Required on create unless never_expires is true.",
-        example: "2026-12-31"
-      },
-      {
-        key: "never_expires",
-        type: "boolean",
-        required: false,
-        description: "true keeps the calendar open with no end date; end_date is then ignored.",
-        example: false
-      },
-      {
-        key: "comments_allowed",
-        type: "boolean",
-        required: false,
-        description: "Whether the client may comment on posts. Defaults to false on create.",
-        example: true
-      },
-      {
-        key: "pin",
-        type: "string",
-        required: false,
-        description: "A 4-digit PIN the client must enter to open the calendar. Send an empty string on update to remove it.",
-        example: "1234"
-      },
-      {
-        key: "enabled",
-        type: "boolean",
-        required: false,
-        description: "Required when action is link: true makes the public link work, false switches it off.",
-        example: true
-      },
-      {
-        key: "email",
-        type: "email",
-        required: false,
-        description: "Required when action is invite_client: the address to mail the calendar link to.",
-        example: "client@example.com"
       },
       {
         key: "workspace_id",
@@ -669,12 +262,11 @@ export const sharedCalendarsTools: ToolSpec[] = [
   },
   {
     name: "shared_calendar_comments_list",
-    title: "Shared Calendar Comments (List)",
+    title: "Shared Calendar Comments List",
     module: "shared_calendars",
-    endpoint: "shared_calendar_comments",
-    action: "list",
-    summary: "List, add or mark as read the client calendar comments on a queued post. This tool runs the list action.",
-    description: "The comments on one queued post as they appear on the client calendar: what the client wrote from the calendar page and what the team answered. With action=list (the default) reads them, 6 per page, newest first. add writes a comment in your name. mark sets the unread flag of the post's comments, or of one comment with comment_id, and answers with the list afterwards. Any active member of the workspace may call this; adding and marking need the workspace to have a client calendar. Who is listed: Without a client calendar the list still answers, with whatever the team wrote before; the client can only comment through a calendar whose comments_allowed is on. Your name on the comment: A comment added here carries the name on your RecurPost account and from_client false; a comment the client leaves on the calendar page carries the name they typed there.",
+    endpoint: "shared_calendar_comments_list",
+    summary: "List the client calendar comments on a queued post.",
+    description: "The comments on one queued post as they appear on the client calendar: what the client wrote from the calendar page and what the team answered. This call reads them, 6 per page, newest first. Any active member of the workspace may call this. Who is listed: Without a client calendar the list still answers, with whatever the team wrote before; the client can only comment through a calendar whose comments_allowed is on.",
     readOnly: true,
     destructive: false,
     params: [
@@ -684,20 +276,6 @@ export const sharedCalendarsTools: ToolSpec[] = [
         required: true,
         description: "Plain post id, items[].post_id of /api/queue_list (the id shared by the queue items of one post).",
         example: 48213
-      },
-      {
-        key: "comment",
-        type: "string",
-        required: false,
-        description: "Required when action is add: the comment, 1 to 2000 characters. Surrounding spaces are trimmed.",
-        example: "Thanks, we will swap the image."
-      },
-      {
-        key: "read",
-        type: "boolean",
-        required: false,
-        description: "Required when action is mark: true marks as read, false as unread.",
-        example: true
       },
       {
         key: "page",
@@ -718,12 +296,11 @@ export const sharedCalendarsTools: ToolSpec[] = [
   },
   {
     name: "shared_calendar_comments_add",
-    title: "Shared Calendar Comments (Add)",
+    title: "Shared Calendar Comments Add",
     module: "shared_calendars",
-    endpoint: "shared_calendar_comments",
-    action: "add",
-    summary: "List, add or mark as read the client calendar comments on a queued post. This tool runs the add action.",
-    description: "The comments on one queued post as they appear on the client calendar: what the client wrote from the calendar page and what the team answered. With action=list (the default) reads them, 6 per page, newest first. add writes a comment in your name. mark sets the unread flag of the post's comments, or of one comment with comment_id, and answers with the list afterwards. Any active member of the workspace may call this; adding and marking need the workspace to have a client calendar. Who is listed: Without a client calendar the list still answers, with whatever the team wrote before; the client can only comment through a calendar whose comments_allowed is on. Your name on the comment: A comment added here carries the name on your RecurPost account and from_client false; a comment the client leaves on the calendar page carries the name they typed there.",
+    endpoint: "shared_calendar_comments_add",
+    summary: "Add a comment on a queued post in your name.",
+    description: "The comments on one queued post as they appear on the client calendar: what the client wrote from the calendar page and what the team answered. This call writes a comment in your name; the workspace needs a client calendar. Any active member of the workspace may call this. Your name on the comment: A comment added here carries the name on your RecurPost account and from_client false; a comment the client leaves on the calendar page carries the name they typed there.",
     readOnly: false,
     destructive: false,
     params: [
@@ -738,23 +315,8 @@ export const sharedCalendarsTools: ToolSpec[] = [
         key: "comment",
         type: "string",
         required: true,
-        description: "Required when action is add: the comment, 1 to 2000 characters. Surrounding spaces are trimmed.",
+        description: "The comment, 1 to 2000 characters. Surrounding spaces are trimmed.",
         example: "Thanks, we will swap the image."
-      },
-      {
-        key: "read",
-        type: "boolean",
-        required: false,
-        description: "Required when action is mark: true marks as read, false as unread.",
-        example: true
-      },
-      {
-        key: "page",
-        type: "integer",
-        required: false,
-        description: "Page of the list, 6 comments per page.",
-        default: "1",
-        example: 1
       },
       {
         key: "workspace_id",
@@ -767,12 +329,11 @@ export const sharedCalendarsTools: ToolSpec[] = [
   },
   {
     name: "shared_calendar_comments_mark",
-    title: "Shared Calendar Comments (Mark)",
+    title: "Shared Calendar Comments Mark",
     module: "shared_calendars",
-    endpoint: "shared_calendar_comments",
-    action: "mark",
-    summary: "List, add or mark as read the client calendar comments on a queued post. This tool runs the mark action.",
-    description: "The comments on one queued post as they appear on the client calendar: what the client wrote from the calendar page and what the team answered. With action=list (the default) reads them, 6 per page, newest first. add writes a comment in your name. mark sets the unread flag of the post's comments, or of one comment with comment_id, and answers with the list afterwards. Any active member of the workspace may call this; adding and marking need the workspace to have a client calendar. Who is listed: Without a client calendar the list still answers, with whatever the team wrote before; the client can only comment through a calendar whose comments_allowed is on. Your name on the comment: A comment added here carries the name on your RecurPost account and from_client false; a comment the client leaves on the calendar page carries the name they typed there.",
+    endpoint: "shared_calendar_comments_mark",
+    summary: "Mark the client calendar comments on a queued post read or unread.",
+    description: "The comments on one queued post as they appear on the client calendar: what the client wrote from the calendar page and what the team answered. This call sets the unread flag of the post's comments, or of one comment with comment_id, and answers with the list afterwards; the workspace needs a client calendar. Any active member of the workspace may call this.",
     readOnly: false,
     destructive: false,
     params: [
@@ -787,21 +348,14 @@ export const sharedCalendarsTools: ToolSpec[] = [
         key: "read",
         type: "boolean",
         required: true,
-        description: "Required when action is mark: true marks as read, false as unread.",
+        description: "true marks as read, false as unread.",
         example: true
-      },
-      {
-        key: "comment",
-        type: "string",
-        required: false,
-        description: "Required when action is add: the comment, 1 to 2000 characters. Surrounding spaces are trimmed.",
-        example: "Thanks, we will swap the image."
       },
       {
         key: "comment_id",
         type: "integer",
         required: false,
-        description: "With mark: plain id of one comment from comments[].id. Left out, every comment of the post is marked.",
+        description: "Plain id of one comment from comments[].id. Left out, every comment of the post is marked.",
         example: 7
       },
       {
