@@ -67,7 +67,7 @@ describe("generated tool specs", () => {
     expect(byName.get("custom_fields_list")!.confirm).toBeUndefined();
     expect(byName.get("workspace_list")!.confirm).toBeUndefined();
     expect(requestBody(byName.get("workspace_delete")!, { workspace_id: "w" })).toEqual({ workspace_id: "w", confirm: true });
-    expect(requestBody(byName.get("custom_fields_list")!, {})).toEqual({ action: "list" });
+    expect(requestBody(byName.get("custom_fields_list")!, {})).toEqual({});
   });
 
   it("flag destructive and read-only tools", () => {
