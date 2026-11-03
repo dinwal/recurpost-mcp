@@ -250,12 +250,12 @@ describe("parameter forwarding", () => {
     expect(apiCalls()[0].body.id).toEqual(["a", "b"]);
   });
 
-  it("sends the fixed action on a split tool", async () => {
+  it("calls the per-verb route of a tool that used to be an action", async () => {
     await client.callTool({ name: "approval_reject", arguments: { id: "p-1", message: "Please fix the link" } });
 
     const [call] = apiCalls();
-    expect(call.url).toBe("https://social.recurpost.com/api/approval_decide");
-    expect(call.body).toEqual({ action: "reject", id: "p-1", message: "Please fix the link" });
+    expect(call.url).toBe("https://social.recurpost.com/api/approval_reject");
+    expect(call.body).toEqual({ id: "p-1", message: "Please fix the link" });
   });
 
   it("rejects a value outside the documented list before calling the API", async () => {
@@ -343,13 +343,14 @@ describe("catalog tools", () => {
     expect(call.body).toEqual({ workspace_id: "enc-9", confirm: true });
   });
 
-  it("call_operation sends the action of a split operation", async () => {
+  it("call_operation sends no action field for a per-verb operation", async () => {
     await client.callTool({
       name: "call_operation",
       arguments: { name: "inbox_bookmark_add", params: { id: "m-1", workspace_id: "enc-1" } },
     });
 
-    expect(apiCalls()[0].body).toEqual({ action: "add", id: "m-1", workspace_id: "enc-1" });
+    expect(apiCalls()[0].url).toBe("https://social.recurpost.com/api/inbox_bookmark_add");
+    expect(apiCalls()[0].body).toEqual({ id: "m-1", workspace_id: "enc-1" });
   });
 
   it("call_operation rejects missing or unknown parameters without calling the API", async () => {

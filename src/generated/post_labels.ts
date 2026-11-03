@@ -157,12 +157,11 @@ export const postLabelsTools: ToolSpec[] = [
   },
   {
     name: "label_assign_set",
-    title: "Label Assign (Set)",
+    title: "Label Assign Set",
     module: "post_labels",
-    endpoint: "label_assign",
-    action: "set",
-    summary: "Set, add or remove labels on one scheduled post or one library post. This tool runs the set action.",
-    description: "Changes the labels on exactly one post: a scheduled post named by post_id (the same plain id /api/post_status takes, covering every account the post goes to) or a library post named by content_id. action decides how label_ids is applied: set replaces the current labels with the list, add adds the list to them, remove takes the list away. The answer is the list of labels now on the post, sorted by name. Written directly: This endpoint writes the label rows itself and does not call the app, so there is no internal error path beyond the ones listed. Labels on a scheduled post apply to the post as a whole, not to one account's copy of it. Clearing labels: To remove every label from a post send action=set with no label_ids. remove requires at least one id and silently ignores ids that were not on the post. Workspace scope: With workspace_id, a post_id must go to at least one account of that workspace; otherwise the answer is 404 Post not found. Without it the post only has to belong to the workspace owner.",
+    endpoint: "label_assign_set",
+    summary: "Replace the labels on one scheduled post or one library post.",
+    description: "Changes the labels on exactly one post: a scheduled post named by post_id (the same plain id /api/post_status takes, covering every account the post goes to) or a library post named by content_id. Replaces the current labels with label_ids; an empty or missing list clears every label from the post. The answer is the list of labels now on the post, sorted by name. Written directly: This endpoint writes the label rows itself and does not call the app, so there is no internal error path beyond the ones listed. Labels on a scheduled post apply to the post as a whole, not to one account's copy of it. Workspace scope: With workspace_id, a post_id must go to at least one account of that workspace; otherwise the answer is 404 Post not found. Without it the post only has to belong to the workspace owner.",
     readOnly: false,
     destructive: false,
     params: [
@@ -184,7 +183,7 @@ export const postLabelsTools: ToolSpec[] = [
         key: "label_ids",
         type: "array",
         required: false,
-        description: "Plain integer label ids as a JSON array or a comma-separated string. Required for add and remove. With set an empty or missing list clears every label from the post.",
+        description: "Plain integer label ids as a JSON array or a comma-separated string. Empty or left out to clear every label.",
         example: [
           31,
           32
@@ -203,12 +202,11 @@ export const postLabelsTools: ToolSpec[] = [
   },
   {
     name: "label_assign_add",
-    title: "Label Assign (Add)",
+    title: "Label Assign Add",
     module: "post_labels",
-    endpoint: "label_assign",
-    action: "add",
-    summary: "Set, add or remove labels on one scheduled post or one library post. This tool runs the add action.",
-    description: "Changes the labels on exactly one post: a scheduled post named by post_id (the same plain id /api/post_status takes, covering every account the post goes to) or a library post named by content_id. action decides how label_ids is applied: set replaces the current labels with the list, add adds the list to them, remove takes the list away. The answer is the list of labels now on the post, sorted by name. Written directly: This endpoint writes the label rows itself and does not call the app, so there is no internal error path beyond the ones listed. Labels on a scheduled post apply to the post as a whole, not to one account's copy of it. Clearing labels: To remove every label from a post send action=set with no label_ids. remove requires at least one id and silently ignores ids that were not on the post. Workspace scope: With workspace_id, a post_id must go to at least one account of that workspace; otherwise the answer is 404 Post not found. Without it the post only has to belong to the workspace owner.",
+    endpoint: "label_assign_add",
+    summary: "Add labels to one scheduled post or one library post.",
+    description: "Changes the labels on exactly one post: a scheduled post named by post_id (the same plain id /api/post_status takes, covering every account the post goes to) or a library post named by content_id. Adds label_ids to the labels the post has. The answer is the list of labels now on the post, sorted by name. Written directly: This endpoint writes the label rows itself and does not call the app, so there is no internal error path beyond the ones listed. Labels on a scheduled post apply to the post as a whole, not to one account's copy of it. Workspace scope: With workspace_id, a post_id must go to at least one account of that workspace; otherwise the answer is 404 Post not found. Without it the post only has to belong to the workspace owner.",
     readOnly: false,
     destructive: false,
     params: [
@@ -216,7 +214,7 @@ export const postLabelsTools: ToolSpec[] = [
         key: "label_ids",
         type: "array",
         required: true,
-        description: "Plain integer label ids as a JSON array or a comma-separated string. Required for add and remove. With set an empty or missing list clears every label from the post.",
+        description: "Plain integer label ids as a JSON array or a comma-separated string; at least one.",
         example: [
           31,
           32
@@ -249,12 +247,11 @@ export const postLabelsTools: ToolSpec[] = [
   },
   {
     name: "label_assign_remove",
-    title: "Label Assign (Remove)",
+    title: "Label Assign Remove",
     module: "post_labels",
-    endpoint: "label_assign",
-    action: "remove",
-    summary: "Set, add or remove labels on one scheduled post or one library post. This tool runs the remove action.",
-    description: "Changes the labels on exactly one post: a scheduled post named by post_id (the same plain id /api/post_status takes, covering every account the post goes to) or a library post named by content_id. action decides how label_ids is applied: set replaces the current labels with the list, add adds the list to them, remove takes the list away. The answer is the list of labels now on the post, sorted by name. Written directly: This endpoint writes the label rows itself and does not call the app, so there is no internal error path beyond the ones listed. Labels on a scheduled post apply to the post as a whole, not to one account's copy of it. Clearing labels: To remove every label from a post send action=set with no label_ids. remove requires at least one id and silently ignores ids that were not on the post. Workspace scope: With workspace_id, a post_id must go to at least one account of that workspace; otherwise the answer is 404 Post not found. Without it the post only has to belong to the workspace owner.",
+    endpoint: "label_assign_remove",
+    summary: "Remove labels from one scheduled post or one library post.",
+    description: "Changes the labels on exactly one post: a scheduled post named by post_id (the same plain id /api/post_status takes, covering every account the post goes to) or a library post named by content_id. Takes label_ids away from the post; ids that were not on the post are ignored. The answer is the list of labels now on the post, sorted by name. Written directly: This endpoint writes the label rows itself and does not call the app, so there is no internal error path beyond the ones listed. Labels on a scheduled post apply to the post as a whole, not to one account's copy of it. Workspace scope: With workspace_id, a post_id must go to at least one account of that workspace; otherwise the answer is 404 Post not found. Without it the post only has to belong to the workspace owner.",
     readOnly: false,
     destructive: true,
     params: [
@@ -262,7 +259,7 @@ export const postLabelsTools: ToolSpec[] = [
         key: "label_ids",
         type: "array",
         required: true,
-        description: "Plain integer label ids as a JSON array or a comma-separated string. Required for add and remove. With set an empty or missing list clears every label from the post.",
+        description: "Plain integer label ids as a JSON array or a comma-separated string; at least one.",
         example: [
           31,
           32

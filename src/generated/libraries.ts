@@ -166,12 +166,11 @@ export const librariesTools: ToolSpec[] = [
   },
   {
     name: "library_pause",
-    title: "Library Pause / Resume (Pause)",
+    title: "Library Pause",
     module: "libraries",
     endpoint: "library_pause",
-    action: "pause",
-    summary: "Pause a library so it stops filling its schedules, or resume it. This tool runs the pause action.",
-    description: "Sets the library to paused or back to active. A paused library adds no new posts to the queue. Posts from the library that are already in the queue stay scheduled; remove them under Queue if they should not go out. Idempotent: Pausing a paused library or resuming an active one answers 200 and changes nothing.",
+    summary: "Pause a library so it stops filling its schedules.",
+    description: "Sets the library to paused: it adds no new posts to the queue until /api/library_resume. Posts from the library that are already in the queue stay scheduled; remove them under Queue if they should not go out. Idempotent: Pausing a paused library answers 200 and changes nothing.",
     readOnly: false,
     destructive: false,
     params: [
@@ -193,12 +192,11 @@ export const librariesTools: ToolSpec[] = [
   },
   {
     name: "library_resume",
-    title: "Library Pause / Resume (Resume)",
+    title: "Library Resume",
     module: "libraries",
-    endpoint: "library_pause",
-    action: "resume",
-    summary: "Pause a library so it stops filling its schedules, or resume it. This tool runs the resume action.",
-    description: "Sets the library to paused or back to active. A paused library adds no new posts to the queue. Posts from the library that are already in the queue stay scheduled; remove them under Queue if they should not go out. Idempotent: Pausing a paused library or resuming an active one answers 200 and changes nothing.",
+    endpoint: "library_resume",
+    summary: "Resume a paused library.",
+    description: "Sets the library back to active, so it fills its schedules again. Idempotent: Resuming an active library answers 200 and changes nothing.",
     readOnly: false,
     destructive: false,
     params: [
@@ -2600,12 +2598,11 @@ export const librariesTools: ToolSpec[] = [
   },
   {
     name: "library_content_order_move",
-    title: "Library Content Order (Move)",
+    title: "Library Content Order Move",
     module: "libraries",
-    endpoint: "library_content_order",
-    action: "move",
-    summary: "Move a post to a position in a library's publishing order, or shuffle the whole order. This tool runs the move action.",
-    description: "Changes the order in which a library's posts go out. action move puts content_id at position (1 publishes next) and shifts the posts in between; shuffle randomises the whole library. Both answer with the complete new order, one row per post with its position and encrypted id. Each account's place in that order is read and changed with /api/library_pointers. Moving a post to the position it already has changes nothing and still answers 200 with the order. Order versus pointers: The order is the library's. Every account connected to the library has its own pointer into it (/api/library_pointers), so moving a post to position 1 makes it the next post for accounts whose pointer is at the start; an account further down the order reaches it on its next cycle.",
+    endpoint: "library_content_order_move",
+    summary: "Move a post to a position in a library's publishing order.",
+    description: "Puts content_id at position (1 publishes next) and shifts the posts in between. Answers with the complete new order, one row per post with its position and encrypted id. Each account's place in that order is read and changed with /api/library_pointers_list and /api/library_pointers_set. Moving a post to the position it already has changes nothing and still answers 200 with the order. Order versus pointers: The order is the library's. Every account connected to the library has its own pointer into it (/api/library_pointers), so moving a post to position 1 makes it the next post for accounts whose pointer is at the start; an account further down the order reaches it on its next cycle.",
     readOnly: false,
     destructive: false,
     params: [
@@ -2620,14 +2617,14 @@ export const librariesTools: ToolSpec[] = [
         key: "content_id",
         type: "string",
         required: true,
-        description: "Encrypted id of the post to move. Required when action is move; the post must be in the library.",
+        description: "Encrypted id of the post to move; the post must be in the library.",
         example: "pQ8sL3vY2a=="
       },
       {
         key: "position",
         type: "integer",
         required: true,
-        description: "New position, 1 to the number of posts in the library (1 publishes next). Required when action is move.",
+        description: "New position, 1 to the number of posts in the library (1 publishes next).",
         example: 1
       },
       {
@@ -2641,12 +2638,11 @@ export const librariesTools: ToolSpec[] = [
   },
   {
     name: "library_content_order_shuffle",
-    title: "Library Content Order (Shuffle)",
+    title: "Library Content Order Shuffle",
     module: "libraries",
-    endpoint: "library_content_order",
-    action: "shuffle",
-    summary: "Move a post to a position in a library's publishing order, or shuffle the whole order. This tool runs the shuffle action.",
-    description: "Changes the order in which a library's posts go out. action move puts content_id at position (1 publishes next) and shifts the posts in between; shuffle randomises the whole library. Both answer with the complete new order, one row per post with its position and encrypted id. Each account's place in that order is read and changed with /api/library_pointers. Moving a post to the position it already has changes nothing and still answers 200 with the order. Order versus pointers: The order is the library's. Every account connected to the library has its own pointer into it (/api/library_pointers), so moving a post to position 1 makes it the next post for accounts whose pointer is at the start; an account further down the order reaches it on its next cycle.",
+    endpoint: "library_content_order_shuffle",
+    summary: "Shuffle a library's publishing order.",
+    description: "Randomises the whole publishing order of the library. Answers with the complete new order, one row per post with its position and encrypted id.",
     readOnly: false,
     destructive: false,
     params: [
@@ -2656,20 +2652,6 @@ export const librariesTools: ToolSpec[] = [
         required: true,
         description: "Encrypted library id.",
         example: "nX2k9Qp7Lw=="
-      },
-      {
-        key: "content_id",
-        type: "string",
-        required: false,
-        description: "Encrypted id of the post to move. Required when action is move; the post must be in the library.",
-        example: "pQ8sL3vY2a=="
-      },
-      {
-        key: "position",
-        type: "integer",
-        required: false,
-        description: "New position, 1 to the number of posts in the library (1 publishes next). Required when action is move.",
-        example: 1
       },
       {
         key: "workspace_id",

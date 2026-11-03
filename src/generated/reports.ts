@@ -323,12 +323,11 @@ export const reportsTools: ToolSpec[] = [
   },
   {
     name: "report_x_quote",
-    title: "X Report Data (Quote)",
+    title: "X Report Quote",
     module: "reports",
-    endpoint: "report_x",
-    action: "quote",
-    summary: "Price, then buy, the X (Twitter) analytics of an account for a period; paid from the caller's X Wallet. This tool runs the quote action.",
-    description: "X analytics are not free: RecurPost fetches them on demand and bills the fetch to an X Wallet. This call is the two-step purchase behind the in-app X report. action=quote (the default) prices the period: which parts are already stored (free), what the rest costs per post and for the account overview, the cap on the charge and whether the wallet can cover it. action=fetch with confirm=true reserves the capped amount, fetches and stores the data, charges what was used and refunds the rest. /api/report_account and /api/report_posts then read the stored data for that account at no cost. The wallet charged is the one of the account that owns the API key you call with (wallet answers caller), even when the workspace belongs to someone else. force_refresh=true fetches again what is already stored, and pays for it again. fetch charges real money: A fetch with confirm=true debits the X Wallet of the API key's owner (the caller, not the workspace owner). Always quote first, check sufficient and max_charge, and never retry a fetch in a loop: a repeat is free only while covered is true and force_refresh is off. Reading the data afterwards: The stored data is what /api/report_account and /api/report_posts answer for an X account (their 411 means nothing has been fetched yet). The quote's uncovered_ranges also appears in the account report as the parts still missing.",
+    endpoint: "report_x_quote",
+    summary: "Price the X (Twitter) analytics of an account for a period before buying them.",
+    description: "X analytics are not free: RecurPost fetches them on demand and bills the fetch to an X Wallet. This is the two-step purchase behind the in-app X report. The quote prices the period: which parts are already stored (free), what the rest costs per post and for the account overview, the cap on the charge and whether the wallet can cover it. Buy with /api/report_x_fetch. The wallet is the one of the account that owns the API key you call with (wallet answers caller), even when the workspace belongs to someone else. force_refresh=true covers what is already stored again, and pays for it again. Reading the data afterwards: The stored data is what /api/report_account and /api/report_posts answer for an X account (their 411 means nothing has been fetched yet). The quote's uncovered_ranges also appears in the account report as the parts still missing.",
     readOnly: true,
     destructive: false,
     params: [
@@ -343,7 +342,7 @@ export const reportsTools: ToolSpec[] = [
         key: "force_refresh",
         type: "boolean",
         required: false,
-        description: "true fetches (and pays for) the whole period again, replacing what is stored. Sent on both actions; on quote it prices the full refetch.",
+        description: "true prices the full refetch of the period, replacing what is stored.",
         default: "false",
         example: false
       },
@@ -386,13 +385,12 @@ export const reportsTools: ToolSpec[] = [
   },
   {
     name: "report_x_fetch",
-    title: "X Report Data (Fetch)",
+    title: "X Report Fetch",
     module: "reports",
-    endpoint: "report_x",
-    action: "fetch",
+    endpoint: "report_x_fetch",
     confirm: true,
-    summary: "Price, then buy, the X (Twitter) analytics of an account for a period; paid from the caller's X Wallet. This tool runs the fetch action.",
-    description: "X analytics are not free: RecurPost fetches them on demand and bills the fetch to an X Wallet. This call is the two-step purchase behind the in-app X report. action=quote (the default) prices the period: which parts are already stored (free), what the rest costs per post and for the account overview, the cap on the charge and whether the wallet can cover it. action=fetch with confirm=true reserves the capped amount, fetches and stores the data, charges what was used and refunds the rest. /api/report_account and /api/report_posts then read the stored data for that account at no cost. The wallet charged is the one of the account that owns the API key you call with (wallet answers caller), even when the workspace belongs to someone else. force_refresh=true fetches again what is already stored, and pays for it again. fetch charges real money: A fetch with confirm=true debits the X Wallet of the API key's owner (the caller, not the workspace owner). Always quote first, check sufficient and max_charge, and never retry a fetch in a loop: a repeat is free only while covered is true and force_refresh is off. Reading the data afterwards: The stored data is what /api/report_account and /api/report_posts answer for an X account (their 411 means nothing has been fetched yet). The quote's uncovered_ranges also appears in the account report as the parts still missing.",
+    summary: "Buy the X (Twitter) analytics of an account for a period from the caller's X Wallet.",
+    description: "X analytics are not free: RecurPost fetches them on demand and bills the fetch to an X Wallet. This is the two-step purchase behind the in-app X report. With confirm=true it reserves the capped amount from the quote, fetches and stores the data, charges what was used and refunds the rest. /api/report_account and /api/report_posts then read the stored data for that account at no cost. The wallet is the one of the account that owns the API key you call with (wallet answers caller), even when the workspace belongs to someone else. force_refresh=true covers what is already stored again, and pays for it again. This charges real money: A fetch with confirm=true debits the X Wallet of the API key's owner (the caller, not the workspace owner). Always call /api/report_x_quote first, check sufficient and max_charge, and never retry a fetch in a loop: a repeat is free only while covered is true and force_refresh is off. Reading the data afterwards: The stored data is what /api/report_account and /api/report_posts answer for an X account.",
     readOnly: false,
     destructive: true,
     params: [
@@ -407,7 +405,7 @@ export const reportsTools: ToolSpec[] = [
         key: "force_refresh",
         type: "boolean",
         required: false,
-        description: "true fetches (and pays for) the whole period again, replacing what is stored. Sent on both actions; on quote it prices the full refetch.",
+        description: "true fetches (and pays for) the whole period again, replacing what is stored.",
         default: "false",
         example: false
       },

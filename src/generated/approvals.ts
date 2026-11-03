@@ -60,12 +60,11 @@ export const approvalsTools: ToolSpec[] = [
   },
   {
     name: "approval_approve",
-    title: "Approval Decide (Approve)",
+    title: "Approval Approve",
     module: "approvals",
-    endpoint: "approval_decide",
-    action: "approve",
-    summary: "Approve a waiting library post into its library, or reject it with a message for the author. This tool runs the approve action.",
-    description: "Records your decision on a post that is waiting for approval. You must be one of the post's reviewers and the post must still be waiting. approve moves the post into its library's rotation; reject turns it down and stores your message for the author, who sees it under scope rejected of /api/approval_list. Decisions are final: Once approved or rejected, the post cannot be decided again through the API; a second call answers 409. The author comments on a rejected post with /api/approval_comment and sends it back with /api/approval_resend; the content itself is edited in RecurPost. Approval counts against the plan: An approved post joins the library like any other post, so the owner's library post limit applies at the moment of approval, not when the author submitted it.",
+    endpoint: "approval_approve",
+    summary: "Approve a waiting library post into its library.",
+    description: "Records your approval of a post that is waiting for it: the post moves into its library's rotation. You must be one of the post's reviewers and the post must still be waiting. Decisions are final: Once approved or rejected, the post cannot be decided again through the API; a second call answers 409. The author comments on a rejected post with /api/approval_comment and sends it back with /api/approval_resend; the content itself is edited in RecurPost. Approval counts against the plan: An approved post joins the library like any other post, so the owner's library post limit applies at the moment of approval, not when the author submitted it.",
     readOnly: false,
     destructive: false,
     params: [
@@ -75,13 +74,6 @@ export const approvalsTools: ToolSpec[] = [
         required: true,
         description: "Encrypted library post id from /api/approval_list (scope to_review).",
         example: "sP9cM3xY1z=="
-      },
-      {
-        key: "message",
-        type: "string",
-        required: false,
-        description: "Required when action is reject: what the author should change. Ignored on approve.",
-        example: "Please shorten the caption and fix the typo in the first line."
       },
       {
         key: "workspace_id",
@@ -94,12 +86,11 @@ export const approvalsTools: ToolSpec[] = [
   },
   {
     name: "approval_reject",
-    title: "Approval Decide (Reject)",
+    title: "Approval Reject",
     module: "approvals",
-    endpoint: "approval_decide",
-    action: "reject",
-    summary: "Approve a waiting library post into its library, or reject it with a message for the author. This tool runs the reject action.",
-    description: "Records your decision on a post that is waiting for approval. You must be one of the post's reviewers and the post must still be waiting. approve moves the post into its library's rotation; reject turns it down and stores your message for the author, who sees it under scope rejected of /api/approval_list. Decisions are final: Once approved or rejected, the post cannot be decided again through the API; a second call answers 409. The author comments on a rejected post with /api/approval_comment and sends it back with /api/approval_resend; the content itself is edited in RecurPost. Approval counts against the plan: An approved post joins the library like any other post, so the owner's library post limit applies at the moment of approval, not when the author submitted it.",
+    endpoint: "approval_reject",
+    summary: "Reject a waiting library post with a message for the author.",
+    description: "Turns down a post that is waiting for approval and stores your message for the author, who sees it under scope rejected of /api/approval_list. You must be one of the post's reviewers and the post must still be waiting. Decisions are final: Once approved or rejected, the post cannot be decided again through the API; a second call answers 409. The author comments on a rejected post with /api/approval_comment and sends it back with /api/approval_resend; the content itself is edited in RecurPost.",
     readOnly: false,
     destructive: false,
     params: [
@@ -114,7 +105,7 @@ export const approvalsTools: ToolSpec[] = [
         key: "message",
         type: "string",
         required: true,
-        description: "Required when action is reject: what the author should change. Ignored on approve.",
+        description: "What the author should change.",
         example: "Please shorten the caption and fix the typo in the first line."
       },
       {
@@ -1190,7 +1181,7 @@ export const approvalsTools: ToolSpec[] = [
     module: "approvals",
     endpoint: "approval_resend",
     summary: "Send a rejected post back to its reviewers.",
-    description: "Puts a rejected post back in front of its reviewers: it returns to waiting, the reviewers get the approval request mail again, and a fresh decision is recorded with /api/approval_decide. Only the post's author may do this, and only for a rejected post. Edit the post first from RecurPost; this call sends the content as it stands. Sends mail to every reviewer: Each successful call mails the reviewers again. The post goes back to submitted in /api/approval_list and the reviewers see it under to_review.",
+    description: "Puts a rejected post back in front of its reviewers: it returns to waiting, the reviewers get the approval request mail again, and a fresh decision is recorded with /api/approval_approve or /api/approval_reject. Only the post's author may do this, and only for a rejected post. Edit the post first from RecurPost; this call sends the content as it stands. Sends mail to every reviewer: Each successful call mails the reviewers again. The post goes back to submitted in /api/approval_list and the reviewers see it under to_review.",
     readOnly: false,
     destructive: false,
     params: [
@@ -1217,7 +1208,7 @@ export const approvalsTools: ToolSpec[] = [
     endpoint: "approval_delete",
     confirm: true,
     summary: "Remove a post from the approval flow for good.",
-    description: "Deletes a post that is in the approval flow, whether waiting, approved or rejected, together with its comments. The author and the reviewers of the post may delete it. The post never reaches the library; an approved post that already joined the library is the library's and is not touched here. confirm=true is required. Not reversible: The post, its media links and its comment thread are gone; the author has to compose it again. Reviewers who want the post changed should reject it with /api/approval_decide instead.",
+    description: "Deletes a post that is in the approval flow, whether waiting, approved or rejected, together with its comments. The author and the reviewers of the post may delete it. The post never reaches the library; an approved post that already joined the library is the library's and is not touched here. confirm=true is required. Not reversible: The post, its media links and its comment thread are gone; the author has to compose it again. Reviewers who want the post changed should reject it with /api/approval_reject instead.",
     readOnly: false,
     destructive: true,
     params: [

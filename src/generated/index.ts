@@ -117,7 +117,7 @@ export const modules: ModuleSpec[] = [
   {
     key: "post_labels",
     title: "Post Labels",
-    description: "Labels are account-wide tags you put on scheduled posts and library posts; the label report groups performance by them. Labels belong to the workspace owner's account, so the same label set is visible in every workspace of that owner. Manage the labels here and attach them to posts with /api/label_assign."
+    description: "Labels are account-wide tags you put on scheduled posts and library posts; the label report groups performance by them. Labels belong to the workspace owner's account, so the same label set is visible in every workspace of that owner. Manage the labels here and attach them to posts with /api/label_assign_set, /api/label_assign_add and /api/label_assign_remove."
   },
   {
     key: "posts",

@@ -117,11 +117,11 @@
   },
   {
     "name": "approval_approve",
-    "description": "Approve a waiting library post into its library, or reject it with a message for the author. This tool runs the approve action."
+    "description": "Approve a waiting library post into its library."
   },
   {
     "name": "approval_reject",
-    "description": "Approve a waiting library post into its library, or reject it with a message for the author. This tool runs the reject action."
+    "description": "Reject a waiting library post with a message for the author."
   },
   {
     "name": "approval_comment",

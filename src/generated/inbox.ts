@@ -400,12 +400,11 @@ export const inboxTools: ToolSpec[] = [
   },
   {
     name: "inbox_item_labels_add",
-    title: "Inbox Item Labels (Add)",
+    title: "Inbox Item Labels Add",
     module: "inbox",
-    endpoint: "inbox_item_labels",
-    action: "add",
-    summary: "Puts labels on items of one account, takes them off, or replaces them. This tool runs the add action.",
-    description: "Changes the labels of up to 50 items that all belong to the same account. add appends the given labels, remove takes them off, set replaces every label of the items with the given ones (an empty label_ids with set clears them). Every label id must exist on that account. Answers the labels each item carries afterwards. RecurPost only.",
+    endpoint: "inbox_item_labels_add",
+    summary: "Put labels on inbox items of one account.",
+    description: "Appends the given labels to up to 50 items that all belong to the same account. Every label id must exist on that account. Answers the labels each item carries afterwards. RecurPost only.",
     readOnly: false,
     destructive: false,
     params: [
@@ -425,7 +424,7 @@ export const inboxTools: ToolSpec[] = [
         key: "label_ids",
         type: "array",
         required: true,
-        description: "Label ids (plain integers) of that account, as an array or a comma-separated string. Required for add and remove; may be empty with set to clear every label.",
+        description: "Label ids (plain integers) of that account, as an array or a comma-separated string.",
         example: [
           12
         ],
@@ -444,12 +443,11 @@ export const inboxTools: ToolSpec[] = [
   },
   {
     name: "inbox_item_labels_remove",
-    title: "Inbox Item Labels (Remove)",
+    title: "Inbox Item Labels Remove",
     module: "inbox",
-    endpoint: "inbox_item_labels",
-    action: "remove",
-    summary: "Puts labels on items of one account, takes them off, or replaces them. This tool runs the remove action.",
-    description: "Changes the labels of up to 50 items that all belong to the same account. add appends the given labels, remove takes them off, set replaces every label of the items with the given ones (an empty label_ids with set clears them). Every label id must exist on that account. Answers the labels each item carries afterwards. RecurPost only.",
+    endpoint: "inbox_item_labels_remove",
+    summary: "Take labels off inbox items of one account.",
+    description: "Takes the given labels off up to 50 items that all belong to the same account. Answers the labels each item carries afterwards. RecurPost only.",
     readOnly: false,
     destructive: true,
     params: [
@@ -469,7 +467,7 @@ export const inboxTools: ToolSpec[] = [
         key: "label_ids",
         type: "array",
         required: true,
-        description: "Label ids (plain integers) of that account, as an array or a comma-separated string. Required for add and remove; may be empty with set to clear every label.",
+        description: "Label ids (plain integers) of that account, as an array or a comma-separated string.",
         example: [
           12
         ],
@@ -488,12 +486,11 @@ export const inboxTools: ToolSpec[] = [
   },
   {
     name: "inbox_item_labels_set",
-    title: "Inbox Item Labels (Set)",
+    title: "Inbox Item Labels Set",
     module: "inbox",
-    endpoint: "inbox_item_labels",
-    action: "set",
-    summary: "Puts labels on items of one account, takes them off, or replaces them. This tool runs the set action.",
-    description: "Changes the labels of up to 50 items that all belong to the same account. add appends the given labels, remove takes them off, set replaces every label of the items with the given ones (an empty label_ids with set clears them). Every label id must exist on that account. Answers the labels each item carries afterwards. RecurPost only.",
+    endpoint: "inbox_item_labels_set",
+    summary: "Replace the labels of inbox items of one account.",
+    description: "Replaces every label of up to 50 items of the same account with the given ones; an empty label_ids clears them. Answers the labels each item carries afterwards. RecurPost only.",
     readOnly: false,
     destructive: false,
     params: [
@@ -513,7 +510,7 @@ export const inboxTools: ToolSpec[] = [
         key: "label_ids",
         type: "array",
         required: false,
-        description: "Label ids (plain integers) of that account, as an array or a comma-separated string. Required for add and remove; may be empty with set to clear every label.",
+        description: "Label ids (plain integers) of that account, as an array or a comma-separated string. Empty or left out to clear every label.",
         example: [
           12
         ],
@@ -648,12 +645,11 @@ export const inboxTools: ToolSpec[] = [
   },
   {
     name: "inbox_like",
-    title: "Inbox Like (Like)",
+    title: "Inbox Like",
     module: "inbox",
     endpoint: "inbox_like",
-    action: "like",
-    summary: "Likes or unlikes the post of an item, or one of its comments. This tool runs the like action.",
-    description: "Without comment_id the like applies to the post of the item (a comment or review item); with comment_id it applies to that comment of the item. On Facebook pages and LinkedIn company pages the like is sent to the network as the page. On Instagram business and Google Business the app has no like call, so the request is refused with 409 instead of recording a like nobody sees. Message items (conversations) are refused with 400.",
+    summary: "Like the post of an inbox item, or one of its comments.",
+    description: "Without comment_id it applies to the post of the item (a comment or review item); with comment_id to that comment of the item. On Facebook pages and LinkedIn company pages it is sent to the network as the page. On Instagram business and Google Business the app has no like call, so the request is refused with 409. Message items (conversations) are refused with 400.",
     readOnly: false,
     destructive: false,
     params: [
@@ -683,12 +679,11 @@ export const inboxTools: ToolSpec[] = [
   },
   {
     name: "inbox_unlike",
-    title: "Inbox Like (Unlike)",
+    title: "Inbox Unlike",
     module: "inbox",
-    endpoint: "inbox_like",
-    action: "unlike",
-    summary: "Likes or unlikes the post of an item, or one of its comments. This tool runs the unlike action.",
-    description: "Without comment_id the like applies to the post of the item (a comment or review item); with comment_id it applies to that comment of the item. On Facebook pages and LinkedIn company pages the like is sent to the network as the page. On Instagram business and Google Business the app has no like call, so the request is refused with 409 instead of recording a like nobody sees. Message items (conversations) are refused with 400.",
+    endpoint: "inbox_unlike",
+    summary: "Remove a like from the post of an inbox item, or from one of its comments.",
+    description: "Without comment_id it applies to the post of the item (a comment or review item); with comment_id to that comment of the item. On Facebook pages and LinkedIn company pages it is sent to the network as the page. On Instagram business and Google Business the app has no like call, so the request is refused with 409. Message items (conversations) are refused with 400.",
     readOnly: false,
     destructive: false,
     params: [
@@ -718,12 +713,11 @@ export const inboxTools: ToolSpec[] = [
   },
   {
     name: "inbox_mark_reviewed",
-    title: "Inbox Mark Reviewed (Review)",
+    title: "Inbox Mark Reviewed",
     module: "inbox",
     endpoint: "inbox_mark_reviewed",
-    action: "review",
-    summary: "Marks items as reviewed, or puts them back to to_review. This tool runs the review action.",
-    description: "Moves up to 50 items to status reviewed and records you as reviewed_by; any assignment on them is cleared. unreview moves them back to to_review. The items may sit on different accounts of the workspace owner. RecurPost only. Assignments are cleared: Both review and unreview remove any team member assignment from the items; reviewed_by is set to you either way.",
+    summary: "Mark inbox items as reviewed.",
+    description: "Moves up to 50 items to status reviewed and records you as reviewed_by; any assignment on them is cleared. The items may sit on different accounts of the workspace owner. RecurPost only. Assignments are cleared: Both marking reviewed and unmarking remove any team member assignment from the items; reviewed_by is set to you either way.",
     readOnly: false,
     destructive: false,
     params: [
@@ -751,12 +745,11 @@ export const inboxTools: ToolSpec[] = [
   },
   {
     name: "inbox_mark_unreviewed",
-    title: "Inbox Mark Reviewed (Unreview)",
+    title: "Inbox Mark Unreviewed",
     module: "inbox",
-    endpoint: "inbox_mark_reviewed",
-    action: "unreview",
-    summary: "Marks items as reviewed, or puts them back to to_review. This tool runs the unreview action.",
-    description: "Moves up to 50 items to status reviewed and records you as reviewed_by; any assignment on them is cleared. unreview moves them back to to_review. The items may sit on different accounts of the workspace owner. RecurPost only. Assignments are cleared: Both review and unreview remove any team member assignment from the items; reviewed_by is set to you either way.",
+    endpoint: "inbox_mark_unreviewed",
+    summary: "Put reviewed inbox items back to to_review.",
+    description: "Moves up to 50 items back to status to_review; any assignment on them is cleared and reviewed_by is set to you. The items may sit on different accounts of the workspace owner. RecurPost only. Assignments are cleared: Both marking reviewed and unmarking remove any team member assignment from the items; reviewed_by is set to you either way.",
     readOnly: false,
     destructive: false,
     params: [
@@ -784,12 +777,11 @@ export const inboxTools: ToolSpec[] = [
   },
   {
     name: "inbox_bookmark_add",
-    title: "Inbox Bookmark (Add)",
+    title: "Inbox Bookmark Add",
     module: "inbox",
-    endpoint: "inbox_bookmark",
-    action: "add",
-    summary: "Bookmarks items or removes the bookmark. This tool runs the add action.",
-    description: "Sets or clears the bookmark on up to 50 items of the workspace owner's accounts in one write. Bookmarks are a RecurPost flag; filter on them with bookmarked=true in /api/inbox_list.",
+    endpoint: "inbox_bookmark_add",
+    summary: "Bookmark inbox items.",
+    description: "Sets the bookmark on up to 50 items of the workspace owner's accounts in one write. Bookmarks are a RecurPost flag; filter on them with bookmarked=true in /api/inbox_list.",
     readOnly: false,
     destructive: false,
     params: [
@@ -816,12 +808,11 @@ export const inboxTools: ToolSpec[] = [
   },
   {
     name: "inbox_bookmark_remove",
-    title: "Inbox Bookmark (Remove)",
+    title: "Inbox Bookmark Remove",
     module: "inbox",
-    endpoint: "inbox_bookmark",
-    action: "remove",
-    summary: "Bookmarks items or removes the bookmark. This tool runs the remove action.",
-    description: "Sets or clears the bookmark on up to 50 items of the workspace owner's accounts in one write. Bookmarks are a RecurPost flag; filter on them with bookmarked=true in /api/inbox_list.",
+    endpoint: "inbox_bookmark_remove",
+    summary: "Remove the bookmark from inbox items.",
+    description: "Clears the bookmark on up to 50 items of the workspace owner's accounts in one write. Bookmarks are a RecurPost flag; filter on them with bookmarked=true in /api/inbox_list.",
     readOnly: false,
     destructive: true,
     params: [
@@ -848,12 +839,11 @@ export const inboxTools: ToolSpec[] = [
   },
   {
     name: "inbox_assign",
-    title: "Inbox Assign (Assign)",
+    title: "Inbox Assign",
     module: "inbox",
     endpoint: "inbox_assign",
-    action: "assign",
-    summary: "Assigns items of one account to a team member, or unassigns them. This tool runs the assign action.",
-    description: "Hands up to 50 items of the same account to one team member: the items move to status assigned, assigned_to and assigned_by are set, and the member receives an email about the assignment. unassign clears the assignment and returns the items to to_review. The member must appear in /api/inbox_team_members for that account. RecurPost only. Side effect: Assigning sends the member an assignment notification email. An item can hold one assignment at a time; assigning again replaces it.",
+    summary: "Assign inbox items of one account to a team member.",
+    description: "Hands up to 50 items of the same account to one team member: the items move to status assigned, assigned_to and assigned_by are set, and the member receives an email about the assignment. The member must appear in /api/inbox_team_members for that account. RecurPost only. Side effect: Assigning sends the member an assignment notification email. An item can hold one assignment at a time; assigning again replaces it.",
     readOnly: false,
     destructive: false,
     params: [
@@ -873,7 +863,7 @@ export const inboxTools: ToolSpec[] = [
         key: "user_id",
         type: "string",
         required: true,
-        description: "Encrypted user id from /api/inbox_team_members. Required when action is assign; ignored for unassign.",
+        description: "Encrypted user id from /api/inbox_team_members.",
         example: "MRBkPwJx4i8="
       },
       {
@@ -888,12 +878,11 @@ export const inboxTools: ToolSpec[] = [
   },
   {
     name: "inbox_unassign",
-    title: "Inbox Assign (Unassign)",
+    title: "Inbox Unassign",
     module: "inbox",
-    endpoint: "inbox_assign",
-    action: "unassign",
-    summary: "Assigns items of one account to a team member, or unassigns them. This tool runs the unassign action.",
-    description: "Hands up to 50 items of the same account to one team member: the items move to status assigned, assigned_to and assigned_by are set, and the member receives an email about the assignment. unassign clears the assignment and returns the items to to_review. The member must appear in /api/inbox_team_members for that account. RecurPost only. Side effect: Assigning sends the member an assignment notification email. An item can hold one assignment at a time; assigning again replaces it.",
+    endpoint: "inbox_unassign",
+    summary: "Clear the assignment of inbox items.",
+    description: "Clears the assignment of up to 50 items of the same account and returns them to to_review. RecurPost only.",
     readOnly: false,
     destructive: true,
     params: [
@@ -908,13 +897,6 @@ export const inboxTools: ToolSpec[] = [
         ],
         items: "string",
         acceptsList: true
-      },
-      {
-        key: "user_id",
-        type: "string",
-        required: false,
-        description: "Encrypted user id from /api/inbox_team_members. Required when action is assign; ignored for unassign.",
-        example: "MRBkPwJx4i8="
       },
       {
         key: "workspace_id",

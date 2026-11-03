@@ -108,12 +108,11 @@ export const feedsTools: ToolSpec[] = [
   },
   {
     name: "feed_pause",
-    title: "Feed Status (Pause)",
+    title: "Feed Pause",
     module: "feeds",
-    endpoint: "feed_status",
-    action: "pause",
-    summary: "Pause, resume or delete a feed of a library. This tool runs the pause action.",
-    description: "Changes one feed of one library. pause stops new articles from being fetched for it, resume starts again (the plan's feed limit is checked), delete removes the feed. The feed must be attached to the given library and both must belong to the workspace owner. One feed per library: Adding the same URL to another library creates a separate feed with its own id, so delete removes this library's feed and its pending (not yet approved) articles only. Articles already approved into the library stay.",
+    endpoint: "feed_pause",
+    summary: "Pause a feed of a library.",
+    description: "Stops new articles from being fetched for one feed of one library; resume it with /api/feed_resume. The feed must be attached to the given library and both must belong to the workspace owner.",
     readOnly: false,
     destructive: false,
     params: [
@@ -142,12 +141,11 @@ export const feedsTools: ToolSpec[] = [
   },
   {
     name: "feed_resume",
-    title: "Feed Status (Resume)",
+    title: "Feed Resume",
     module: "feeds",
-    endpoint: "feed_status",
-    action: "resume",
-    summary: "Pause, resume or delete a feed of a library. This tool runs the resume action.",
-    description: "Changes one feed of one library. pause stops new articles from being fetched for it, resume starts again (the plan's feed limit is checked), delete removes the feed. The feed must be attached to the given library and both must belong to the workspace owner. One feed per library: Adding the same URL to another library creates a separate feed with its own id, so delete removes this library's feed and its pending (not yet approved) articles only. Articles already approved into the library stay.",
+    endpoint: "feed_resume",
+    summary: "Resume a paused feed of a library.",
+    description: "Starts fetching articles again for a paused feed; the plan's feed limit is checked. The feed must be attached to the given library and both must belong to the workspace owner.",
     readOnly: false,
     destructive: false,
     params: [
@@ -176,12 +174,11 @@ export const feedsTools: ToolSpec[] = [
   },
   {
     name: "feed_delete",
-    title: "Feed Status (Delete)",
+    title: "Feed Delete",
     module: "feeds",
-    endpoint: "feed_status",
-    action: "delete",
-    summary: "Pause, resume or delete a feed of a library. This tool runs the delete action.",
-    description: "Changes one feed of one library. pause stops new articles from being fetched for it, resume starts again (the plan's feed limit is checked), delete removes the feed. The feed must be attached to the given library and both must belong to the workspace owner. One feed per library: Adding the same URL to another library creates a separate feed with its own id, so delete removes this library's feed and its pending (not yet approved) articles only. Articles already approved into the library stay.",
+    endpoint: "feed_delete",
+    summary: "Delete a feed from a library.",
+    description: "Removes the feed from the library with its pending (not yet approved) articles. The feed must be attached to the given library and both must belong to the workspace owner. One feed per library: Adding the same URL to another library creates a separate feed with its own id, so delete removes this library's feed and its pending (not yet approved) articles only. Articles already approved into the library stay.",
     readOnly: false,
     destructive: true,
     params: [
@@ -214,7 +211,7 @@ export const feedsTools: ToolSpec[] = [
     module: "feeds",
     endpoint: "feed_update",
     summary: "Change a feed's settings in one library, or move it to another library.",
-    description: "Changes how feed id fills library library_id. Every setting is optional and a setting left out keeps its value: auto_approve, top_of_queue, host_images, live_date, expire_date and message_template (with the {|||name|||} placeholders of /api/feed_create). new_library_id moves the feed, with its waiting items, to another library of the owner. The answer is the feed's settings after the change. auto_approve on approves the backlog: Turning auto_approve on moves every item waiting in /api/feed_items into the library in this call, each taking a library post slot on the plan. Decide the backlog with /api/feed_item_decide first if you want to keep some out.",
+    description: "Changes how feed id fills library library_id. Every setting is optional and a setting left out keeps its value: auto_approve, top_of_queue, host_images, live_date, expire_date and message_template (with the {|||name|||} placeholders of /api/feed_create). new_library_id moves the feed, with its waiting items, to another library of the owner. The answer is the feed's settings after the change. auto_approve on approves the backlog: Turning auto_approve on moves every item waiting in /api/feed_items into the library in this call, each taking a library post slot on the plan. Decide the backlog with /api/feed_item_approve and /api/feed_item_reject first if you want to keep some out.",
     readOnly: false,
     destructive: false,
     params: [
@@ -329,7 +326,7 @@ export const feedsTools: ToolSpec[] = [
     module: "feeds",
     endpoint: "feed_items",
     summary: "The articles of a feed waiting for review in a library.",
-    description: "Lists the articles feed id fetched for library library_id that are waiting for a decision, newest first and paged. Approve or reject them with /api/feed_item_decide using items[].id. A feed that auto-approves has nothing here.",
+    description: "Lists the articles feed id fetched for library library_id that are waiting for a decision, newest first and paged. Approve or reject them with /api/feed_item_approve and /api/feed_item_reject using items[].id. A feed that auto-approves has nothing here.",
     readOnly: true,
     destructive: false,
     params: [
@@ -374,12 +371,11 @@ export const feedsTools: ToolSpec[] = [
   },
   {
     name: "feed_item_approve",
-    title: "Decide Feed Items (Approve)",
+    title: "Feed Item Approve",
     module: "feeds",
-    endpoint: "feed_item_decide",
-    action: "approve",
-    summary: "Approve or reject waiting feed articles, one by one or all at once. This tool runs the approve action.",
-    description: "Decides the articles of feed id waiting in library library_id. action picks the operation: approve: copies the items in item_ids into the library with their text, link, images and video. reject: removes the items in item_ids from the waiting list. approve_all: moves every waiting item into the library; needs confirm=true. As the app's bulk approve does, it copies text, link and cover image only. reject_all: empties the feed's list; needs confirm=true. As in the app, this also removes items approved earlier from the feed's list (the library posts made from them stay). approve_all drops media: Bulk approval copies each article's text, link and cover image only, as the app's Approve all does. Approve items one by one (action=approve) to keep every image and the video.",
+    endpoint: "feed_item_approve",
+    summary: "Approve waiting feed articles into the library.",
+    description: "Decides articles of feed id waiting in library library_id. Copies the items in item_ids into the library with their text, link, images and video.",
     readOnly: false,
     destructive: false,
     params: [
@@ -401,7 +397,7 @@ export const feedsTools: ToolSpec[] = [
         key: "item_ids",
         type: "array",
         required: true,
-        description: "Plain integer item ids from /api/feed_items: one id, a comma-separated string or an array, at most 50; every id must be waiting in this feed and library. Required when action is approve or reject.",
+        description: "Plain integer item ids from /api/feed_items: one id, a comma-separated string or an array, at most 50; every id must be waiting in this feed and library.",
         example: [
           4812,
           4813
@@ -420,12 +416,11 @@ export const feedsTools: ToolSpec[] = [
   },
   {
     name: "feed_item_reject",
-    title: "Decide Feed Items (Reject)",
+    title: "Feed Item Reject",
     module: "feeds",
-    endpoint: "feed_item_decide",
-    action: "reject",
-    summary: "Approve or reject waiting feed articles, one by one or all at once. This tool runs the reject action.",
-    description: "Decides the articles of feed id waiting in library library_id. action picks the operation: approve: copies the items in item_ids into the library with their text, link, images and video. reject: removes the items in item_ids from the waiting list. approve_all: moves every waiting item into the library; needs confirm=true. As the app's bulk approve does, it copies text, link and cover image only. reject_all: empties the feed's list; needs confirm=true. As in the app, this also removes items approved earlier from the feed's list (the library posts made from them stay). approve_all drops media: Bulk approval copies each article's text, link and cover image only, as the app's Approve all does. Approve items one by one (action=approve) to keep every image and the video.",
+    endpoint: "feed_item_reject",
+    summary: "Reject waiting feed articles.",
+    description: "Decides articles of feed id waiting in library library_id. Removes the items in item_ids from the waiting list.",
     readOnly: false,
     destructive: false,
     params: [
@@ -447,7 +442,7 @@ export const feedsTools: ToolSpec[] = [
         key: "item_ids",
         type: "array",
         required: true,
-        description: "Plain integer item ids from /api/feed_items: one id, a comma-separated string or an array, at most 50; every id must be waiting in this feed and library. Required when action is approve or reject.",
+        description: "Plain integer item ids from /api/feed_items: one id, a comma-separated string or an array, at most 50; every id must be waiting in this feed and library.",
         example: [
           4812,
           4813
@@ -466,13 +461,12 @@ export const feedsTools: ToolSpec[] = [
   },
   {
     name: "feed_item_approve_all",
-    title: "Decide Feed Items (Approve All)",
+    title: "Feed Item Approve All",
     module: "feeds",
-    endpoint: "feed_item_decide",
-    action: "approve_all",
+    endpoint: "feed_item_approve_all",
     confirm: true,
-    summary: "Approve or reject waiting feed articles, one by one or all at once. This tool runs the approve_all action.",
-    description: "Decides the articles of feed id waiting in library library_id. action picks the operation: approve: copies the items in item_ids into the library with their text, link, images and video. reject: removes the items in item_ids from the waiting list. approve_all: moves every waiting item into the library; needs confirm=true. As the app's bulk approve does, it copies text, link and cover image only. reject_all: empties the feed's list; needs confirm=true. As in the app, this also removes items approved earlier from the feed's list (the library posts made from them stay). approve_all drops media: Bulk approval copies each article's text, link and cover image only, as the app's Approve all does. Approve items one by one (action=approve) to keep every image and the video.",
+    summary: "Approve every waiting article of a feed into the library.",
+    description: "Decides articles of feed id waiting in library library_id. Moves every waiting item into the library; needs confirm=true. As the app's bulk approve does, it copies text, link and cover image only. Bulk approval drops media: Bulk approval copies each article's text, link and cover image only, as the app's Approve all does. Approve items one by one with /api/feed_item_approve to keep every image and the video.",
     readOnly: false,
     destructive: true,
     params: [
@@ -489,18 +483,6 @@ export const feedsTools: ToolSpec[] = [
         required: true,
         description: "Encrypted id of the library the feed fills.",
         example: "pQ8rS2tU4v=="
-      },
-      {
-        key: "item_ids",
-        type: "array",
-        required: false,
-        description: "Plain integer item ids from /api/feed_items: one id, a comma-separated string or an array, at most 50; every id must be waiting in this feed and library. Required when action is approve or reject.",
-        example: [
-          4812,
-          4813
-        ],
-        items: "string",
-        acceptsList: true
       },
       {
         key: "workspace_id",
@@ -513,13 +495,12 @@ export const feedsTools: ToolSpec[] = [
   },
   {
     name: "feed_item_reject_all",
-    title: "Decide Feed Items (Reject All)",
+    title: "Feed Item Reject All",
     module: "feeds",
-    endpoint: "feed_item_decide",
-    action: "reject_all",
+    endpoint: "feed_item_reject_all",
     confirm: true,
-    summary: "Approve or reject waiting feed articles, one by one or all at once. This tool runs the reject_all action.",
-    description: "Decides the articles of feed id waiting in library library_id. action picks the operation: approve: copies the items in item_ids into the library with their text, link, images and video. reject: removes the items in item_ids from the waiting list. approve_all: moves every waiting item into the library; needs confirm=true. As the app's bulk approve does, it copies text, link and cover image only. reject_all: empties the feed's list; needs confirm=true. As in the app, this also removes items approved earlier from the feed's list (the library posts made from them stay). approve_all drops media: Bulk approval copies each article's text, link and cover image only, as the app's Approve all does. Approve items one by one (action=approve) to keep every image and the video.",
+    summary: "Empty the waiting list of a feed.",
+    description: "Decides articles of feed id waiting in library library_id. Empties the feed's list; needs confirm=true. As in the app, this also removes items approved earlier from the feed's list (the library posts made from them stay).",
     readOnly: false,
     destructive: true,
     params: [
@@ -536,18 +517,6 @@ export const feedsTools: ToolSpec[] = [
         required: true,
         description: "Encrypted id of the library the feed fills.",
         example: "pQ8rS2tU4v=="
-      },
-      {
-        key: "item_ids",
-        type: "array",
-        required: false,
-        description: "Plain integer item ids from /api/feed_items: one id, a comma-separated string or an array, at most 50; every id must be waiting in this feed and library. Required when action is approve or reject.",
-        example: [
-          4812,
-          4813
-        ],
-        items: "string",
-        acceptsList: true
       },
       {
         key: "workspace_id",

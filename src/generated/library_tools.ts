@@ -684,7 +684,7 @@ export const libraryToolsTools: ToolSpec[] = [
     endpoint: "library_pointers",
     action: "list",
     summary: "See which post each account publishes next from a library, move one account's pointer, or point accounts at a post. This tool runs the list action.",
-    description: "Every social account connected to a library has a pointer into the library's publishing order (/api/library_content_order): the position of the post it publishes next. action picks the operation on library library_id: list (default): every account on the library with its next position and the post there. set: moves one account's pointer (account_id) to position. reset: points one or more accounts (account_ids) at post content_id, so they publish it next.",
+    description: "Every social account connected to a library has a pointer into the library's publishing order (/api/library_content_order_move): the position of the post it publishes next. action picks the operation on library library_id: list (default): every account on the library with its next position and the post there. set: moves one account's pointer (account_id) to position. reset: points one or more accounts (account_ids) at post content_id, so they publish it next.",
     readOnly: true,
     destructive: false,
     params: [
@@ -744,7 +744,7 @@ export const libraryToolsTools: ToolSpec[] = [
     endpoint: "library_pointers",
     action: "set",
     summary: "See which post each account publishes next from a library, move one account's pointer, or point accounts at a post. This tool runs the set action.",
-    description: "Every social account connected to a library has a pointer into the library's publishing order (/api/library_content_order): the position of the post it publishes next. action picks the operation on library library_id: list (default): every account on the library with its next position and the post there. set: moves one account's pointer (account_id) to position. reset: points one or more accounts (account_ids) at post content_id, so they publish it next.",
+    description: "Every social account connected to a library has a pointer into the library's publishing order (/api/library_content_order_move): the position of the post it publishes next. action picks the operation on library library_id: list (default): every account on the library with its next position and the post there. set: moves one account's pointer (account_id) to position. reset: points one or more accounts (account_ids) at post content_id, so they publish it next.",
     readOnly: false,
     destructive: false,
     params: [
@@ -804,7 +804,7 @@ export const libraryToolsTools: ToolSpec[] = [
     endpoint: "library_pointers",
     action: "reset",
     summary: "See which post each account publishes next from a library, move one account's pointer, or point accounts at a post. This tool runs the reset action.",
-    description: "Every social account connected to a library has a pointer into the library's publishing order (/api/library_content_order): the position of the post it publishes next. action picks the operation on library library_id: list (default): every account on the library with its next position and the post there. set: moves one account's pointer (account_id) to position. reset: points one or more accounts (account_ids) at post content_id, so they publish it next.",
+    description: "Every social account connected to a library has a pointer into the library's publishing order (/api/library_content_order_move): the position of the post it publishes next. action picks the operation on library library_id: list (default): every account on the library with its next position and the post there. set: moves one account's pointer (account_id) to position. reset: points one or more accounts (account_ids) at post content_id, so they publish it next.",
     readOnly: false,
     destructive: true,
     params: [
