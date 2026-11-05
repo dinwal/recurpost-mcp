@@ -839,7 +839,7 @@ export const draftsTools: ToolSpec[] = [
         key: "yt_privacy_status",
         type: "string",
         required: false,
-        description: "YouTube visibility, case-insensitive.",
+        description: "Video privacy. Lower-cased and stored as given, so use one of the listed values; an unknown value reaches YouTube and fails there. When omitted it is saved as public, and the other YouTube options and the AI label are kept.",
         values: [
           "public",
           "private",
@@ -891,7 +891,7 @@ export const draftsTools: ToolSpec[] = [
         key: "tk_privacy_status",
         type: "string",
         required: false,
-        description: "TikTok visibility, matched case-insensitively with spaces or underscores. Unknown values fall back to Public to Everyone.",
+        description: "Who can watch the TikTok video. Case-insensitive, spaces or underscores. Any other value, or none, is saved as Public to Everyone; the other TikTok options and the AI label are kept either way. /api/tiktok_options lists what the account allows.",
         values: [
           "Public to Everyone",
           "Mutual Follow Friends",
