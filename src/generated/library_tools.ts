@@ -200,7 +200,7 @@ export const libraryToolsTools: ToolSpec[] = [
     module: "library_tools",
     endpoint: "library_drafts_update",
     summary: "Change a draft of a library field by field.",
-    description: "A draft is a library post with a live date in the future: it sits in the library but is not scheduled until that day. This call changes the fields you send over the draft's current values; a field left out keeps its value. The draft must keep a live date; clear it with /api/library_drafts_publish. The content fields here are the simple ones of a library post (one message, one link, one image, one video); per-network tabs are not touched. For a full rewrite use /api/library_content_update. Patch semantics, unlike library_content_update: The fields you send merge over the draft's current values, so you can change one field alone. /api/library_content_update is a full replacement; use it to rewrite per-network tabs. gmb_cta_type 1 is treated as none: The app stores Learn more as code 1, but this endpoint keeps only codes above 1; sending 1 clears the button. Set a Learn more button through /api/library_content_update with gbp_cta instead.",
+    description: "A draft is a library post with a live date in the future: it sits in the library but is not scheduled until that day. This call changes the fields you send over the draft's current values; a field left out keeps its value. The draft must keep a live date; clear it with /api/library_drafts_publish. The content fields here are the simple ones of a library post (one message, one link, one image, one video); per-network tabs are not touched. For a full rewrite use /api/library_content_update. Patch semantics, unlike library_content_update: The fields you send merge over the draft's current values, so you can change one field alone. /api/library_content_update is a full replacement; use it to rewrite per-network tabs.",
     readOnly: false,
     destructive: false,
     params: [
@@ -278,7 +278,7 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "gmb_cta_type",
         type: "integer",
         required: false,
-        description: "Google Business call-to-action code as the app stores it: 2 Sign up, 3 Buy, 4 Order online, 5 Book, 6 Call now, 8 Offer. 0 or 1 clears the button.",
+        description: "Google Business call-to-action code as the app stores it: 1 Learn more, 2 Sign up, 3 Buy, 4 Order online, 5 Book, 6 Call now, 8 Offer. 0 or 7 clears the button. Left out, the draft keeps its button.",
         example: 2
       },
       {
@@ -296,7 +296,7 @@ export const libraryToolsTools: ToolSpec[] = [
     module: "library_tools",
     endpoint: "library_drafts_publish",
     summary: "Clear the live date of a draft so it joins the library now.",
-    description: "A draft is a library post with a live date in the future: it sits in the library but is not scheduled until that day. This call clears the live date so the post joins the library now; the other fields you send are applied at the same time, over the draft's current values. The content fields here are the simple ones of a library post (one message, one link, one image, one video); per-network tabs are not touched. For a full rewrite use /api/library_content_update. Patch semantics, unlike library_content_update: The fields you send merge over the draft's current values, so you can change one field alone. /api/library_content_update is a full replacement; use it to rewrite per-network tabs. gmb_cta_type 1 is treated as none: The app stores Learn more as code 1, but this endpoint keeps only codes above 1; sending 1 clears the button. Set a Learn more button through /api/library_content_update with gbp_cta instead.",
+    description: "A draft is a library post with a live date in the future: it sits in the library but is not scheduled until that day. This call clears the live date so the post joins the library now; the other fields you send are applied at the same time, over the draft's current values. The content fields here are the simple ones of a library post (one message, one link, one image, one video); per-network tabs are not touched. For a full rewrite use /api/library_content_update. Patch semantics, unlike library_content_update: The fields you send merge over the draft's current values, so you can change one field alone. /api/library_content_update is a full replacement; use it to rewrite per-network tabs.",
     readOnly: false,
     destructive: false,
     params: [
@@ -367,7 +367,7 @@ export const libraryToolsTools: ToolSpec[] = [
         key: "gmb_cta_type",
         type: "integer",
         required: false,
-        description: "Google Business call-to-action code as the app stores it: 2 Sign up, 3 Buy, 4 Order online, 5 Book, 6 Call now, 8 Offer. 0 or 1 clears the button.",
+        description: "Google Business call-to-action code as the app stores it: 1 Learn more, 2 Sign up, 3 Buy, 4 Order online, 5 Book, 6 Call now, 8 Offer. 0 or 7 clears the button. Left out, the draft keeps its button.",
         example: 2
       },
       {
