@@ -777,69 +777,6 @@ export const approvalsTools: ToolSpec[] = [
         acceptsList: true
       },
       {
-        key: "in_audio_id",
-        type: "string",
-        required: false,
-        description: "Instagram audio to lay under a reel, from /api/instagram_audio_search. Needs in_post_type reel, a video_url and in_audio_account_id.",
-        example: "1234567890123456"
-      },
-      {
-        key: "in_audio_account_id",
-        type: "string",
-        required: false,
-        description: "Encrypted id of the Instagram account /api/instagram_audio_search ran for. Required with in_audio_id.",
-        example: "aK3mZ8vQr1=="
-      },
-      {
-        key: "in_audio_type",
-        type: "string",
-        required: false,
-        description: "Kind of audio behind in_audio_id.",
-        values: [
-          "music",
-          "original_sound"
-        ],
-        default: "music",
-        example: "music"
-      },
-      {
-        key: "in_audio_title",
-        type: "string",
-        required: false,
-        description: "Title of the audio, as the search returned it; stored with the reel.",
-        example: "Summer Nights"
-      },
-      {
-        key: "in_audio_artist",
-        type: "string",
-        required: false,
-        description: "Artist of the audio, as the search returned it.",
-        example: "The Examples"
-      },
-      {
-        key: "in_audio_duration_ms",
-        type: "integer",
-        required: false,
-        description: "Length of the audio in milliseconds, as the search returned it.",
-        example: 30000
-      },
-      {
-        key: "in_audio_volume",
-        type: "integer",
-        required: false,
-        description: "Volume of the added audio, 0 to 100.",
-        default: "100",
-        example: 100
-      },
-      {
-        key: "in_video_volume",
-        type: "integer",
-        required: false,
-        description: "Volume of the reel's own sound, 0 to 100.",
-        default: "100",
-        example: 100
-      },
-      {
         key: "in_trial_reel",
         type: "string",
         required: false,
