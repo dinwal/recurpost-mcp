@@ -8,7 +8,7 @@ export const teamRolesTools: ToolSpec[] = [
     module: "team_roles",
     endpoint: "roles",
     summary: "List the account's roles with the permission and notification keys, or read one role in full.",
-    description: "Without role_id lists every role of the account together with permission_keys (every key /api/role_set_permissions accepts in permissions) and notification_keys (every key it accepts as notification_key). With role_id returns that one role with the permissions it holds, its notification settings and the workflow stages it reviews. Owner only: the key must belong to the account owner. Role and user ids in this module are plain integers. Feature masters: social, library, inbox, reports, dm, ads and client are master keys that switch a whole feature on for the role; the keys that follow each one in the list are its finer permissions and only count while the master is held. Reading as a member: A team member's own role in a workspace is on members[].role of /api/workspace_members; this endpoint is for the owner's account.",
+    description: "Without role_id lists every role of the account together with permission_keys (every key /api/role_set_permissions accepts; /api/role_permissions has the same keys with their labels and groups) and notification_keys (every key it accepts as notification_key). With role_id returns that one role with the permissions it holds, its notification settings and the workflow stages it reviews. Owner only: the key must belong to the account owner. Role and user ids in this module are plain integers. Feature masters: social, library, inbox, reports, dm, ads and client are master keys that switch a whole feature on for the role; the keys that follow each one in the list are its finer permissions and only count while the master is held. Reading as a member: A team member's own role in a workspace is on members[].role of /api/workspace_members; this endpoint is for the owner's account.",
     readOnly: true,
     destructive: false,
     params: [
@@ -19,6 +19,25 @@ export const teamRolesTools: ToolSpec[] = [
         description: "Plain role id to read in full. Omit for the list.",
         example: 5
       },
+      {
+        key: "workspace_id",
+        type: "string",
+        required: false,
+        description: "Workspace to act in. Defaults to your default workspace. Get ids from /api/workspace_list. Roles are account-wide; the workspace only decides whose roles are read, and it must be yours.",
+        example: "nX2k9Qp7Lw=="
+      }
+    ]
+  },
+  {
+    name: "role_permissions",
+    title: "Role Permissions",
+    module: "team_roles",
+    endpoint: "role_permissions",
+    summary: "List every permission a role can hold, grouped as the Roles page shows them.",
+    description: "The permission catalog: every group of the Roles page with its label and description, the permissions in it, and the group's master_key when it has one. A group with a master (Social profiles, Content library, Inbox, Reports, DM automations, Paid ads, Client review) is switched on as a whole by that key; its finer keys only take effect while the master is held. Use the keys here in permissions of /api/role_set_permissions. Owner only. Masters first: When you build a role from this list, switch the group's master_key on together with the finer keys you want; a finer key without its master is stored but has no effect.",
+    readOnly: false,
+    destructive: false,
+    params: [
       {
         key: "workspace_id",
         type: "string",
@@ -131,8 +150,8 @@ export const teamRolesTools: ToolSpec[] = [
     title: "Role Set Permissions",
     module: "team_roles",
     endpoint: "role_set_permissions",
-    summary: "Replace the permission keys of a role.",
-    description: "Replaces the role's permission keys with permissions; keys not in the list are taken away. Answers with the role as /api/roles returns it. Owner only. This replaces, it does not add: Send the whole list the role should end up with. Read the current permissions with /api/roles, change it, send it back. A finer key without its feature master (for example lib-upload without library) is stored but has no effect.",
+    summary: "Switch permissions of a role on or off; keys you leave out are not changed.",
+    description: "Changes only the permission keys named in permissions: each is switched on (true, yes, 1) or off (false, no, 0), and every other key the role holds stays as it is. Answers with the role as /api/roles returns it. Owner only. Only the named keys move: Nothing needs to be read first: send the keys to switch and their new state. To take every permission away, send every key the role holds with false. A finer key without its feature master (for example lib-upload without library) is stored but has no effect, so switch the master on with it.",
     readOnly: false,
     destructive: false,
     params: [
@@ -145,16 +164,15 @@ export const teamRolesTools: ToolSpec[] = [
       },
       {
         key: "permissions",
-        type: "array",
+        type: "object",
         required: true,
-        description: "The full list of permission keys the role should hold, as an array or a comma-separated string, from permission_keys of /api/roles. Duplicates are dropped; an empty list takes every permission away.",
-        example: [
-          "create-posts",
-          "edit-others",
-          "social"
-        ],
-        items: "string",
-        acceptsList: true
+        description: "Object of permission key to toggle, with at least one key. Keys come from /api/role_permissions. A toggle is true/false, yes/no or 1/0, as a boolean, number or string in any case. Switching off a key the role does not hold is a no-op. As a form field send permissions[create-posts]=yes; as a string, the JSON object.",
+        example: {
+          "create-posts": true,
+          "edit-others": "no",
+          library: 1,
+          "lib-upload": "yes"
+        }
       },
       {
         key: "workspace_id",

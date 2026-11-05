@@ -77,7 +77,7 @@
   },
   {
     "name": "queue_post_update",
-    "description": "Move a queued item to a new time, replace its content, or both."
+    "description": "Move a queued item to a new time, change the post behind it, or both."
   },
   {
     "name": "queue_post_delete",
