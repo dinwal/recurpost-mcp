@@ -755,7 +755,7 @@ export const contentToolsTools: ToolSpec[] = [
     module: "content_tools",
     endpoint: "catalog_product_save",
     summary: "Add a product to a catalog on Meta, or change one.",
-    description: "The product catalog behind Instagram product tags (in_product_tags and in_reel_product_tags on /api/post_content; products are read with /api/instagram_products). Every call acts through Instagram business account account_id and is for the workspace owner only. Adds a product to catalog_id, or changes product product_id; send one of the two. A new product needs name, price and currency. Meta's own refusals come back as 400 with Meta's reason; an account whose token Meta no longer accepts answers 409 with reconnect_required. Changes happen on Meta: Catalogs and products live in Meta's Commerce Manager, not in RecurPost. A new catalog must be connected to the Instagram shop in Commerce Manager before its products can be tagged, and Meta reviews new products for a few minutes before /api/instagram_products lists them.",
+    description: "The product catalog behind Instagram product tags (in_product_tags and in_reel_product_tags on /api/post_content; products are read with /api/instagram_products). Every call acts through Instagram business account account_id and is for the workspace owner only. Adds a product to catalog_id, or changes product product_id; send one of the two. A new product needs name, price and currency. Meta's own refusals come back as 400 with Meta's reason; an account whose token Meta no longer accepts answers 409 with reconnect_required. Changes happen on Meta: Catalogs and products live in Meta's Commerce Manager, not in RecurPost. A new catalog must be connected to the Instagram shop in Commerce Manager before its products can be tagged, and Meta reviews new products for a few minutes before /api/instagram_products lists them. A change replaces the product: Meta receives every field on a change. Send the whole product, as /api/instagram_products returns it, with your changes; a description left out is cleared and availability goes back to in stock.",
     readOnly: false,
     destructive: false,
     params: [
@@ -769,9 +769,37 @@ export const contentToolsTools: ToolSpec[] = [
       {
         key: "name",
         type: "string",
-        required: false,
-        description: "The product name, 1 to 150 characters. Required for a new product.",
+        required: true,
+        description: "The product name, 1 to 150 characters. Required on a new product and on a change.",
         example: "Summer collection"
+      },
+      {
+        key: "price",
+        type: "string",
+        required: true,
+        description: "The price as a number in the currency's units, for example 12.50. Required on a new product and on a change.",
+        example: "12.50"
+      },
+      {
+        key: "currency",
+        type: "string",
+        required: true,
+        description: "ISO currency code. Required on a new product and on a change.",
+        example: "USD"
+      },
+      {
+        key: "url",
+        type: "url",
+        required: true,
+        description: "The product page, starting with http:// or https://. Required on a new product and on a change.",
+        example: "https://shop.example.com/hat"
+      },
+      {
+        key: "image_url",
+        type: "url",
+        required: true,
+        description: "The product image, starting with http:// or https://. Required on a new product and on a change.",
+        example: "https://shop.example.com/img/hat.jpg"
       },
       {
         key: "catalog_id",
@@ -788,45 +816,17 @@ export const contentToolsTools: ToolSpec[] = [
         example: "901000111222333"
       },
       {
-        key: "price",
-        type: "string",
-        required: false,
-        description: "The price as a number in the currency's units, for example 12.50. Required for a new product.",
-        example: "12.50"
-      },
-      {
-        key: "currency",
-        type: "string",
-        required: false,
-        description: "ISO currency code. Required for a new product.",
-        example: "USD"
-      },
-      {
-        key: "url",
-        type: "url",
-        required: false,
-        description: "The product page, starting with http:// or https://.",
-        example: "https://shop.example.com/hat"
-      },
-      {
-        key: "image_url",
-        type: "url",
-        required: false,
-        description: "The product image, starting with http:// or https://.",
-        example: "https://shop.example.com/img/hat.jpg"
-      },
-      {
         key: "description",
         type: "string",
         required: false,
-        description: "Up to 5000 characters.",
+        description: "Up to 5000 characters. Left out, it is sent blank, so a change clears it.",
         example: "Wide-brim straw hat."
       },
       {
         key: "availability",
         type: "string",
         required: false,
-        description: "Meta availability value, for example in stock or out of stock.",
+        description: "Meta availability value, for example in stock or out of stock. Left out, it is sent as in stock.",
         example: "in stock"
       },
       {
@@ -840,7 +840,7 @@ export const contentToolsTools: ToolSpec[] = [
         key: "retailer_id",
         type: "string",
         required: false,
-        description: "Your own SKU or id for the product.",
+        description: "Your own SKU or id for the product. Meta keeps it once set; a change does not update it.",
         example: "HAT-001"
       },
       {
