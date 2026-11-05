@@ -229,7 +229,7 @@ export const workflowSettingsTools: ToolSpec[] = [
         key: "reject_to_stage_id",
         type: "integer",
         required: false,
-        description: "On the client stage: the stage a post the client rejects goes back to.",
+        description: "On the client stage: the stage a post the client rejects goes back to. It must be an earlier work or review stage; any other value is dropped and the stage reads back 0 in stages[].",
         example: 71
       },
       {

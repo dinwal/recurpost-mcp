@@ -1193,6 +1193,27 @@ export const librariesTools: ToolSpec[] = [
         example: 0
       },
       {
+        key: "fb_mentions",
+        type: "array",
+        required: false,
+        description: "Facebook pages to mention, at most 10: page ids from /api/mention_search, as a list of ids or of {page_id, name} objects. Write each page in the text as @<page id>; the publisher turns it into the page's mention on Facebook pages.",
+        example: [
+          {
+            page_id: "108296975869040",
+            name: "Acme"
+          }
+        ],
+        items: "object",
+        acceptsList: false
+      },
+      {
+        key: "fb_background_id",
+        type: "string",
+        required: false,
+        description: "Facebook text background for a post without image_url or video_url: an id from /api/facebook_backgrounds (letters, digits, underscore or dash, up to 64 characters). Applied on Facebook pages only.",
+        example: "106"
+      },
+      {
         key: "workspace_id",
         type: "string",
         required: false,

@@ -315,14 +315,14 @@ export const workflowBoardTools: ToolSpec[] = [
         key: "assignee_user_id",
         type: "string",
         required: false,
-        description: "Encrypted user id from members[] to assign the card to; 0 clears the assignee. The app checks the member may work the stage.",
+        description: "Encrypted user id from members[] to assign the card to; 0 clears the assignee. The app checks the member may work the stage. A member who may not work the card's stage is not assigned: the card is left unassigned, so read assignee on the card.",
         example: "Sl7mN2vB4Q=="
       },
       {
         key: "share_with_client",
         type: "boolean",
         required: false,
-        description: "Whether the card is shared with the client for approval. Defaults to the workflow setting.",
+        description: "Whether the card is shared with the client for approval. Defaults to the workflow setting. Only the owner and members with the send-to-client permission can set it; for anyone else it is ignored and the workflow setting applies. Read client_approval on the card to see what was kept.",
         example: true
       },
       {
@@ -1397,14 +1397,14 @@ export const workflowBoardTools: ToolSpec[] = [
         key: "assignee_user_id",
         type: "string",
         required: false,
-        description: "Encrypted user id from members[] to assign the card to; 0 clears the assignee. The app checks the member may work the stage.",
+        description: "Encrypted user id from members[] to assign the card to; 0 clears the assignee. The app checks the member may work the stage. A member who may not work the card's stage is not assigned: the card is left unassigned, so read assignee on the card.",
         example: "Sl7mN2vB4Q=="
       },
       {
         key: "share_with_client",
         type: "boolean",
         required: false,
-        description: "Whether the card is shared with the client for approval.",
+        description: "Whether the card is shared with the client for approval. Only the owner and members with the send-to-client permission can set it; for anyone else it is ignored and the workflow setting applies. Read client_approval on the card to see what was kept.",
         example: true
       },
       {
