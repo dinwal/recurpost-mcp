@@ -1,7 +1,7 @@
 {
   "name": "recurpost-mcp",
-  "version": "1.1.4",
-  "description": "MCP server for RecurPost social media management APIs",
+  "version": "2.0.0",
+  "description": "MCP server for the RecurPost social media management API (v2)",
   "type": "module",
   "license": "MIT",
   "repository": {
@@ -20,12 +20,16 @@
   "bin": {
     "recurpost-mcp": "build/index.js"
   },
+  "engines": {
+    "node": ">=18.20.0"
+  },
   "scripts": {
     "build": "node scripts/gen-version.mjs && tsc && chmod 755 build/index.js",
     "prepublishOnly": "npm run build",
     "start": "node build/index.js",
     "test": "vitest run",
-    "mcpb": "node scripts/build-mcpb.mjs"
+    "mcpb": "node scripts/build-mcpb.mjs",
+    "sync-catalog": "node scripts/sync-catalog.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
