@@ -4,7 +4,7 @@
   "display_name": "RecurPost",
   "version": "0.0.0",
   "description": "Schedule and publish social media posts through your RecurPost account.",
-  "long_description": "Connects Claude to RecurPost so you can list your connected social accounts and content libraries, post or schedule content, add evergreen content to a library, review posting history, and generate post copy or images with AI. Requires a RecurPost account and an API Password Key from Account Settings.",
+  "long_description": "Connects Claude to RecurPost (API v2) so you can post or schedule content, manage the queue, drafts, content libraries and their schedules, review posting history and reports, work with labels, approvals and the workflow board, and generate post copy or images with AI, in any workspace you belong to. Every other RecurPost API endpoint is reachable through the find_endpoints and call_endpoint tools. Requires a RecurPost account and an API key from Account Settings > API key.",
   "author": {
     "name": "RecurPost",
     "url": "https://recurpost.com"
@@ -14,16 +14,24 @@
   "support": "https://recurpost.com/contact/",
   "icon": "icon.png",
   "license": "MIT",
-  "keywords": ["social media", "scheduling", "recurpost", "publishing"],
+  "keywords": [
+    "social media",
+    "scheduling",
+    "recurpost",
+    "publishing"
+  ],
   "server": {
     "type": "node",
     "entry_point": "server/index.js",
     "mcp_config": {
       "command": "node",
-      "args": ["${__dirname}/server/index.js"],
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
       "env": {
         "RECURPOST_EMAIL": "${user_config.email}",
-        "RECURPOST_API_KEY": "${user_config.api_key}"
+        "RECURPOST_API_KEY": "${user_config.api_key}",
+        "RECURPOST_API_URL": "${user_config.api_url}"
       }
     }
   },
@@ -36,26 +44,227 @@
     },
     "api_key": {
       "type": "string",
-      "title": "API Password Key",
-      "description": "Generate one in RecurPost under Account Settings > API Password Key. This is not your login password.",
+      "title": "API key",
+      "description": "Find it in RecurPost under Account Settings > API key. This is not your login password.",
       "sensitive": true,
       "required": true
+    },
+    "api_url": {
+      "type": "string",
+      "title": "API URL (advanced)",
+      "description": "Leave as it is unless RecurPost support gives you another address.",
+      "default": "https://social.recurpost.com",
+      "required": false
     }
   },
   "tools": [
-    { "name": "user_login", "description": "Verify your RecurPost API credentials" },
-    { "name": "workspace_list", "description": "List all workspaces you are a member of" },
-    { "name": "social_account_list", "description": "List all connected social media accounts" },
-    { "name": "library_list", "description": "List all content libraries" },
-    { "name": "connect_social_account_urls", "description": "Get URLs to connect new social accounts" },
-    { "name": "history_data", "description": "Get posting history for a social account" },
-    { "name": "post_content", "description": "Post or schedule content to a social account" },
-    { "name": "add_content_in_library", "description": "Add content to a library for recurring posting" },
-    { "name": "generate_content_with_ai", "description": "Generate social media post text with AI" },
-    { "name": "generate_image_with_ai", "description": "Generate images from text descriptions" }
+    {
+      "name": "user_login",
+      "description": "Check your RecurPost API key and account"
+    },
+    {
+      "name": "workspace_list",
+      "description": "List the workspaces you own or belong to"
+    },
+    {
+      "name": "workspace_details",
+      "description": "Read one workspace: libraries, accounts, members"
+    },
+    {
+      "name": "workspace_members",
+      "description": "List the members of a workspace"
+    },
+    {
+      "name": "social_account_list",
+      "description": "List connected social accounts"
+    },
+    {
+      "name": "social_account_details",
+      "description": "Read one social account"
+    },
+    {
+      "name": "connect_social_account_urls",
+      "description": "Get links to connect new social accounts"
+    },
+    {
+      "name": "post_content",
+      "description": "Post now or schedule a post on social accounts"
+    },
+    {
+      "name": "post_status",
+      "description": "Show where a post stands on each account"
+    },
+    {
+      "name": "post_details",
+      "description": "Read the full content of a post"
+    },
+    {
+      "name": "queue_list",
+      "description": "List scheduled queue items"
+    },
+    {
+      "name": "queue_post",
+      "description": "Read one queued item"
+    },
+    {
+      "name": "queue_post_update",
+      "description": "Reschedule or edit a queued item"
+    },
+    {
+      "name": "queue_post_delete",
+      "description": "Remove items from the queue"
+    },
+    {
+      "name": "calendar",
+      "description": "Show the queue day by day"
+    },
+    {
+      "name": "draft_list",
+      "description": "List drafts"
+    },
+    {
+      "name": "draft_save",
+      "description": "Save or replace a draft"
+    },
+    {
+      "name": "draft_schedule",
+      "description": "Schedule a draft"
+    },
+    {
+      "name": "draft_delete",
+      "description": "Delete a draft"
+    },
+    {
+      "name": "library_list",
+      "description": "List content libraries"
+    },
+    {
+      "name": "library_details",
+      "description": "Read one content library"
+    },
+    {
+      "name": "library_create",
+      "description": "Create a content library"
+    },
+    {
+      "name": "library_content_list",
+      "description": "List the posts of a library"
+    },
+    {
+      "name": "library_content",
+      "description": "Read one library post"
+    },
+    {
+      "name": "add_content_in_library",
+      "description": "Add an evergreen post to a library"
+    },
+    {
+      "name": "library_content_update",
+      "description": "Edit a library post"
+    },
+    {
+      "name": "library_content_search",
+      "description": "Search library posts"
+    },
+    {
+      "name": "library_content_delete",
+      "description": "Delete library posts"
+    },
+    {
+      "name": "schedule_list",
+      "description": "List library time slots"
+    },
+    {
+      "name": "schedule_create",
+      "description": "Add library time slots"
+    },
+    {
+      "name": "schedule_delete",
+      "description": "Delete library time slots"
+    },
+    {
+      "name": "history_list",
+      "description": "Published and failed posts of a workspace"
+    },
+    {
+      "name": "history_data",
+      "description": "Posting history of one social account"
+    },
+    {
+      "name": "media_list",
+      "description": "List media used in earlier posts"
+    },
+    {
+      "name": "label_list",
+      "description": "List post labels"
+    },
+    {
+      "name": "label_create",
+      "description": "Create a post label"
+    },
+    {
+      "name": "label_assign_add",
+      "description": "Add labels to a post"
+    },
+    {
+      "name": "approval_list",
+      "description": "List posts in the approval flow"
+    },
+    {
+      "name": "approval_approve",
+      "description": "Approve a waiting library post"
+    },
+    {
+      "name": "approval_reject",
+      "description": "Reject a waiting library post"
+    },
+    {
+      "name": "workflow_board",
+      "description": "Read the workflow board"
+    },
+    {
+      "name": "workflow_card",
+      "description": "Read one workflow card"
+    },
+    {
+      "name": "report_account",
+      "description": "Analytics for an account or the workspace"
+    },
+    {
+      "name": "report_posts",
+      "description": "Metrics per published post"
+    },
+    {
+      "name": "generate_content_with_ai",
+      "description": "Generate post text with AI"
+    },
+    {
+      "name": "generate_image_with_ai",
+      "description": "Generate an image with AI"
+    },
+    {
+      "name": "ai_hashtags",
+      "description": "Suggest hashtags for a post"
+    },
+    {
+      "name": "ai_credits",
+      "description": "Show remaining AI credits"
+    },
+    {
+      "name": "find_endpoints",
+      "description": "Search all RecurPost API endpoints"
+    },
+    {
+      "name": "call_endpoint",
+      "description": "Call any RecurPost API endpoint"
+    }
   ],
   "compatibility": {
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ],
     "runtimes": {
       "node": ">=18.0.0"
     }
