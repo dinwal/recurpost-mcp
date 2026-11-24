@@ -207,6 +207,28 @@ describe("curated tools", () => {
     expect(many.body.id).toEqual(["acc-1", "acc-2"]);
   });
 
+  it("post_content takes Facebook and Instagram post types as one value or a list", async () => {
+    await call("post_content", { id: "acc-1", message: "Hi", fb_post_type: "story", in_post_type: "reel" });
+    const listed = await call("post_content", {
+      id: "acc-1",
+      message: "Hi",
+      fb_post_type: ["feed", "story", "reel"],
+      in_post_type: ["story", "reel"],
+    });
+    expect(listed.isError).toBe(false);
+    const [single, multi] = mock.apiCalls();
+    expect(single.body.fb_post_type).toBe("story");
+    expect(single.body.in_post_type).toBe("reel");
+    expect(multi.body.fb_post_type).toEqual(["feed", "story", "reel"]);
+    expect(multi.body.in_post_type).toEqual(["story", "reel"]);
+  });
+
+  it("rejects an unknown post type before reaching the API", async () => {
+    const bad = await call("post_content", { id: "acc-1", message: "Hi", fb_post_type: ["feed", "carousel"] });
+    expect(bad.isError).toBe(true);
+    expect(mock.apiCalls()).toHaveLength(0);
+  });
+
   it("add_content_in_library keeps the v1 params", async () => {
     await call("add_content_in_library", {
       id: "lib-1",

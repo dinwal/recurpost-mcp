@@ -18,8 +18,9 @@ export interface CuratedTool {
   compose?: "full" | "core";
   // Composer params to leave out for this tool.
   exclude?: string[];
-  // Per-param description or required-flag overrides.
-  overrides?: Record<string, { description?: string; required?: boolean }>;
+  // Per-param description or required-flag overrides. multiple also takes a
+  // list of the param's values (the API reads a single value or an array).
+  overrides?: Record<string, { description?: string; required?: boolean; multiple?: boolean }>;
   readOnly?: boolean;
   destructive?: boolean;
 }
@@ -188,6 +189,16 @@ export const CURATED_TOOLS: CuratedTool[] = [
       id: {
         description:
           "Social account id(s) (smpa_id from social_account_list): one id or a list, at most 50. The same post goes to all of them.",
+      },
+      fb_post_type: {
+        multiple: true,
+        description:
+          'Facebook post type: feed, reel or story, or a list to post several types at once: ["feed", "story"], ["feed", "reel"], ["story", "reel"] or ["feed", "story", "reel"]. Each type becomes its own queue item on every Facebook page. A reel needs a video. Default: feed.',
+      },
+      in_post_type: {
+        multiple: true,
+        description:
+          'Instagram post type: feed, story or reel, or the list ["feed", "story"] or ["story", "reel"] to post both (the second goes out a minute after the first). Instagram does not take feed and reel together. A reel needs a video. Default: feed.',
       },
     },
   },
@@ -629,7 +640,8 @@ export function buildShape(tool: CuratedTool): Record<string, ZodTypeAny> {
     if (!p) throw new Error(`Tool ${tool.name}: endpoint ${tool.endpoint} has no param ${name}`);
     const override = tool.overrides?.[name];
     const required = override?.required ?? p.required;
-    const base = zodForParam(p);
+    const single = zodForParam(p);
+    const base = override?.multiple ? z.union([single, z.array(single).min(1)]) : single;
     shape[name] = (required ? base : base.optional()).describe(
       paramDescription(p, override?.description)
     );
